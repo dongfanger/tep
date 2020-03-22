@@ -20,7 +20,7 @@ class Dao:
     def __init__(self, address, user, password):
         """Initial
 
-        @param address: Host:port
+        @param address: Host:port/database
         @param user: User for database
         @param password: Password for database
         """
@@ -74,3 +74,7 @@ class Dao:
         if isinstance(x, float) and x % 1 == 0:
             return int(x)
         return x
+
+
+def test():
+    Dao('localhost:3306/new_schema', 'root', '123456').select('select * from new_table;')
