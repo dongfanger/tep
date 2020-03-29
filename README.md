@@ -1,4 +1,4 @@
 # pyface
-pytest+requests+allure 接口自动化测试框架实践
+详细介绍请阅读Blog：
 <br/>
-[https://www.cnblogs.com/df888/p/12523829.html](https://www.cnblogs.com/df888/p/12523829.html)
+[https://www.cnblogs.com/df888/p/12592716.html](https://www.cnblogs.com/df888/p/12592716.html)

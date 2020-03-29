@@ -35,7 +35,7 @@ class Dao:
         :param sql: Sql to run
         :return: DataFrame. how to get? data['col_name']['row_index'] eg:data['id'][0]
         """
-        logger.info(f'Running sql{sql}')
+        logger.info(f'Running sql\n{sql}')
         try:
             self.data_frame = pd.read_sql(sql, self.engine)
         except (InternalError, ProgrammingError):
