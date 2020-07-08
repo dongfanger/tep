@@ -2,11 +2,7 @@
 
 一款JMeter设计灵感的RESTful API测试框架。
 
-[安装](#install)
-
-[使用](#use)
-
-[附 解决github图片加载失败](#loadimg)
+[安装](#install)    [使用](#use)    [附 解决github图片加载失败](#loadimg)
 
  <span id="install"></span>
 
