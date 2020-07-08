@@ -244,7 +244,7 @@ def test():
 
 
 
-更多介绍请见wiki。
+更多介绍请见[wiki](https://github.com/dongfanger/pyface/wiki/介绍)。
 
 
 
