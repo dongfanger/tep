@@ -119,7 +119,7 @@
 
    生成api和case文件，
 
-   ![image-20200708151846132](C:\Users\class100\AppData\Roaming\Typora\typora-user-images\image-20200708151846132.png)
+   ![image-20200708151846132](README/image-20200708151846132.png)
 
 2. 在线mock（演示，非必须）
 
