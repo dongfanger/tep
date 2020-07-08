@@ -2,7 +2,9 @@
 
 一款JMeter设计灵感的RESTful API测试框架。
 
-[安装](#install)    [使用](#use)    [附 解决github图片加载失败](#loadimg)
+- [安装](#install)
+- [使用](#use)
+- [附 解决github图片加载失败](#loadimg)
 
  <span id="install"></span>
 
@@ -129,8 +131,10 @@
 
 2. 在线mock（演示，非必须）
 
-   http://www.mockhttp.cn/，打开后mock一个http接口，密码随意如123456，
+   http://www.mockhttp.cn/
 
+   打开后mock一个http接口，密码随意如123456，
+   
    ```
    /hello/pyface
    
@@ -144,7 +148,7 @@
    
 3. 配置环境变量
 
-   在data\env.py文件中，修改test_url为http://www.mockhttp.cn，
+   在data\env.py文件中，修改test_url为`http://www.mockhttp.cn`，
    
    ```
    class Qa:
@@ -256,7 +260,9 @@
 
 # 附 解决github图片加载失败
 
-打开https://www.ipaddress.com/，搜索raw.githubusercontent.com，拿到ip，添加到hosts，如，
+https://www.ipaddress.com/
+
+打开后搜索raw.githubusercontent.com，拿到ip，添加到hosts，如，
 
 ```
 199.232.68.133 raw.githubusercontent.com
