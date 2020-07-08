@@ -2,9 +2,9 @@
 # encoding=utf-8
 
 """
-@Author : Dongfanger
+@Author : dongfanger
 @Date   : 2019/12/12 10:58
-@Desc   : Common functions
+@Desc   : common functions
 """
 
 import ast
@@ -37,19 +37,19 @@ class NpEncoder(json.JSONEncoder):
 
 
 def encrypt(pwd):
-    """Base64
+    """base64
 
-    @param pwd: Password
-    @return: Base64 password
+    @param pwd: password
+    @return: base64 password
     """
     return base64.b64encode(pwd.encode()).decode()
 
 
 def current_time(t='time'):
-    """Time
+    """time
 
     @param t: type: time/date/number
-    @return: Time
+    @return: time
     """
     time_format = {'time': '%Y-%m-%d %H:%M:%S',
                    'date': '%Y-%m-%d',
@@ -58,7 +58,7 @@ def current_time(t='time'):
 
 
 def current_time_millis():
-    """Java time millis
+    """java time millis
 
     @return: Time millis
     """
@@ -66,9 +66,9 @@ def current_time_millis():
 
 
 def last_natural_day():
-    """Last Natural day
+    """last natural day
 
-    @return: Last Natural day
+    @return: last natural day
     """
     return (datetime.datetime.now() + datetime.timedelta(days=-1)).strftime("%Y-%m-%d")
 
@@ -76,8 +76,8 @@ def last_natural_day():
 def obj2json(x):
     """obj to json
 
-    @param x: Object eg:dict/str
-    @return: Json
+    @param x: object eg:dict/str
+    @return: json
     """
     if isinstance(x, dict):
         return json.dumps(x, ensure_ascii=False, cls=NpEncoder)
@@ -86,10 +86,10 @@ def obj2json(x):
 
 
 def lower_id_uri(s):
-    """String 'report/downExcel' to 'report_down_excel'
+    """string 'report/downExcel' to 'report_down_excel'
 
-    @param s: Upper
-    @return: Lower
+    @param s: upper
+    @return: lower
     """
     s = ''.join(['_' + c.lower() if c.isupper()
                  else c for c in s.replace('/', '_')])
@@ -97,16 +97,16 @@ def lower_id_uri(s):
 
 
 def upper_id_uri(s):
-    """String 'national_market_index' to 'NationalMarketIndex'
+    """string 'national_market_index' to 'NationalMarketIndex'
 
-    @param s: Lower
-    @return: Upper
+    @param s: lower
+    @return: upper
     """
     return ''.join(x[0].upper() + x[1:] for x in s.replace(' ', '').replace('/', '_').split('_'))
 
 
 def bar(i):
-    """Processing bar
+    """processing bar
 
     @param i: percent
     """
@@ -118,7 +118,7 @@ def bar(i):
 
 
 def json2form(body):
-    """Json to form
+    """json to form
 
     @param body: {"a": 1, "b": 2}
     @return: a=1&b=2
@@ -127,7 +127,7 @@ def json2form(body):
 
 
 def form2json(form):
-    """Form to json
+    """form to json
 
     @param form: a=1&b=2
     @return: {"a": 1, "b": 2}
@@ -140,10 +140,10 @@ def form2json(form):
 
 
 def print_column(select_result, cols):
-    """After select, print specified cols
+    """after select, print specified cols
 
-    @param select_result: Sql select Result
-    @param cols: Cols to print
+    @param select_result: sql select Result
+    @param cols: cols to print
     """
     s = ''
     for c in cols:
@@ -152,11 +152,11 @@ def print_column(select_result, cols):
 
 
 def report_csv(path, title, row):
-    """Csv formatted test report of interface called info
+    """csv formatted test report of interface called info
 
-    @param path: File path
-    @param title: Table title
-    @param row: Row
+    @param path: file path
+    @param title: table title
+    @param row: row
     """
     with open(path, 'a') as f:
         w = csv.writer(f)

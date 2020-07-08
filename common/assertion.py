@@ -2,15 +2,15 @@
 # encoding=utf-8
 
 """
-@Author : Dongfanger
+@Author : dongfanger
 @Date   : 2019/12/12 10:58
-@Desc   : Assertions
+@Desc   : assertions
 """
 
 
 def status_ok(r):
-    """Response status is ok
+    """response status is ok
 
-    @param r: Response object
+    @param r: response object
     """
     assert r.status_code < 400

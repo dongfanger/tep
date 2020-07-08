@@ -2,9 +2,9 @@
 # encoding=utf-8
 
 """
-@Author : Dongfanger
+@Author : dongfanger
 @Date   : 2020/2/17 17:06
-@Desc   : Base api class
+@Desc   : base api
 """
 
 from common.assertion import status_ok
@@ -20,16 +20,18 @@ class Api:
         self.res = None
         self.content = {}
 
-    def set_content(self):
-        """After request, assert status and set content
+    def assert_response_status(self):
+        """after request, assert response status and set content
 
         """
+        # http status
         status_ok(self.res)
         res_json = self.res.json()
-        assert 1000 == res_json.get('status')
+        # business status
+        assert res_json.get('status') == 1000
         try:
             self.content = res_json['content']
         except KeyError:
-            logger.info(f"{'*' * 26}\n"
-                        f"Response no content\n"
+            logger.info(f"\n{'*' * 26}\n"
+                        f"response no content\n"
                         f"{'*' * 26}\n")

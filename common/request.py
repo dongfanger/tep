@@ -2,9 +2,9 @@
 # encoding=utf-8
 
 """
-@Author : Dongfanger
+@Author : dongfanger
 @Date   : 2019/12/12 10:58
-@Desc   : Packaging requests lib
+@Desc   : packaging requests lib
 """
 
 import decimal
@@ -17,23 +17,23 @@ from requests.api import request
 
 from common.func import current_time, NpEncoder, report_csv
 from common.pytest_logger import logger
-from config.config import interface_log_level
+from pytest_allure import api_log_level
 from config.relative_path import interface_called_info_file
 
 urllib3.disable_warnings(urllib3.exceptions.InsecureRequestWarning)
 
 
 def method(f):
-    """Decorator
+    """decorator
 
-    @param f: Decorated function
-    @return: Inner function
+    @param f: decorated function
+    @return: inner function
     """
 
     def send(self, *args, **kwargs):
         self.param["method"] = f.__name__
-        if interface_log_level in (1, 3):
-            logger.info(f"Request params")
+        if api_log_level in (1, 3):
+            logger.info(f"requesting")
             for k, v in kwargs.items():
                 try:
                     if isinstance(v, dict):
@@ -41,18 +41,19 @@ def method(f):
                         kwargs[k] = json.loads(v)
                 except TypeError:
                     logger.info(f"{'>' * 16}\n"
-                                f"Parameterize failed, probable cause:\n"
-                                f"No double quote\n"
-                                f"Get sql data not by index\n"
+                                f"parameterize failed, probable cause:\n"
+                                f"no double quote\n"
+                                f"get sql data not by index\n"
                                 f"{'<' * 16}\n")
-                logger.info(f"""{k}\n{str(v).replace("'", '"')}\n""")
+                # url headers json/data
+                logger.info(f"""{k}\n{str(v).replace("'", '"')}""")
         start = time.process_time()
         while True:
             try:
                 self.param['r'] = f(self, *args, **kwargs)
             except (requests.exceptions.SSLError, requests.exceptions.ConnectionError) as e:
                 if 'bad handshake' in str(e) or '10054' in str(e):
-                    logger.info(f"{'>' * 16}Read time out, retrying{'<' * 16}")
+                    logger.info(f"{'>' * 16}read time out, retrying{'<' * 16}")
                     continue
                 else:
                     raise Exception(e)
@@ -60,7 +61,7 @@ def method(f):
         end = time.process_time()
 
         self.param['elapsed'] = decimal.Decimal("%.2f" % float(end - start))
-        self._request_log(*args, **kwargs)
+        self._response_log(*args, **kwargs)
         return self.param['r']
 
     return send
@@ -76,22 +77,22 @@ class Request:
             "elapsed": None
         }
 
-    def _request_log(self, *args, **kwargs):
-        """Request log info
+    def _response_log(self, *args, **kwargs):
+        """response log info
 
         @param args: list args
         @param kwargs: keyword args
         """
         param = self.param
-        if interface_log_level in (1, 3):
+        if api_log_level in (1, 3):
             try:
-                logger.info(f"Response\n{param['r'].text}\n")
+                logger.info(f"response\n{param['r'].text}")
             except AttributeError:
                 logger.info(f"{'>' * 16}\n"
-                            f"Request failed\n"
+                            f"request failed\n"
                             f"{'<' * 16}\n")
 
-        if interface_log_level in (2, 3):
+        if api_log_level in (2, 3):
             title = ['time', 'status', 'elapsed(s)', 'request', 'response']
             row = [current_time(),
                    param['r'].status_code,

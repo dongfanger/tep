@@ -1,7 +1,7 @@
 """
-@Author : Dongfanger
+@Author : dongfanger
 @Date   : 2019/12/12 10:58
-@Desc   : Random data
+@Desc   : random data
 """
 
 import random
@@ -11,29 +11,29 @@ from data.cache import chinese
 
 
 def safe_sample(seq, n):
-    """Avoid list out of bound
+    """avoid list out of bound
 
-    @param seq: Sequence
-    @param n: Number
-    @return: Sample result
+    @param seq: sequence
+    @param n: number
+    @return: sample result
     """
     return random.sample(seq, n if n < len(seq) else len(seq))
 
 
 def random_chinese(n):
-    """Random chinese
+    """random chinese
 
-    @param n: Number
-    @return: Sample result
+    @param n: number
+    @return: sample result
     """
     return ''.join(random.sample(chinese.replace('\r', '').replace('\n', ''), n))
 
 
 def random_id(n):
-    """Random id
+    """random id
 
-    @param n: Number
-    @return: Int sequence
+    @param n: number
+    @return: int sequence
     """
     s = ""
     for i in range(n):
@@ -42,19 +42,19 @@ def random_id(n):
 
 
 def random_01(n):
-    """Random 01 sequence
+    """random 01 sequence
 
-    @param n: Number
-    @return: Code like '1010100'
+    @param n: number
+    @return: code like '1010100'
     """
     return ''.join([random.choice('01') for i in range(n)])
 
 
 def _timestamp(t):
-    """Timestamp
+    """timestamp
 
-    @param t: Time
-    @return: Timestamp
+    @param t: time
+    @return: timestamp
     """
     y, m, d = tuple(int(x) for x in t.split('-'))
     m = (y, m, d, 0, 0, 0, 0, 0, 0)
@@ -62,12 +62,12 @@ def _timestamp(t):
 
 
 def random_date(start, end, n):
-    """Random date
+    """random date
 
-    @param start: Start date
-    @param end: End date
-    @param n: Number
-    @return: Random n date
+    @param start: start date
+    @param end: end date
+    @param n: number
+    @return: random n date
     """
     start = _timestamp(start)
     end = _timestamp(end)
@@ -75,12 +75,12 @@ def random_date(start, end, n):
 
 
 def range_num(a, b, interval=1.0):
-    """Range number
+    """range number
 
-    @param a: Start number
-    @param b: End number
-    @param interval: Interval
-    @return: Number list
+    @param a: start number
+    @param b: end number
+    @param interval: interval
+    @return: number list
     """
     if interval == 1:
         return [i for i in range(a, b)]
@@ -93,12 +93,12 @@ def range_num(a, b, interval=1.0):
 
 
 def range_char(a, b, n=None):
-    """Range character list
+    """range character list
 
-    @param a: Start number
-    @param b: End number
-    @param n: Number
-    @return: Character list
+    @param a: start number
+    @param b: end number
+    @param n: number
+    @return: character list
     """
     out = [str(i) for i in range(a, b)]
     return out if n is None else safe_sample(out, n)
