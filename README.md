@@ -2,7 +2,13 @@
 
 一款JMeter设计灵感的RESTful API测试框架。
 
-[TOC]
+[安装](#install)
+
+[使用](#use)
+
+[附 解决github图片加载失败](#loadimg)
+
+ <span id="install"></span>
 
 # 安装
 
@@ -97,6 +103,8 @@
    ```
 
 7. 备注，python、pycharm、jdk网上搜索下载安装即可。
+
+ <span id="use"></span>
 
 # 使用
 
@@ -248,9 +256,17 @@
 
 更多介绍请见[wiki](https://github.com/dongfanger/pyface/wiki/介绍)。
 
+<span id="loadimg"></span>
 
+# 附 解决github图片加载失败
 
+打开https://www.ipaddress.com/，搜索raw.githubusercontent.com，拿到ip，添加到hosts，如，
 
+```
+199.232.68.133 raw.githubusercontent.com
+```
 
+raw.githubusercontent.com就是F12查看图片的网络地址。
 
+若添加后仍然打不开，则通过F12查看获取到图片地址后，继续用这个方法。
 
