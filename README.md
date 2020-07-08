@@ -61,11 +61,11 @@
    
    以下是我安装后的结果，
    
-   ![image-20200708112844119_副本](README/image-20200708112844119_副本.jpg)
+   ![image-20200708112844119](README/image-20200708112844119.jpg)
    
 4. 设置Default test runner为pytest
 
-![image-20200708115152999_副本](README/image-20200708115152999_副本.jpg)
+   ![image-20200708115152999](README/image-20200708115152999.jpg)
 
 5. 设置Code Templates（推荐，非必须）
 
@@ -78,7 +78,7 @@
    ```
 
 
-![image-20200708135841404_副本](README/image-20200708135841404_副本.jpg)
+   ![image-20200708135841404](README/image-20200708135841404.jpg)
 
 6. allure
 
@@ -115,7 +115,7 @@
 
    点击运行，
 
-   ![image-20200708151806083_副本](README/image-20200708151806083_副本.jpg)
+   ![image-20200708151806083](README/image-20200708151806083.jpg)
 
    生成api和case文件，
 
@@ -134,7 +134,7 @@
        "content": {}
    }
    ```
-   ![image-20200708163225327_副本](README/image-20200708163225327_副本.jpg)
+   ![image-20200708163225327](README/image-20200708163225327.jpg)
    
 3. 配置环境变量
 
@@ -162,7 +162,7 @@
 
    一是基于IDE运行，如这里我只运行test\_mock\_hello\_pyface.py里面的test\_default()，
 
-   ![image-20200708152726803_副本](README/image-20200708152726803_副本.jpg)
+   ![image-20200708152726803](README/image-20200708152726803.jpg)
 
    运行结果，
 
@@ -202,45 +202,45 @@
 
    运行后会生成allure测试报告，
 
-   ![image-20200708155848011_副本](README/image-20200708155848011_副本.jpg)
+   ![image-20200708155848011](README/image-20200708155848011.jpg)
 
-index.html右键选择chrome打开。
+   index.html右键选择chrome打开。
 
-也可以选择运行完后自动打开测试报告，在pytest_allure.py文件中，
+   也可以选择运行完后自动打开测试报告，在pytest_allure.py文件中，
 
-```
-# open allure report after test
-open_allure_report = 1
-```
+   ```
+   # open allure report after test
+   open_allure_report = 1
+   ```
 
-修改test\_mock\_hello\_pyface.py，
+   修改test\_mock\_hello\_pyface.py，
 
-```python
-#!/usr/bin/python
-# encoding=utf-8
+   ```python
+   #!/usr/bin/python
+   # encoding=utf-8
+   
+   """
+   @Author :  dongfanger
+   @Date   :  2020-07-08 14:15:47
+   @Desc   : 
+   """
 
-"""
-@Author :  dongfanger
-@Date   :  2020-07-08 14:15:47
-@Desc   : 
-"""
-
-from api.bu.MockHelloPyface import MockHelloPyface
-from pytest_allure import vars_
-
-
-def test_default():
-    x = MockHelloPyface()
-    x.load().send()
-
-
-def test():
-    assert 1 == 2
-```
-
-测试报告长这样，
-
-![image-20200708160148061_副本](README/image-20200708160148061_副本.jpg)
+   from api.bu.MockHelloPyface import MockHelloPyface
+   from pytest_allure import vars_
+   
+   
+   def test_default():
+       x = MockHelloPyface()
+       x.load().send()
+   
+   
+   def test():
+       assert 1 == 2
+   ```
+   
+   测试报告长这样，
+   
+   ![image-20200708160148061](README/image-20200708160148061.jpg)
 
 
 
