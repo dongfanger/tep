@@ -1,7 +1,0 @@
-.idea/
-.pytest_cache/
-__pycache__/
-*.pyc
-reports/report*/
-reports/*.log
-debug/

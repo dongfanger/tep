@@ -1,7 +1,7 @@
 [tool.poetry]
 name = "tep"
-version = "0.2.3"
-description = "A RESTful API testing framework inspired by JMeter's design."
+version = "0.2.4"
+description = "A RESTful API testing tool inspired by JMeter's design."
 license = "Apache-2.0"
 readme = "README.md"
 authors = ["dongfanger <2802358564@qq.com>"]

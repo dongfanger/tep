@@ -76,7 +76,7 @@ allure_report_dir = os.path.join(reports_dir, 'report-' + current_date())
 run_dir = os.path.join(testcases_dir, '')
 
 # open allure test report automatically after testing
-open_allure_report = 1
+open_allure_report = 0
 
 if __name__ == '__main__':
 
@@ -101,13 +101,16 @@ def pytest_sessionfinish(session):
         if open_allure_report:
             os.system(f"allure open {html_dir}")"""
 
-    testcases_conftest_content = """
+    testcases_conftest_content = """import pytest
+from faker import Faker
 
-def token_headers(token):
+
+def json_token_headers(token):
     return {"Content-Type": "application/json", "token": token}
 
 
 headers = {"Content-Type": "application/json"}
+fake = Faker(locale='zh_CN')
 
 
 class Dev:
@@ -133,6 +136,44 @@ class Release:
 
 # choose environment
 env = Release
+
+
+@pytest.fixture()
+def admin_login_token():
+    token = 'test_token'
+    return token
+"""
+
+    crud_test_content = """import jmespath
+from loguru import logger
+from tep.client import request
+
+from testcases.conftest import fake, json_token_headers, env
+
+
+def test(admin_login_token):
+    admin_json_token_headers = json_token_headers(admin_login_token)
+
+    logger.info('create')
+    test_name = fake.name()
+    body = {"name": test_name}
+    response = request('post', url=env.test_url + '/api', headers=admin_json_token_headers, json=body)
+    assert response.status_code < 400
+
+    logger.info('retrieve')
+    body = {"keyword": test_name}
+    response = request('get', url=env.test_url + '/api', headers=admin_json_token_headers, params=body)
+    assert response.status_code < 400
+    test_id = jmespath.search('id', response.json())
+
+    logger.info('update')
+    body = {"name": test_name + '-update'}
+    response = request('put', url=env.test_url + f'/api/{test_id}', headers=admin_json_token_headers, json=body)
+    assert response.status_code < 400
+
+    logger.info('delete')
+    response = request('delete', url=env.test_url + f'/api/{test_id}', headers=admin_json_token_headers)
+    assert response.status_code < 400
 """
 
     ignore_content = '\n'.join(
@@ -146,6 +187,7 @@ env = Release
 
     create_file(os.path.join(project_name, 'testcases', '__init__.py'), '')
     create_file(os.path.join(project_name, 'testcases', 'conftest.py'), testcases_conftest_content)
+    create_file(os.path.join(project_name, 'testcases', 'crud_test.py'), crud_test_content)
     create_file(os.path.join(project_name, 'run.py'), run_content)
     create_file(os.path.join(project_name, 'conftest.py'), conftest_content)
     create_file(os.path.join(project_name, '.gitignore'), ignore_content)
