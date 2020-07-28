@@ -1,9 +1,0 @@
-allure-pytest
-allure-python-commons
-numpy
-pandas
-PyMySQL
-requests
-SQLAlchemy
-texttable
-urllib3

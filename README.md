@@ -1,6 +1,5 @@
 # tep
 
-一款JMeter设计灵感的RESTful API测试框架。<br/>
-jmeter restful api，各取一个字母，tep。
+A RESTful API testing framework inspired by JMeter's design.
 
-版本升级中
+jme**t**er r**e**stful a**p**i, take one letter each, tep.
