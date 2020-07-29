@@ -31,7 +31,7 @@ $ pip install -U git+https://github.com/dongfanger/tep.git@master
 
 When tep is installed, tep command will be added in your system.
 
-To see `HttpRunner` version:
+To see `tep` version:
 
 ```
 $ tep -V  # tep --version
