@@ -101,12 +101,16 @@ def pytest_sessionfinish(session):
         if open_allure_report:
             os.system(f"allure open {html_dir}")"""
 
-    testcases_conftest_content = """import pytest
-from faker import Faker
+    testcases_conftest_content = """from faker import Faker
+from loguru import logger
 
 
 def json_token_headers(token):
     return {"Content-Type": "application/json", "token": token}
+
+
+def token_headers(token):
+    return {"token": token}
 
 
 headers = {"Content-Type": "application/json"}
@@ -137,23 +141,21 @@ class Release:
 # choose environment
 env = Release
 
-
-@pytest.fixture()
-def admin_login_token():
-    token = 'test_token'
-    return token
+logger.info('admin login to get token')
+admin_login_token = 'token'
+admin_json_token_headers = json_token_headers(admin_login_token)
+admin_token_headers = token_headers(admin_login_token)
 """
 
     crud_test_content = """import jmespath
 from loguru import logger
+from testcases.conftest import fake, env
+
+from prj.testcases.conftest import admin_json_token_headers
 from tep.client import request
 
-from testcases.conftest import fake, json_token_headers, env
 
-
-def test(admin_login_token):
-    admin_json_token_headers = json_token_headers(admin_login_token)
-
+def test():
     logger.info('create')
     test_name = fake.name()
     body = {"name": test_name}
