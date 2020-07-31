@@ -1,8 +1,6 @@
 # tep
 
-A RESTful API testing tool inspired by JMeter's design.
-
-jme**t**er r**e**stful a**p**i, take one letter each, `tep`.
+Try Easy Pytest
 
 ## Installation
 

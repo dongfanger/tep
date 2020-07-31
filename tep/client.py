@@ -38,7 +38,7 @@ def request_encapsulate(func):
             try:
                 response = func(*args, **kwargs)
             except (requests.exceptions.SSLError, requests.exceptions.ConnectionError) as e:
-                if 'bad handshake' in str(e) or '10054' in str(e):
+                if 'bad handshake' in str(e) or '10054' in str(e) or 'TimeoutError' in str(e):
                     logger.warning("request time out, retrying")
                     continue
                 else:
