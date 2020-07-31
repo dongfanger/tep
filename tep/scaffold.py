@@ -158,23 +158,45 @@ from tep.client import request
 def test():
     logger.info('create')
     test_name = fake.name()
-    body = {"name": test_name}
-    response = request('post', url=env.test_url + '/api', headers=admin_json_token_headers, json=body)
+    response = request(
+        'post',
+        url=env.test_url + '/api',
+        headers=admin_json_token_headers,
+        json={
+            "name": test_name
+        }
+    )
     assert response.status_code < 400
 
     logger.info('retrieve')
-    body = {"keyword": test_name}
-    response = request('get', url=env.test_url + '/api', headers=admin_json_token_headers, params=body)
+    response = request(
+        'get',
+        url=env.test_url + '/api',
+        headers=admin_json_token_headers,
+        params={
+            "keyword": test_name
+        }
+    )
     assert response.status_code < 400
     test_id = jmespath.search('id', response.json())
 
     logger.info('update')
-    body = {"name": test_name + '-update'}
-    response = request('put', url=env.test_url + f'/api/{test_id}', headers=admin_json_token_headers, json=body)
+    response = request(
+        'put',
+        url=env.test_url + f'/api/{test_id}',
+        headers=admin_json_token_headers,
+        json={
+            "name": test_name + '-update'
+        }
+    )
     assert response.status_code < 400
 
     logger.info('delete')
-    response = request('delete', url=env.test_url + f'/api/{test_id}', headers=admin_json_token_headers)
+    response = request(
+        'delete',
+        url=env.test_url + f'/api/{test_id}',
+        headers=admin_json_token_headers
+    )
     assert response.status_code < 400
 """
 

@@ -2,6 +2,21 @@
 
 Try Easy Pytest
 
+## Design Philosophy
+
+- Simple is better
+- Inspired by JMeter's design
+- Embrace open source, leverage [`pytest`](https://docs.pytest.org/), [`requests`](http://docs.python-requests.org/en/master/), [`faker`](https://faker.readthedocs.io/), [`jmespath`](https://jmespath.org/) and [`allure`](https://docs.qameta.io/allure/).
+
+## Key Features
+
+- With [`pytest`](https://docs.pytest.org/), hundreds of plugins are readily available.
+- Inherit all powerful features of [`requests`](http://docs.python-requests.org/en/master/), stay native and strong.
+- With [`faker`](https://faker.readthedocs.io/), generate fake data for you. 
+- With [`jmespath`](https://jmespath.org/), extract and validate json response has never been easier.
+- With [`allure`](https://docs.qameta.io/allure/), test report can be pretty nice and powerful.
+- CLI command supported, perfect combination with `CI/CD`.
+
 ## Installation
 
 `tep` is developed with Python, it supports Python `3.6+` and most operating systems.
