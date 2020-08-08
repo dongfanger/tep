@@ -6,8 +6,11 @@
 @Date    :  7/24/2020 5:41 PM
 @Desc    :  some functions
 """
+import json
 import re
 import time
+
+import numpy as np
 
 
 def current_time():
@@ -44,6 +47,22 @@ def uri2name(u, t):
     # clear the last _
     u = u.strip('_')
     return u
+
+
+class NpEncoder(json.JSONEncoder):
+    def default(self, obj):
+        if isinstance(obj, np.integer):
+            return int(obj)
+        elif isinstance(obj, np.int64):
+            return int(obj)
+        elif isinstance(obj, np.floating):
+            return float(obj)
+        elif isinstance(obj, np.float64):
+            return float(obj)
+        elif isinstance(obj, np.ndarray):
+            return obj.tolist()
+        else:
+            return super(NpEncoder, self).default(obj)
 
 
 def textbox_input():

@@ -16,27 +16,18 @@ import urllib3
 from loguru import logger
 from requests import sessions
 
-from tep.builtin.numpy_encoder import NpEncoder
+from tep.funcs import NpEncoder
 
 urllib3.disable_warnings(urllib3.exceptions.InsecureRequestWarning)
 
 
-def request_encapsulate(func):
+def request_encapsulate(req):
     def send(*args, **kwargs):
-        # numpy encode
-        for k, v in kwargs.items():
-            try:
-                if isinstance(v, dict):
-                    v = json.loads(json.dumps(v, ensure_ascii=False, cls=NpEncoder))
-                    kwargs[k] = v
-            except TypeError:
-                logger.warning('not json')
-
         # request timeout retry
         start = time.process_time()
         while True:
             try:
-                response = func(*args, **kwargs)
+                response = req(*args, **kwargs)
             except (requests.exceptions.SSLError, requests.exceptions.ConnectionError) as e:
                 if 'bad handshake' in str(e) or '10054' in str(e) or 'TimeoutError' in str(e):
                     logger.warning("request time out, retrying")

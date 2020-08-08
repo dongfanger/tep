@@ -1,7 +1,7 @@
 [tool.poetry]
 name = "tep"
-version = "0.2.4"
-description = "Try Easy Pytest."
+version = "0.2.6"
+description = "Try Easy Pytest"
 license = "Apache-2.0"
 readme = "README.md"
 authors = ["dongfanger <2802358564@qq.com>"]
