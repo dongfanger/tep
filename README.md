@@ -5,17 +5,6 @@ Try Easy Pytest
 ## Design Philosophy
 
 - Simple is better
-- Inspired by JMeter's design
-- Embrace open source, leverage [`pytest`](https://docs.pytest.org/), [`requests`](http://docs.python-requests.org/en/master/), [`faker`](https://faker.readthedocs.io/), [`jmespath`](https://jmespath.org/) and [`allure`](https://docs.qameta.io/allure/).
-
-## Key Features
-
-- With [`pytest`](https://docs.pytest.org/), hundreds of plugins are readily available.
-- Inherit all powerful features of [`requests`](http://docs.python-requests.org/en/master/), stay native and strong.
-- With [`faker`](https://faker.readthedocs.io/), generate fake data for you. 
-- With [`jmespath`](https://jmespath.org/), extract and validate json response has never been easier.
-- With [`allure`](https://docs.qameta.io/allure/), test report can be pretty nice and powerful.
-- CLI command supported, perfect combination with `CI/CD`.
 
 ## Installation
 
@@ -27,17 +16,10 @@ Try Easy Pytest
 $ pip install tep
 ```
 
-If you want to keep up with the latest version, you can install with github repository url.
+or domestic mirror.
 
 ```
-$ pip install git+https://github.com/dongfanger/tep.git@master
-```
-
-If you have installed `tep` before and want to upgrade to the latest version, you can use the `-U` option.
-
-```
-$ pip install -U tep
-$ pip install -U git+https://github.com/dongfanger/tep.git@master
+$ pip --default-timeout=600 install -i https://pypi.tuna.tsinghua.edu.cn/simple tep
 ```
 
 ## Check Installation
@@ -49,23 +31,6 @@ To see `tep` version:
 ```
 $ tep -V  # tep --version
 0.2.3
-```
-
-To see available options, run:
-
-```
-$ tep -h
-usage: tep [-h] [-V] {startproject} ...
-
-A RESTful API testing tool inspired by JMeter's design.
-
-positional arguments:
-  {startproject}  sub-command help
-    startproject  create a new project with template structure.
-
-optional arguments:
-  -h, --help      show this help message and exit
-  -V, --version   show version
 ```
 
 # Scaffold

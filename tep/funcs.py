@@ -7,7 +7,6 @@
 @Desc    :  some functions
 """
 import json
-import re
 import time
 
 import numpy as np
@@ -19,34 +18,6 @@ def current_time():
 
 def current_date():
     return time.strftime('%Y-%m-%d', time.localtime(time.time()))
-
-
-def uri2name(u, t):
-    """uri to name
-
-    @param u: uri
-    @param t: camel, snake
-    @return:
-    """
-    # all to _
-    p = re.compile(r'/|{|}')
-    u = re.sub(p, '_', u)
-    # clear double underline
-    u = u.replace('__', '_')
-    p = re.compile(r'[A-Z][a-z]')
-    u = re.sub(p, lambda x: '_' + x.group(0).lower(), u)
-    # clear double underline
-    u = u.replace('__', '_')
-    if t == 'snake':
-        u = u.lstrip('_')
-    elif t == 'camel':
-        p = re.compile(r'_\w')
-        u = re.sub(p, lambda x: x.group(0)[1].upper(), u)
-    else:
-        print('uri2name() param not in (camel, snake)')
-    # clear the last _
-    u = u.strip('_')
-    return u
 
 
 class NpEncoder(json.JSONEncoder):
