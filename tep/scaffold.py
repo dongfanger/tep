@@ -63,7 +63,7 @@ reports_html = os.path.join(project_dir, 'reports', 'report-' + current_date())
 
 def pytest_addoption(parser):
     parser.addoption(
-        '--open-allure',
+        '--allureopen',
         action='store_const',
         const=True,
         help='Open allure test report automatically after testing.'
@@ -75,7 +75,7 @@ def pytest_sessionfinish(session):
     if allure_report_dir:
         os.system(f"allure generate {allure_report_dir} -o {reports_html}  --clean")
         shutil.rmtree(allure_report_dir)
-        if session.config.getoption('--open-allure'):
+        if session.config.getoption('--allureopen'):
             os.system(f"allure open {reports_html}")
 """
 
