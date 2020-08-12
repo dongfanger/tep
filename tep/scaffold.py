@@ -15,106 +15,72 @@ from loguru import logger
 
 def init_parser_scaffold(subparsers):
     sub_parser_scaffold = subparsers.add_parser(
-        'startproject', help='create a new project with template structure.'
+        'startproject', help='Create a new project with template structure.'
     )
     sub_parser_scaffold.add_argument(
-        'project_name', type=str, nargs='?', help='specify new project name.'
+        'project_name', type=str, nargs='?', help='Specify new project name.'
     )
     return sub_parser_scaffold
 
 
 def create_scaffold(project_name):
-    """ create scaffold with specified project name.
+    """ Create scaffold with specified project name.
     """
     if os.path.isdir(project_name):
         logger.warning(
-            f'project folder {project_name} exists, please specify a new project name.'
+            f'Project folder {project_name} exists, please specify a new project name.'
         )
         return 1
     elif os.path.isfile(project_name):
         logger.warning(
-            f'project name {project_name} conflicts with existed file, please specify a new one.'
+            f'Project name {project_name} conflicts with existed file, please specify a new one.'
         )
         return 1
 
-    logger.info(f'create new project: {project_name}')
-    print(f'project root dir: {os.path.join(os.getcwd(), project_name)}\n')
+    logger.info(f'Create new project: {project_name}')
+    print(f'Project root dir: {os.path.join(os.getcwd(), project_name)}\n')
 
     def create_folder(path):
         os.makedirs(path)
-        msg = f'created folder: {path}'
+        msg = f'Created folder: {path}'
         print(msg)
 
     def create_file(path, file_content=''):
         with open(path, 'w', encoding='utf-8') as f:
             f.write(file_content)
-        msg = f'created file: {path}'
+        msg = f'Created file: {path}'
         print(msg)
 
-    run_content = """import os
+    conftest_content = """import os
 import shutil
 
 from tep.funcs import current_date
 
 project_dir = os.path.dirname(os.path.abspath(__file__))
 
-api_dir = os.path.join(project_dir, 'api')
+reports_html = os.path.join(project_dir, 'reports', 'report-' + current_date())
 
-testcases_dir = os.path.join(project_dir, 'testcases')
 
-datafiles_dir = os.path.join(project_dir, 'datafiles')
-
-reports_dir = os.path.join(project_dir, 'reports')
-
-log_file = os.path.join(reports_dir, current_date() + '.log')
-
-api_record_file = os.path.join(reports_dir, "api-record-" + current_date() + ".csv")
-
-allure_report_dir = os.path.join(reports_dir, 'report-' + current_date())
-
-# choose path to run tests
-run_dir = os.path.join(testcases_dir, '')
-
-# open allure test report automatically after testing
-open_allure_report = 0
-
-if __name__ == '__main__':
-
-    if os.path.exists(allure_report_dir):
-        shutil.rmtree(allure_report_dir)
-    os.makedirs(allure_report_dir)
-
-    os.system(f'pytest -v {run_dir} --alluredir {allure_report_dir}')
-"""
-
-    conftest_content = """import os
-
-from run import open_allure_report
+def pytest_addoption(parser):
+    parser.addoption(
+        '--open-allure',
+        action='store_const',
+        const=True,
+        help='Open allure test report automatically after testing.'
+    )
 
 
 def pytest_sessionfinish(session):
     allure_report_dir = session.config.getoption('allure_report_dir')
     if allure_report_dir:
-        html_dir = os.path.join(allure_report_dir, 'html')
-        os.system(f'mkdir {html_dir}')
-        os.system(f"allure generate {allure_report_dir} -o {html_dir}")
-        if open_allure_report:
-            os.system(f"allure open {html_dir}")"""
+        os.system(f"allure generate {allure_report_dir} -o {reports_html}  --clean")
+        shutil.rmtree(allure_report_dir)
+        if session.config.getoption('--open-allure'):
+            os.system(f"allure open {reports_html}")
+"""
 
     testcases_conftest_content = """from faker import Faker
 from loguru import logger
-
-
-def json_token_headers(token):
-    return {"Content-Type": "application/json", "token": token}
-
-
-def token_headers(token):
-    return {"token": token}
-
-
-headers = {"Content-Type": "application/json"}
-fake = Faker(locale='zh_CN')
 
 
 class Dev:
@@ -140,6 +106,18 @@ class Release:
 
 # choose environment
 env = Release
+
+
+def json_token_headers(token):
+    return {"Content-Type": "application/json", "token": token}
+
+
+def token_headers(token):
+    return {"token": token}
+
+
+headers = {"Content-Type": "application/json"}
+fake = Faker(locale='zh_CN')
 
 logger.info('admin login to get token')
 admin_login_token = 'token'
@@ -206,13 +184,11 @@ def test():
 
     create_folder(project_name)
     create_folder(os.path.join(project_name, 'testcases'))
-    create_folder(os.path.join(project_name, 'datafiles'))
     create_folder(os.path.join(project_name, 'reports'))
 
     create_file(os.path.join(project_name, 'testcases', '__init__.py'), '')
     create_file(os.path.join(project_name, 'testcases', 'conftest.py'), testcases_conftest_content)
     create_file(os.path.join(project_name, 'testcases', 'crud_test.py'), crud_test_content)
-    create_file(os.path.join(project_name, 'run.py'), run_content)
     create_file(os.path.join(project_name, 'conftest.py'), conftest_content)
     create_file(os.path.join(project_name, '.gitignore'), ignore_content)
 
