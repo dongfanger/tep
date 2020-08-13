@@ -46,13 +46,8 @@ $ tep startproject demo
 project root dir: \PycharmProjects\demo
 
 created folder: demo
-created folder: demo\testcases
-created folder: demo\datafiles
-created folder: demo\reports
-created file: demo\testcases\__init__.py
-created file: demo\testcases\conftest.py
-created file: demo\testcases\crud_test.py
-created file: demo\run.py
+created folder: demo\tests
+created file: demo\tests\__init__.py
 created file: demo\conftest.py
 created file: demo\.gitignore
 
@@ -63,13 +58,7 @@ The directory looks like this.
 ```
 │  .gitignore
 │  conftest.py
-│  run.py
-│
-├─datafiles
-├─reports
-└─testcases
-        conftest.py
-        crud_test.py
+└─tests
         __init__.py
 ```
 
