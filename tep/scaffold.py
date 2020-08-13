@@ -62,7 +62,7 @@ from tep.funcs import current_date
 
 project_dir = os.path.dirname(os.path.abspath(__file__))
 
-reports_html = os.path.join(project_dir, 'reports', 'report-' + current_date())
+_reports_html = os.path.join(project_dir, 'reports', 'report-' + current_date())
 
 _allure_temp = '.allure-temp-auto-del'
 
@@ -76,8 +76,15 @@ def pytest_addoption(parser):
     )
 
 
+def _tep_reports(config):
+    if config.getoption('--tep-reports') and not config.getoption('allure_report_dir'):
+        return True
+    else:
+        return False
+
+
 def pytest_configure(config):
-    if config.getoption('--tep-reports'):
+    if _tep_reports(config):
         test_listener = AllureListener(config)
         config.pluginmanager.register(test_listener)
         allure_commons.plugin_manager.register(test_listener)
@@ -90,10 +97,10 @@ def pytest_configure(config):
 
 
 def pytest_sessionfinish(session):
-    if session.config.getoption('--tep-reports'):
-        os.system(f"allure generate {_allure_temp} -o {reports_html}  --clean")
+    if _tep_reports(session.config):
+        os.system(f"allure generate {_allure_temp} -o {_reports_html}  --clean")
         shutil.rmtree(_allure_temp)
-        os.system(f"allure open {reports_html}")
+        os.system(f"allure open {_reports_html}")
 """
 
     testcases_conftest_content = """from faker import Faker
@@ -201,7 +208,6 @@ def test():
 
     create_folder(project_name)
     create_folder(os.path.join(project_name, 'testcases'))
-    create_folder(os.path.join(project_name, 'reports'))
 
     create_file(os.path.join(project_name, 'testcases', '__init__.py'), '')
     create_file(os.path.join(project_name, 'testcases', 'conftest.py'), testcases_conftest_content)
