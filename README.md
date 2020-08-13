@@ -1,12 +1,13 @@
 # tep
 
-Try Easy Pytest
+tep is a testing tool to help you write pytest more easily. Try Easy Pytest!
 
-## Design Philosophy
+# Design Philosophy
 
 - Simple is better
+- Everyone can write automation in python
 
-## Installation
+# Installation
 
 `tep` is developed with Python, it supports Python `3.6+` and most operating systems.
 
@@ -22,7 +23,7 @@ or domestic mirror.
 $ pip --default-timeout=600 install -i https://pypi.tuna.tsinghua.edu.cn/simple tep
 ```
 
-## Check Installation
+# Check Installation
 
 When tep is installed, tep command will be added in your system.
 
@@ -72,9 +73,7 @@ The directory looks like this.
         __init__.py
 ```
 
-# Demo
-
-After the project is created, you can read demo at `testcases\conftest.py` and `testcases\crud_test.py`.
+# Usage
 
 If you want to know more usages, you can read [pytest docs](https://docs.pytest.org/).
 

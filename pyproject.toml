@@ -1,6 +1,6 @@
 [tool.poetry]
 name = "tep"
-version = "0.2.6"
+version = "0.3.0"
 description = "Try Easy Pytest"
 license = "Apache-2.0"
 readme = "README.md"
@@ -52,6 +52,7 @@ url = "https://pypi.tuna.tsinghua.edu.cn/simple"
 
 [tool.poetry.scripts]
 tep = "tep.cli:main"
+
 [build-system]
 requires = ["poetry>=0.12"]
 build-backend = "poetry.masonry.api"
