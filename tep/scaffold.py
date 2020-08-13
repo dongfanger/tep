@@ -103,115 +103,14 @@ def pytest_sessionfinish(session):
         os.system(f"allure open {_reports_html}")
 """
 
-    testcases_conftest_content = """from faker import Faker
-from loguru import logger
-
-
-class Dev:
-    test_url = 'https://dev.com'
-    # dao_x = Dao('host:port',
-    #             'username',
-    #             'password')
-
-
-class Qa:
-    test_url = 'https://qa.com'
-    # dao_x = Dao('host:port',
-    #             "username",
-    #             "password")
-
-
-class Release:
-    test_url = 'https://release.com'
-    # dao_x = Dao('host:port',
-    #             "username",
-    #             "password")
-
-
-# choose environment
-env = Release
-
-
-def json_token_headers(token):
-    return {"Content-Type": "application/json", "token": token}
-
-
-def token_headers(token):
-    return {"token": token}
-
-
-headers = {"Content-Type": "application/json"}
-fake = Faker(locale='zh_CN')
-
-logger.info('admin login to get token')
-admin_login_token = 'token'
-admin_json_token_headers = json_token_headers(admin_login_token)
-admin_token_headers = token_headers(admin_login_token)
-"""
-
-    crud_test_content = """import jmespath
-from loguru import logger
-from testcases.conftest import fake, env
-
-from prj.testcases.conftest import admin_json_token_headers
-from tep.client import request
-
-
-def test():
-    logger.info('create')
-    test_name = fake.name()
-    response = request(
-        'post',
-        url=env.test_url + '/api',
-        headers=admin_json_token_headers,
-        json={
-            "name": test_name
-        }
-    )
-    assert response.status_code < 400
-
-    logger.info('retrieve')
-    response = request(
-        'get',
-        url=env.test_url + '/api',
-        headers=admin_json_token_headers,
-        params={
-            "keyword": test_name
-        }
-    )
-    assert response.status_code < 400
-    test_id = jmespath.search('id', response.json())
-
-    logger.info('update')
-    response = request(
-        'put',
-        url=env.test_url + f'/api/{test_id}',
-        headers=admin_json_token_headers,
-        json={
-            "name": test_name + '-update'
-        }
-    )
-    assert response.status_code < 400
-
-    logger.info('delete')
-    response = request(
-        'delete',
-        url=env.test_url + f'/api/{test_id}',
-        headers=admin_json_token_headers
-    )
-    assert response.status_code < 400
-"""
-
     ignore_content = '\n'.join(
         ['.idea/', '.pytest_cache/', '__pycache__/', '*.pyc', 'reports/report*/', 'reports/*.log', 'debug/']
     )
 
     create_folder(project_name)
-    create_folder(os.path.join(project_name, 'testcases'))
+    create_folder(os.path.join(project_name, 'tests'))
 
-    create_file(os.path.join(project_name, 'testcases', '__init__.py'), '')
-    create_file(os.path.join(project_name, 'testcases', 'conftest.py'), testcases_conftest_content)
-    create_file(os.path.join(project_name, 'testcases', 'crud_test.py'), crud_test_content)
+    create_file(os.path.join(project_name, 'tests', '__init__.py'), '')
     create_file(os.path.join(project_name, 'conftest.py'), conftest_content)
     create_file(os.path.join(project_name, '.gitignore'), ignore_content)
 
