@@ -63,20 +63,19 @@ reports_html = os.path.join(project_dir, 'reports', 'report-' + current_date())
 
 def pytest_addoption(parser):
     parser.addoption(
-        '--allureopen',
+        '--tepreports',
         action='store_const',
         const=True,
-        help='Open allure test report automatically after testing.'
+        help='Create tep reports and open automatically.'
     )
 
 
 def pytest_sessionfinish(session):
     allure_report_dir = session.config.getoption('allure_report_dir')
-    if allure_report_dir:
+    if allure_report_dir and session.config.getoption('--tepreports'):
         os.system(f"allure generate {allure_report_dir} -o {reports_html}  --clean")
         shutil.rmtree(allure_report_dir)
-        if session.config.getoption('--allureopen'):
-            os.system(f"allure open {reports_html}")
+        os.system(f"allure open {reports_html}")
 """
 
     testcases_conftest_content = """from faker import Faker
