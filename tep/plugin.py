@@ -7,7 +7,6 @@
 @Desc    :  
 """
 import os
-import pickle
 import shutil
 
 import allure_commons
@@ -16,14 +15,10 @@ from allure_pytest.listener import AllureListener
 from allure_pytest.plugin import cleanup_factory
 
 from tep.funcs import current_date
-from tep.scaffold import tep_dir
+from tep.path import Path
 
-with open(os.path.join(tep_dir, 'files', 'project_dir'), 'rb') as f:
-    project_dir = pickle.load(f)
-
-_reports_html = os.path.join(project_dir, 'reports', 'report-' + current_date())
-
-_allure_temp = '.allure-temp-auto-del'
+reports_html = os.path.join(Path.project_dir, 'reports', 'report-' + current_date())
+allure_temp = '.allure-temp-auto-del'
 
 
 def _tep_reports(config):
@@ -51,12 +46,12 @@ class Plugin:
             config.add_cleanup(cleanup_factory(test_listener))
 
             clean = config.option.clean_alluredir
-            file_logger = AllureFileLogger(_allure_temp, clean)
+            file_logger = AllureFileLogger(allure_temp, clean)
             allure_commons.plugin_manager.register(file_logger)
             config.add_cleanup(cleanup_factory(file_logger))
 
     def pytest_sessionfinish(session):
         if _tep_reports(session.config):
-            os.system(f"allure generate {_allure_temp} -o {_reports_html}  --clean")
-            shutil.rmtree(_allure_temp)
-            os.system(f"allure open {_reports_html}")
+            os.system(f"allure generate {allure_temp} -o {reports_html}  --clean")
+            shutil.rmtree(allure_temp)
+            os.system(f"allure open {reports_html}")

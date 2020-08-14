@@ -65,5 +65,5 @@ def textbox_input():
 
 
 def project_dir(dir):
-    with open(os.path.join(tep_dir, 'files', 'project_dir'), 'wb') as f:
+    with open(os.path.join(tep_dir, 'project_dir'), 'wb') as f:
         pickle.dump(dir, f)
