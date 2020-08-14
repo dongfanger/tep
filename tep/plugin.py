@@ -21,15 +21,8 @@ reports_html = os.path.join(Path.project_dir, 'reports', 'report-' + current_dat
 allure_temp = '.allure-temp-auto-del'
 
 
-def _tep_reports(config):
-    if config.getoption('--tep-reports') and not config.getoption('allure_report_dir'):
-        return True
-    else:
-        return False
-
-
 class Plugin:
-
+    @staticmethod
     def pytest_addoption(parser):
         parser.addoption(
             '--tep-reports',
@@ -38,8 +31,16 @@ class Plugin:
             help='Create tep reports and open automatically.'
         )
 
+    @staticmethod
+    def _tep_reports(config):
+        if config.getoption('--tep-reports') and not config.getoption('allure_report_dir'):
+            return True
+        else:
+            return False
+
+    @staticmethod
     def pytest_configure(config):
-        if _tep_reports(config):
+        if Plugin._tep_reports(config):
             test_listener = AllureListener(config)
             config.pluginmanager.register(test_listener)
             allure_commons.plugin_manager.register(test_listener)
@@ -50,8 +51,9 @@ class Plugin:
             allure_commons.plugin_manager.register(file_logger)
             config.add_cleanup(cleanup_factory(file_logger))
 
+    @staticmethod
     def pytest_sessionfinish(session):
-        if _tep_reports(session.config):
+        if Plugin._tep_reports(session.config):
             os.system(f"allure generate {allure_temp} -o {reports_html}  --clean")
             shutil.rmtree(allure_temp)
             os.system(f"allure open {reports_html}")
