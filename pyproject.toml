@@ -53,6 +53,9 @@ url = "https://pypi.tuna.tsinghua.edu.cn/simple"
 [tool.poetry.scripts]
 tep = "tep.cli:main"
 
+[tool.poetry.plugins."pytest11"]
+"tep" = "tep.plugin:Plugin"
+
 [build-system]
 requires = ["poetry>=0.12"]
 build-backend = "poetry.masonry.api"
