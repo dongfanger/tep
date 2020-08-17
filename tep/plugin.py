@@ -16,9 +16,7 @@ from allure_pytest.listener import AllureListener
 from allure_pytest.plugin import cleanup_factory
 
 from tep.funcs import current_date
-from tep.path import Path
 
-reports_html = os.path.join(Path.project_dir, 'reports', 'report-' + current_date())
 allure_temp = '.allure-temp-auto-del'
 
 
@@ -54,7 +52,8 @@ class Plugin:
 
     @staticmethod
     def pytest_sessionfinish(session):
+        project_dir = session.config.cache.get("project_dir", None)
+        reports_html = os.path.join(project_dir, 'reports', 'report-' + current_date())
         if Plugin._tep_reports(session.config):
             os.system(f"allure generate {allure_temp} -o {reports_html}  --clean")
             shutil.rmtree(allure_temp)
-            os.system(f"allure open {reports_html}")
