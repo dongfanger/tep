@@ -17,7 +17,7 @@ from allure_pytest.plugin import cleanup_factory
 
 from tep.funcs import current_date
 
-allure_temp = '.allure-temp-auto-del'
+allure_temp = "tep_allure.tmp"
 
 
 class Plugin:
