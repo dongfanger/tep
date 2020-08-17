@@ -13,9 +13,6 @@ import sys
 from loguru import logger
 
 
-tep_dir = os.path.dirname(os.path.abspath(__file__))
-
-
 def init_parser_scaffold(subparsers):
     sub_parser_scaffold = subparsers.add_parser(
         'startproject', help='Create a new project with template structure.'
