@@ -4,7 +4,7 @@
 """
 @Author  :  Don
 @Date    :  7/17/2020 3:49 PM
-@Desc    :  command line interface
+@Desc    :  Command line.
 """
 
 import argparse
@@ -15,7 +15,7 @@ from tep.scaffold import init_parser_scaffold, main_scaffold
 
 
 def main():
-    """parse command line options and run commands
+    """Parse command line options and run commands.
     """
     parser = argparse.ArgumentParser(description=__description__)
     parser.add_argument(
