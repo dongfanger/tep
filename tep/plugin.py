@@ -17,22 +17,22 @@ from allure_pytest.plugin import cleanup_factory
 
 from tep.funcs import current_time
 
-allure_temp = "tep_allure.tmp"
+allure_temp = ".tep_allure_tmp"
 
 
 class Plugin:
     @staticmethod
     def pytest_addoption(parser):
         parser.addoption(
-            '--tep-reports',
-            action='store_const',
+            "--tep-reports",
+            action="store_const",
             const=True,
-            help='Create tep reports and open automatically.'
+            help="Create tep reports and open automatically."
         )
 
     @staticmethod
     def _tep_reports(config):
-        if config.getoption('--tep-reports') and not config.getoption('allure_report_dir'):
+        if config.getoption("--tep-reports") and not config.getoption("allure_report_dir"):
             return True
         else:
             return False
@@ -54,8 +54,8 @@ class Plugin:
     def pytest_sessionfinish(session):
         if Plugin._tep_reports(session.config):
             project_dir = session.config.cache.get("project_dir", None)
-            reports_dir = os.path.join(project_dir, 'reports')
-            new_report = os.path.join(reports_dir, 'report-' + current_time().replace(":", "-").replace(" ", "-"))
+            reports_dir = os.path.join(project_dir, "reports")
+            new_report = os.path.join(reports_dir, "report-" + current_time().replace(":", "-").replace(" ", "-"))
             his_reports = os.listdir(reports_dir)
             if his_reports:
                 latest_report_history = os.path.join(reports_dir, his_reports[-1], "history")

@@ -6,6 +6,7 @@
 @Date    :  7/24/2020 5:41 PM
 @Desc    :
 """
+
 import json
 import time
 
@@ -13,11 +14,11 @@ import numpy as np
 
 
 def current_time():
-    return time.strftime('%Y-%m-%d %H:%M:%S', time.localtime(time.time()))
+    return time.strftime("%Y-%m-%d %H:%M:%S", time.localtime(time.time()))
 
 
 def current_date():
-    return time.strftime('%Y-%m-%d', time.localtime(time.time()))
+    return time.strftime("%Y-%m-%d", time.localtime(time.time()))
 
 
 class NpEncoder(json.JSONEncoder):

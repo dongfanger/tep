@@ -1,15 +1,15 @@
 [tool.poetry]
 name = "tep"
-version = "0.3.4"
+version = "0.3.6"
 description = "tep is a testing tool to help you write pytest more easily. Try Easy Pytest!"
 license = "Apache-2.0"
 readme = "README.md"
-authors = ["dongfanger <2802358564@qq.com>"]
+authors = ["dongfanger <eastfullstack@gmail.com>"]
 
 homepage = "https://github.com/dongfanger/tep"
 repository = "https://github.com/dongfanger/tep"
 
-keywords = ["RESTful", "API", "testing", "JMeter"]
+keywords = ["testing", "pytest"]
 
 classifiers = [
     "Topic :: Software Development :: Testing",
@@ -24,22 +24,19 @@ classifiers = [
 ]
 
 [tool.poetry.dependencies]
-python = "^3.6"
-pymysql = "^0.10.0"
+python = "^3.6.1"
 faker = "^4.1.1"
 jmespath = "^0.10.0"
-openpyxl = "^3.0.4"
-xlrd = "^1.2.0"
 urllib3 = "^1.25.9"
 pytest-ordering = "^0.6"
-texttable = "^1.6.2"
-SQLAlchemy = "^1.3.18"
 requests = "^2.24.0"
 allure-pytest = "^2.8.16"
 allure-python-commons = "^2.8.16"
 numpy = "^1.19.1"
-pandas = "^1.0.5"
 loguru = "^0.5.1"
+deepdiff = "^5.0.2"
+pandas = "^1.1.0"
+
 
 [tool.poetry.dev-dependencies]
 pytest = "^5.2"

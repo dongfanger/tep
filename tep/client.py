@@ -23,24 +23,14 @@ urllib3.disable_warnings(urllib3.exceptions.InsecureRequestWarning)
 
 def request_encapsulate(req):
     def send(*args, **kwargs):
-        # request timeout retry
         start = time.process_time()
-        while True:
-            try:
-                response = req(*args, **kwargs)
-            except (requests.exceptions.SSLError, requests.exceptions.ConnectionError) as e:
-                if 'bad handshake' in str(e) or '10054' in str(e) or 'TimeoutError' in str(e):
-                    logger.warning("request time out, retrying")
-                    continue
-                else:
-                    raise Exception(e)
-            break
+        response = req(*args, **kwargs)
         end = time.process_time()
-        elapsed = str(decimal.Decimal("%.3f" % float(end - start))) + 's'
+        elapsed = str(decimal.Decimal("%.3f" % float(end - start))) + "s"
 
         # log
         try:
-            log4a = {'method': args[0]}
+            log4a = {"method": args[0]}
             for k, v in kwargs.items():
                 # if not json, str()
                 try:
@@ -48,12 +38,12 @@ def request_encapsulate(req):
                 except TypeError:
                     v = str(v)
                 log4a.setdefault(k, v)
-            log4a.setdefault('status', response.status_code)
-            log4a.setdefault('response', response.text)
-            log4a.setdefault('elapsed', elapsed)
+            log4a.setdefault("status", response.status_code)
+            log4a.setdefault("response", response.text)
+            log4a.setdefault("elapsed", elapsed)
             logger.info(json.dumps(log4a, ensure_ascii=False, cls=NpEncoder))
         except AttributeError:
-            logger.error('request failed')
+            logger.error("request failed")
         except TypeError:
             logger.warning(log4a)
 
