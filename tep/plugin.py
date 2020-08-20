@@ -56,9 +56,10 @@ class Plugin:
             project_dir = session.config.cache.get("project_dir", None)
             reports_dir = os.path.join(project_dir, "reports")
             new_report = os.path.join(reports_dir, "report-" + current_time().replace(":", "-").replace(" ", "-"))
-            his_reports = os.listdir(reports_dir)
-            if his_reports:
-                latest_report_history = os.path.join(reports_dir, his_reports[-1], "history")
-                shutil.copytree(latest_report_history, os.path.join(allure_temp, "history"))
+            if os.path.exists(reports_dir):
+                his_reports = os.listdir(reports_dir)
+                if his_reports:
+                    latest_report_history = os.path.join(reports_dir, his_reports[-1], "history")
+                    shutil.copytree(latest_report_history, os.path.join(allure_temp, "history"))
             os.system(f"allure generate {allure_temp} -o {new_report}  --clean")
             shutil.rmtree(allure_temp)
