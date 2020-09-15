@@ -92,7 +92,7 @@ env = Qa
 
     create_file(os.path.join(project_name, "tests", "__init__.py"), "")
     create_file(os.path.join(project_name, "tests", "dongfanger", "__init__.py"), "")
-    create_file(os.path.join(project_name, "conftest.py"), conftest_content)
+    create_file(os.path.join(project_name, "tests", "dongfanger", "conftest.py"), conftest_content)
     create_file(os.path.join(project_name, ".gitignore"), ignore_content)
 
 
