@@ -56,9 +56,12 @@ def create_scaffold(project_name):
 import pytest
 
 
+project_dir = os.path.dirname(os.path.abspath(__file__))
+
+
 @pytest.fixture(scope="session", autouse=True)
 def project_cache(request):
-    request.config.cache.set("project_dir", os.path.dirname(os.path.abspath(__file__)))
+    request.config.cache.set("project_dir", project_dir)
 
 
 class Dev:
