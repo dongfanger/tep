@@ -51,39 +51,84 @@ def create_scaffold(project_name):
         msg = f"Created file: {path}"
         print(msg)
 
-    conftest_content = """import os
+    conftest_global_content = """\"\"\" Can only be modified by the administrator. Only fixtures are provided.
+\"\"\"
+
+import os
 
 import pytest
+import yaml
+from faker import Faker
 
-
-project_dir = os.path.dirname(os.path.abspath(__file__))
+_project_dir = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 
 
 @pytest.fixture(scope="session", autouse=True)
 def project_cache(request):
-    request.config.cache.set("project_dir", project_dir)
+    request.config.cache.set("project_dir", _project_dir)
 
 
-class Dev:
-    test_url = 'https://dev.com'
+@pytest.fixture(scope="session")
+def config():
+    config_path = os.path.join(_project_dir, "conf.yaml")
+    with open(config_path, "r", encoding="utf-8") as f:
+        conf = yaml.load(f.read(), Loader=yaml.FullLoader)
+        return conf
 
 
-class Qa:
-    test_url = 'https://qa.com'
+@pytest.fixture(scope="session")
+def fake_ch():
+    return Faker(locale='zh_CN')
 
 
-class Release:
-    test_url = 'https://release.com'
+@pytest.fixture(scope="session")
+def fake_en():
+    return Faker()
 
 
-# choose environment
-env = Qa
+@pytest.fixture(scope="session")
+def env_vars():
+    class Clazz:
+        def __init__(self):
+            self.test_url = None
 
-# you can define your variables and functions and so on
+        def choose(self, env):
+            if env == "qa":
+                self.test_url = "https://dev.com"
+
+            if env == "release":
+                self.test_url = "https://yunke-release.qa.class100.com"
+
+            return self
+
+    return Clazz()
+
+
+def _jwt_headers(token):
+    return {"authorization": f"Bearer {token}"}
+
+
+def _json_jwt_headers(token):
+    return {"Content-Type": "application/json", "authorization": f"Bearer {token}"}
+
+
+@pytest.fixture(scope="session")
+def login(env_vars, config):
+    token = ""
+
+    class Clazz:
+        admin_token = token
+        admin_jwt_headers = _jwt_headers(token)
+        admin_json_jwt_headers = _json_jwt_headers(token)
+
+    return Clazz
 """
+    conftest_content = """\"\"\" You can customize it, if you need to share with team members, define it as a fixture.
+\"\"\""""
+    config_content = """env: qa"""
 
     ignore_content = "\n".join(
-        [".idea/", ".pytest_cache/", "__pycache__/", "*.pyc", "reports/", "debug/"]
+        [".idea/", ".pytest_cache/", ".tep_allure_tmp/", "__pycache__/", "*.pyc", "reports/", "debug/"]
     )
 
     create_folder(project_name)
@@ -91,9 +136,11 @@ env = Qa
     create_folder(os.path.join(project_name, "tests", "dongfanger"))
 
     create_file(os.path.join(project_name, "tests", "__init__.py"), "")
+    create_file(os.path.join(project_name, "tests", "conftest.py"), conftest_global_content)
     create_file(os.path.join(project_name, "tests", "dongfanger", "__init__.py"), "")
     create_file(os.path.join(project_name, "tests", "dongfanger", "conftest.py"), conftest_content)
     create_file(os.path.join(project_name, ".gitignore"), ignore_content)
+    create_file(os.path.join(project_name, "conf.yaml"), config_content)
 
 
 def main_scaffold(args):
