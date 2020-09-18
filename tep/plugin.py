@@ -9,6 +9,7 @@
 
 import os
 import shutil
+import tempfile
 
 import allure_commons
 from allure_commons.logger import AllureFileLogger
@@ -17,7 +18,7 @@ from allure_pytest.plugin import cleanup_factory
 
 from tep.funcs import current_time
 
-allure_temp = ".tep_allure_tmp"
+allure_temp = tempfile.mkdtemp()
 
 
 class Plugin:
