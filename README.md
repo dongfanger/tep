@@ -1,3 +1,7 @@
+# tep
+
+tep is a testing tool to help you write pytest more easily. Try Easy Pytest!
+
 pytest封神之路第0步 零基础入门（待补充）
 
 [pytest封神之路第一步 tep介绍](https://www.cnblogs.com/df888/p/13531714.html)
@@ -11,10 +15,6 @@ pytest封神之路第0步 零基础入门（待补充）
 [pytest封神之路第五步 参数化进阶](https://www.cnblogs.com/df888/p/13721501.html)
 
 持续更新中...
-
-# tep
-
-tep is a testing tool to help you write pytest more easily. Try Easy Pytest!
 
 # Design Philosophy
 
