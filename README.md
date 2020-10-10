@@ -1,5 +1,23 @@
 # tep
 
+[pytest封神之路第零步 快速入门](https://www.cnblogs.com/df888/p/13733877.html)
+
+[pytest封神之路第一步 tep介绍](https://www.cnblogs.com/df888/p/13531714.html)
+
+[pytest封神之路第二步 132个命令行参数用法](https://www.cnblogs.com/df888/p/13649543.html)
+
+[pytest封神之路第三步 精通fixture](https://www.cnblogs.com/df888/p/13691820.html)
+
+[pytest封神之路第四步 内置和自定义marker](https://www.cnblogs.com/df888/p/13715187.html)
+
+[pytest封神之路第五步 参数化进阶](https://www.cnblogs.com/df888/p/13721501.html)
+
+[pytest封神之路第六步 断言技巧](https://www.cnblogs.com/df888/p/13735063.html)
+
+[pytest封神之路第七步 用例查找原理](https://www.cnblogs.com/df888/p/13751717.html)
+
+持续更新中...
+
 tep is a testing tool to help you write pytest more easily. Try Easy Pytest!
 
 # Design Philosophy
