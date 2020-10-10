@@ -51,16 +51,25 @@ def create_scaffold(project_name):
         msg = f"Created file: {path}"
         print(msg)
 
-    conftest_global_content = """\"\"\" Can only be modified by the administrator. Only fixtures are provided.
+    git_ignore = "\n".join(
+        [".idea/", ".pytest_cache/", ".tep_allure_tmp/", "__pycache__/", "*.pyc", "reports/", "debug/"]
+    )
+
+    conf_yaml = """env: qa"""
+
+    conftest = """#!/usr/bin/python
+# encoding=utf-8
+\"\"\" Can only be modified by the administrator. Only fixtures are provided.
 \"\"\"
+
 
 import os
 
 import pytest
 import yaml
-from faker import Faker
 
-_project_dir = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+# Initial
+_project_dir = os.path.dirname(os.path.abspath(__file__))
 
 
 @pytest.fixture(scope="session", autouse=True)
@@ -77,70 +86,121 @@ def config():
 
 
 @pytest.fixture(scope="session")
-def fake_ch():
-    return Faker(locale='zh_CN')
+def files_dir():
+    return os.path.join(_project_dir, "files")
+
+
+# Import fixtures
+exec("from fixtures.fixture_admin import *")
+exec("from fixtures.fixture_don import *")
+"""
+
+    pytest_ini = """[pytest]
+markers =
+    smoke: 冒烟测试
+    regress: 回归测试
+"""
+
+    fixture_admin = """#!/usr/bin/python
+# encoding=utf-8
+
+\"\"\" Can only be modified by the administrator. Only fixtures are provided.
+\"\"\"
+
+import pytest
+from faker import Faker
+from tep.dao import mysql_engine
 
 
 @pytest.fixture(scope="session")
-def fake_en():
-    return Faker()
-
-
-@pytest.fixture(scope="session")
-def env_vars():
+def env_vars(config):
     class Clazz:
         def __init__(self):
-            self.test_url = None
+            env = config["env"]
+            self.mapping = {
+                "qa": {
+                    "domain": "https://qa.com",
+                    "mysql_engine": mysql_engine("127.0.0.1",
+                                                 "2306",
+                                                 "root",
+                                                 "123456",
+                                                 "test")
+                },
+                "release": {
+                    "domain": "https://release.com",
+                    "mysql_engine": mysql_engine("127.0.0.1",
+                                                 "2306",
+                                                 "root",
+                                                 "123456",
+                                                 "release")
+                }
+            }
+            self.domain = self.mapping[env]["domain"]
+            self.mysql_engine = self.mapping[env]["mysql_engine"]
 
-        def choose(self, env):
-            if env == "qa":
-                self.test_url = "https://dev.com"
-
-            if env == "release":
-                self.test_url = "https://yunke-release.qa.class100.com"
-
-            return self
+        def add(self, env, key, value):
+            self.mapping[env][key] = value
 
     return Clazz()
 
 
-def _jwt_headers(token):
-    return {"authorization": f"Bearer {token}"}
+@pytest.fixture(scope="session")
+def url(env_vars, config):
+    def domain_and_uri(uri):
+        if not uri.startswith("/"):
+            uri = "/" + uri
+        return env_vars.domain + uri
 
-
-def _json_jwt_headers(token):
-    return {"Content-Type": "application/json", "authorization": f"Bearer {token}"}
+    return domain_and_uri
 
 
 @pytest.fixture(scope="session")
-def login(env_vars, config):
-    token = ""
+def faker_ch():
+    return Faker(locale="zh_CN")
+
+
+@pytest.fixture(scope="session")
+def faker_en():
+    return Faker()
+
+
+@pytest.fixture(scope="session")
+def pd():
+    import pandas
+    return pandas
+
+
+@pytest.fixture(scope="session")
+def login():
+    # Code your login
 
     class Clazz:
-        admin_token = token
-        admin_jwt_headers = _jwt_headers(token)
-        admin_json_jwt_headers = _json_jwt_headers(token)
+        token = ""
 
     return Clazz
 """
-    conftest_content = """\"\"\" You can customize it, if you need to share with team members, define it as a fixture.
-\"\"\""""
-    config_content = """env: qa"""
 
-    ignore_content = "\n".join(
-        [".idea/", ".pytest_cache/", ".tep_allure_tmp/", "__pycache__/", "*.pyc", "reports/", "debug/"]
-    )
+    fixture_don = """#!/usr/bin/python
+# encoding=utf-8
+
+\"\"\" Please define your own fixture.
+\"\"\"
+"""
 
     create_folder(project_name)
     create_folder(os.path.join(project_name, "tests"))
-    create_folder(os.path.join(project_name, "tests", "dongfanger"))
+    create_folder(os.path.join(project_name, "files"))
+    create_folder(os.path.join(project_name, "fixtures"))
+
+    create_file(os.path.join(project_name, ".gitignore"), git_ignore)
+    create_file(os.path.join(project_name, "conf.yaml"), conf_yaml)
+    create_file(os.path.join(project_name, "conftest.py"), conftest)
+    create_file(os.path.join(project_name, "pytest.ini"), pytest_ini)
 
     create_file(os.path.join(project_name, "tests", "__init__.py"), "")
-    create_file(os.path.join(project_name, "tests", "conftest.py"), conftest_global_content)
-    create_file(os.path.join(project_name, "tests", "dongfanger", "__init__.py"), "")
-    create_file(os.path.join(project_name, "tests", "dongfanger", "conftest.py"), conftest_content)
-    create_file(os.path.join(project_name, ".gitignore"), ignore_content)
-    create_file(os.path.join(project_name, "conf.yaml"), config_content)
+    create_file(os.path.join(project_name, "fixtures", "__init__.py"), "")
+    create_file(os.path.join(project_name, "fixtures", "fixture_admin.py"), fixture_admin)
+    create_file(os.path.join(project_name, "fixtures", "fixture_don.py"), fixture_don)
 
 
 def main_scaffold(args):
