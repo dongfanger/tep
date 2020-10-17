@@ -180,7 +180,7 @@ def login():
     return Clazz
 """
 
-    fixture_don = """#!/usr/bin/python
+    fixture_your_name = """#!/usr/bin/python
 # encoding=utf-8
 
 \"\"\" Please define your own fixture.
@@ -200,7 +200,7 @@ def login():
     create_file(os.path.join(project_name, "tests", "__init__.py"), "")
     create_file(os.path.join(project_name, "fixtures", "__init__.py"), "")
     create_file(os.path.join(project_name, "fixtures", "fixture_admin.py"), fixture_admin)
-    create_file(os.path.join(project_name, "fixtures", "fixture_don.py"), fixture_don)
+    create_file(os.path.join(project_name, "fixtures", "fixture_your_name.py"), fixture_your_name)
 
 
 def main_scaffold(args):
