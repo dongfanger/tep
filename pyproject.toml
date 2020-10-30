@@ -4,7 +4,7 @@ version = "0.4.0"
 description = "tep is a testing tool to help you write pytest more easily. Try Easy Pytest!"
 license = "Apache-2.0"
 readme = "README.md"
-authors = ["dongfanger <eastfullstack@gmail.com>"]
+authors = ["dongfanger <dongfanger@outlook.com>"]
 
 homepage = "https://github.com/dongfanger/tep"
 repository = "https://github.com/dongfanger/tep"

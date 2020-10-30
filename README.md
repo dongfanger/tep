@@ -52,34 +52,6 @@ $ tep -V  # tep --version
 0.2.3
 ```
 
-# Scaffold
-
-If you want to create a new project, you can use the scaffold to startup quickly.
-
-The only argument you need to specify is the project name.
-
-```
-$ tep startproject demo
-2020-07-28 14:34:57.649 | INFO     | tep.scaffold:create_scaffold:40 - create new project: demo
-project root dir: \PycharmProjects\demo
-
-created folder: demo
-created folder: demo\tests
-created file: demo\tests\__init__.py
-created file: demo\conftest.py
-created file: demo\.gitignore
-
-```
-
-The directory looks like this.
-
-```
-│  .gitignore
-│  conftest.py
-└─tests
-        __init__.py
-```
-
 # Usage
 
 If you want to know more usages, you can read [pytest docs](https://docs.pytest.org/).
