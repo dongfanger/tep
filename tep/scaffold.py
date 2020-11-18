@@ -92,7 +92,7 @@ def files_dir():
 
 # Import fixtures
 exec("from fixtures.fixture_admin import *")
-exec("from fixtures.fixture_don import *")
+exec("from fixtures.fixture_your_name import *")
 """
 
     pytest_ini = """[pytest]
