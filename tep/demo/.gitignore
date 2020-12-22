@@ -1,0 +1,7 @@
+.idea/
+.pytest_cache/
+.tep_allure_tmp/
+__pycache__/
+*.pyc
+reports/
+debug/
