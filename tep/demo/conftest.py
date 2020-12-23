@@ -3,7 +3,6 @@
 """ Can only be modified by the administrator. Only fixtures are provided.
 """
 
-
 import os
 
 import pytest

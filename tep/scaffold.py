@@ -64,6 +64,8 @@ def create_scaffold(project_name):
     fixture_admin = read_demo(os.path.join(demo_path, "fixtures", "fixture_admin.py"))
     fixture_your_name = read_demo(os.path.join(demo_path, "fixtures", "fixture_your_name.py"))
     login_test = read_demo(os.path.join(demo_path, "tests", "login_test.py"))
+    mysql_test = read_demo(os.path.join(demo_path, "tests", "mysql_test.py"))
+    post_test = read_demo(os.path.join(demo_path, "tests", "post_test.py"))
 
     create_folder(project_name)
     create_folder(os.path.join(project_name, "fixtures"))
@@ -81,6 +83,8 @@ def create_scaffold(project_name):
 
     create_file(os.path.join(project_name, "tests", "__init__.py"), "")
     create_file(os.path.join(project_name, "tests", "login_test.py"), login_test)
+    create_file(os.path.join(project_name, "tests", "mysql_test.py"), mysql_test)
+    create_file(os.path.join(project_name, "tests", "post_test.py"), post_test)
 
 
 def main_scaffold(args):

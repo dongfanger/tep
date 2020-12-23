@@ -20,11 +20,11 @@ def env_vars(config):
             self.mapping = {
                 "qa": {
                     "domain": "https://qa.com",
-                    "mysql_engine": mysql_engine("127.0.0.1",
-                                                 "2306",
-                                                 "root",
-                                                 "123456",
-                                                 "test")
+                    "mysql_engine": mysql_engine("127.0.0.1",  # host
+                                                 "2306",  # port
+                                                 "root",  # username
+                                                 "123456",  # password
+                                                 "test")  # db_name
                 },
                 "release": {
                     "domain": "https://release.com",
@@ -34,9 +34,11 @@ def env_vars(config):
                                                  "123456",
                                                  "release")
                 }
+                # Add your env and variables
             }
             self.domain = self.mapping[env]["domain"]
             self.mysql_engine = self.mapping[env]["mysql_engine"]
+            # Add properties
 
         def add(self, env, key, value):
             self.mapping[env][key] = value
@@ -45,7 +47,7 @@ def env_vars(config):
 
 
 @pytest.fixture(scope="session")
-def url(env_vars, config):
+def url(env_vars):
     def domain_and_uri(uri):
         if not uri.startswith("/"):
             uri = "/" + uri
@@ -70,6 +72,10 @@ def pd():
     return pandas
 
 
+def _jwt_headers(token):
+    return {"Content-Type": "application/json", "authorization": f"Bearer {token}"}
+
+
 @pytest.fixture(scope="session")
 def login():
     # Code your login
@@ -88,5 +94,6 @@ def login():
 
     class Clazz:
         token = response_token
+        jwt_headers = _jwt_headers(response_token)
 
     return Clazz
