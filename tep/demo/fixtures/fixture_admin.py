@@ -24,7 +24,7 @@ def env_vars(config):
                                                  "2306",  # port
                                                  "root",  # username
                                                  "123456",  # password
-                                                 "test")  # db_name
+                                                 "test"),  # db_name
                 },
                 "release": {
                     "domain": "https://release.com",
@@ -32,7 +32,7 @@ def env_vars(config):
                                                  "2306",
                                                  "root",
                                                  "123456",
-                                                 "release")
+                                                 "release"),
                 }
                 # Add your env and variables
             }
@@ -40,8 +40,8 @@ def env_vars(config):
             self.mysql_engine = self.mapping[env]["mysql_engine"]
             # Add properties
 
-        def add(self, env, key, value):
-            self.mapping[env][key] = value
+        def add(self, key, value):
+            self.mapping[config["env"]][key] = value
 
     return Clazz()
 
