@@ -1,5 +1,6 @@
 #!/usr/bin/python
 # encoding=utf-8
+
 """ Can only be modified by the administrator. Only fixtures are provided.
 """
 
