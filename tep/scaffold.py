@@ -8,7 +8,6 @@
 """
 
 import os
-import shutil
 import sys
 
 from loguru import logger
@@ -52,15 +51,42 @@ def create_scaffold(project_name):
         msg = f"Created file: {path}"
         print(msg)
 
+    def read_demo(path):
+        with open(path) as f:
+            return f.read()
+
     demo_path = os.path.join(os.path.dirname(os.path.abspath(__file__)), "demo")
 
-    shutil.copytree(demo_path, project_name)
+    git_ignore = read_demo(os.path.join(demo_path, ".gitignore"))
+    conf_yaml = read_demo(os.path.join(demo_path, "conf.yaml"))
+    conftest = read_demo(os.path.join(demo_path, "conftest.py"))
+    pytest_ini = read_demo(os.path.join(demo_path, "pytest.ini"))
+    fixture_admin = read_demo(os.path.join(demo_path, "fixtures", "fixture_admin.py"))
+    fixture_your_name = read_demo(os.path.join(demo_path, "fixtures", "fixture_your_name.py"))
+    login_test = read_demo(os.path.join(demo_path, "tests", "sample", "login_test.py"))
+    mysql_test = read_demo(os.path.join(demo_path, "tests", "sample", "mysql_test.py"))
+    post_test = read_demo(os.path.join(demo_path, "tests", "sample", "post_test.py"))
 
-    for root, dirs, files in os.walk(project_name):
-        for name in dirs:
-            print(f"Created folder: {os.path.join(root, name)}")
-        for name in files:
-            print(f"Created file: {os.path.join(root, name)}")
+    create_folder(project_name)
+    create_folder(os.path.join(project_name, "fixtures"))
+    create_folder(os.path.join(project_name, "tests"))
+    create_folder(os.path.join(project_name, "tests", "sample"))
+    create_folder(os.path.join(project_name, "files"))
+
+    create_file(os.path.join(project_name, ".gitignore"), git_ignore)
+    create_file(os.path.join(project_name, "conf.yaml"), conf_yaml)
+    create_file(os.path.join(project_name, "conftest.py"), conftest)
+    create_file(os.path.join(project_name, "pytest.ini"), pytest_ini)
+
+    create_file(os.path.join(project_name, "fixtures", "__init__.py"), "")
+    create_file(os.path.join(project_name, "fixtures", "fixture_admin.py"), fixture_admin)
+    create_file(os.path.join(project_name, "fixtures", "fixture_your_name.py"), fixture_your_name)
+
+    create_file(os.path.join(project_name, "tests", "__init__.py"), "")
+    create_file(os.path.join(project_name, "tests", "sample", "__init__.py"), "")
+    create_file(os.path.join(project_name, "tests", "sample", "login_test.py"), login_test)
+    create_file(os.path.join(project_name, "tests", "sample", "mysql_test.py"), mysql_test)
+    create_file(os.path.join(project_name, "tests", "sample", "post_test.py"), post_test)
 
 
 def main_scaffold(args):

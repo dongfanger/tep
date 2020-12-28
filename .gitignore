@@ -1,7 +1,7 @@
 
 .idea
 .pytest_cache/
-__pycache__
+__pycache__/
 /result/report*/
 /result/*.log
 *.pyc
