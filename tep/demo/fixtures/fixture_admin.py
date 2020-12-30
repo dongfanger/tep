@@ -5,19 +5,20 @@
 """
 
 import jmespath
-import pytest
-from faker import Faker
-from loguru import logger
 
 from tep.client import request
 from tep.dao import mysql_engine
+from tep.fixture import *
 
 
 @pytest.fixture(scope="session")
 def env_vars(config):
-    class Clazz:
+    class Clazz(EnvVars):
         def __init__(self):
-            env = config["env"]
+            super().__init__()
+            self.env = config["env"]
+
+            # Preset environment and variables
             self.mapping = {
                 "qa": {
                     "domain": "https://qa.com",
@@ -35,42 +36,13 @@ def env_vars(config):
                                                  "123456",
                                                  "release"),
                 }
-                # Add your env and variables
+                # Add your environment and variables
             }
-            self.domain = self.mapping[env]["domain"]
-            self.mysql_engine = self.mapping[env]["mysql_engine"]
+            self.domain = self.mapping[self.env]["domain"]
+            self.mysql_engine = self.mapping[self.env]["mysql_engine"]
             # Add properties
 
-        def add(self, key, value):
-            self.mapping[config["env"]][key] = value
-
     return Clazz()
-
-
-@pytest.fixture(scope="session")
-def url(env_vars):
-    def domain_and_uri(uri):
-        if not uri.startswith("/"):
-            uri = "/" + uri
-        return env_vars.domain + uri
-
-    return domain_and_uri
-
-
-@pytest.fixture(scope="session")
-def faker_ch():
-    return Faker(locale="zh_CN")
-
-
-@pytest.fixture(scope="session")
-def faker_en():
-    return Faker()
-
-
-@pytest.fixture(scope="session")
-def pd():
-    import pandas
-    return pandas
 
 
 def _jwt_headers(token):
@@ -78,7 +50,7 @@ def _jwt_headers(token):
 
 
 @pytest.fixture(scope="session")
-def login():
+def login(url):
     # Code your login
     logger.info("Administrator login")
     response = request(

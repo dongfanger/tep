@@ -7,30 +7,18 @@
 import os
 
 import pytest
-import yaml
 
 # Initial
 _project_dir = os.path.dirname(os.path.abspath(__file__))
+_fixtures_dir = os.path.join(_project_dir, "fixtures")
+for root, _, files in os.walk(_fixtures_dir):
+    for file in files:
+        if os.path.isfile(os.path.join(root, file)):
+            if file.startswith("fixture_") and file.endswith(".py"):
+                _fixture_name, _ = os.path.splitext(file)
+                exec(f"from fixtures.{_fixture_name} import *")
 
 
 @pytest.fixture(scope="session", autouse=True)
 def project_cache(request):
     request.config.cache.set("project_dir", _project_dir)
-
-
-@pytest.fixture(scope="session")
-def config():
-    config_path = os.path.join(_project_dir, "conf.yaml")
-    with open(config_path, "r", encoding="utf-8") as f:
-        conf = yaml.load(f.read(), Loader=yaml.FullLoader)
-        return conf
-
-
-@pytest.fixture(scope="session")
-def files_dir():
-    return os.path.join(_project_dir, "files")
-
-
-# Import fixtures
-exec("from fixtures.fixture_admin import *")
-exec("from fixtures.fixture_your_name import *")

@@ -16,6 +16,7 @@ from allure_commons.logger import AllureFileLogger
 from allure_pytest.listener import AllureListener
 from allure_pytest.plugin import cleanup_factory
 
+from tep.fixture import Project
 from tep.funcs import current_time
 
 allure_temp = tempfile.mkdtemp()
@@ -28,7 +29,7 @@ class Plugin:
             "--tep-reports",
             action="store_const",
             const=True,
-            help="Create tep reports and open automatically."
+            help="Create tep allure HTML reports."
         )
 
     @staticmethod
@@ -54,8 +55,7 @@ class Plugin:
     @staticmethod
     def pytest_sessionfinish(session):
         if Plugin._tep_reports(session.config):
-            project_dir = session.config.cache.get("project_dir", None)
-            reports_dir = os.path.join(project_dir, "reports")
+            reports_dir = os.path.join(Project.dir, "reports")
             new_report = os.path.join(reports_dir, "report-" + current_time().replace(":", "-").replace(" ", "-"))
             if os.path.exists(reports_dir):
                 his_reports = os.listdir(reports_dir)
