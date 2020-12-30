@@ -61,7 +61,8 @@ def create_scaffold(project_name):
     conf_yaml = read_demo(os.path.join(demo_path, "conf.yaml"))
     conftest = read_demo(os.path.join(demo_path, "conftest.py"))
     pytest_ini = read_demo(os.path.join(demo_path, "pytest.ini"))
-    fixture_admin = read_demo(os.path.join(demo_path, "fixtures", "fixture_admin.py"))
+    fixture_env_vars = read_demo(os.path.join(demo_path, "fixtures", "fixture_env_vars.py"))
+    fixture_login = read_demo(os.path.join(demo_path, "fixtures", "fixture_login.py"))
     fixture_your_name = read_demo(os.path.join(demo_path, "fixtures", "fixture_your_name.py"))
     login_test = read_demo(os.path.join(demo_path, "tests", "sample", "login_test.py"))
     mysql_test = read_demo(os.path.join(demo_path, "tests", "sample", "mysql_test.py"))
@@ -79,7 +80,8 @@ def create_scaffold(project_name):
     create_file(os.path.join(project_name, "pytest.ini"), pytest_ini)
 
     create_file(os.path.join(project_name, "fixtures", "__init__.py"), "")
-    create_file(os.path.join(project_name, "fixtures", "fixture_admin.py"), fixture_admin)
+    create_file(os.path.join(project_name, "fixtures", "fixture_env_vars.py"), fixture_env_vars)
+    create_file(os.path.join(project_name, "fixtures", "fixture_login.py"), fixture_login)
     create_file(os.path.join(project_name, "fixtures", "fixture_your_name.py"), fixture_your_name)
 
     create_file(os.path.join(project_name, "tests", "__init__.py"), "")

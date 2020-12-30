@@ -4,10 +4,12 @@
 """
 @Author  :  Don
 @Date    :  2020/12/30 9:30
-@Desc    :  
+@Desc    :  Provide some fixtures
 """
+
 import os
 
+import jmespath
 import pytest
 import yaml
 from faker import Faker
@@ -61,10 +63,17 @@ def files_dir():
     return os.path.join(Project.dir, "files")
 
 
-class EnvVars:
-    def __init__(self):
-        self.env = ""
-        self.mapping = {}
+class _EnvVars:
+    def __init__(self, mapping, env):
+        self.mapping = mapping
+        self.env = env
+        try:
+            # Get all var names in all environment
+            var_names = list(set(jmespath.search("* | [*].keys(@)[]", mapping)))
+            for var_name in var_names:
+                setattr(self, var_name, self.mapping[self.env][var_name])
+        except KeyError:
+            logger.error("env_vars mapping key error")
 
     def put(self, key, value):
         self.mapping[self.env][key] = value
@@ -76,3 +85,11 @@ class EnvVars:
         except KeyError:
             logger.error(f"env_vars doesnt have this key: {key}")
         return value
+
+
+@pytest.fixture(scope="session")
+def set_env_vars(config):
+    def func(mapping):
+        return _EnvVars(mapping, config["env"])
+
+    return func
