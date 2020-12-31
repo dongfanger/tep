@@ -8,6 +8,7 @@
 """
 
 import os
+import shutil
 import sys
 
 from loguru import logger
@@ -51,44 +52,40 @@ def create_scaffold(project_name):
         msg = f"Created file: {path}"
         print(msg)
 
-    def read_demo(path):
-        with open(path) as f:
-            return f.read()
-
-    demo_path = os.path.join(os.path.dirname(os.path.abspath(__file__)), "demo")
-
-    git_ignore = read_demo(os.path.join(demo_path, ".gitignore"))
-    conf_yaml = read_demo(os.path.join(demo_path, "conf.yaml"))
-    conftest = read_demo(os.path.join(demo_path, "conftest.py"))
-    pytest_ini = read_demo(os.path.join(demo_path, "pytest.ini"))
-    fixture_env_vars = read_demo(os.path.join(demo_path, "fixtures", "fixture_env_vars.py"))
-    fixture_login = read_demo(os.path.join(demo_path, "fixtures", "fixture_login.py"))
-    fixture_your_name = read_demo(os.path.join(demo_path, "fixtures", "fixture_your_name.py"))
-    login_test = read_demo(os.path.join(demo_path, "tests", "sample", "login_test.py"))
-    mysql_test = read_demo(os.path.join(demo_path, "tests", "sample", "mysql_test.py"))
-    post_test = read_demo(os.path.join(demo_path, "tests", "sample", "post_test.py"))
+    def copy_file(relative_path, filename):
+        tep_demo_path = os.path.join(os.path.dirname(os.path.abspath(__file__)), "demo")
+        src = os.path.join(tep_demo_path, relative_path, filename)
+        des = os.path.join(project_name, relative_path)
+        shutil.copy(src, des)
+        msg = f"Created file: {os.path.join(des, filename)}"
+        print(msg)
 
     create_folder(project_name)
     create_folder(os.path.join(project_name, "fixtures"))
     create_folder(os.path.join(project_name, "tests"))
     create_folder(os.path.join(project_name, "tests", "sample"))
+    create_folder(os.path.join(project_name, "tests", "sample", "case_reuse"))
     create_folder(os.path.join(project_name, "files"))
 
-    create_file(os.path.join(project_name, ".gitignore"), git_ignore)
-    create_file(os.path.join(project_name, "conf.yaml"), conf_yaml)
-    create_file(os.path.join(project_name, "conftest.py"), conftest)
-    create_file(os.path.join(project_name, "pytest.ini"), pytest_ini)
+    copy_file("", ".gitignore")
+    copy_file("", "conf.yaml")
+    copy_file("", "conftest.py")
+    copy_file("", "pytest.ini")
 
-    create_file(os.path.join(project_name, "fixtures", "__init__.py"), "")
-    create_file(os.path.join(project_name, "fixtures", "fixture_env_vars.py"), fixture_env_vars)
-    create_file(os.path.join(project_name, "fixtures", "fixture_login.py"), fixture_login)
-    create_file(os.path.join(project_name, "fixtures", "fixture_your_name.py"), fixture_your_name)
+    create_file(os.path.join(project_name, "fixtures", "__init__.py"))
+    copy_file("fixtures", "fixture_admin.py")
+    copy_file("fixtures", "fixture_login.py")
+    copy_file("fixtures", "fixture_your_name.py")
 
-    create_file(os.path.join(project_name, "tests", "__init__.py"), "")
-    create_file(os.path.join(project_name, "tests", "sample", "__init__.py"), "")
-    create_file(os.path.join(project_name, "tests", "sample", "login_test.py"), login_test)
-    create_file(os.path.join(project_name, "tests", "sample", "mysql_test.py"), mysql_test)
-    create_file(os.path.join(project_name, "tests", "sample", "post_test.py"), post_test)
+    create_file("tests", "__init__.py")
+    copy_file(os.path.join("tests", "sample"), "login_test.py")
+    copy_file(os.path.join("tests", "sample"), "mysql_test.py")
+    copy_file(os.path.join("tests", "sample"), "post_test.py")
+    copy_file(os.path.join("tests", "sample"), "var_reuse_test.py")
+
+    create_file(os.path.join(project_name, "tests", "sample", "case_reuse", "__init__.py"))
+    copy_file(os.path.join("tests", "sample", "case_reuse"), "a_test.py")
+    copy_file(os.path.join("tests", "sample", "case_reuse"), "reuse_a_test.py")
 
 
 def main_scaffold(args):

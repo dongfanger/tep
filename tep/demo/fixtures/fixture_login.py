@@ -1,3 +1,5 @@
+import jmespath
+
 from tep.client import request
 from tep.fixture import *
 

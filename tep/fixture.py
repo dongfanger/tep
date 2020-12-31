@@ -9,7 +9,6 @@
 
 import os
 
-import jmespath
 import pytest
 import yaml
 from faker import Faker
@@ -18,6 +17,12 @@ from loguru import logger
 
 class Project:
     dir = ""
+
+
+def _project_dir_assigned():
+    while True:
+        if Project.dir:
+            return True
 
 
 def pytest_sessionstart(session):
@@ -52,44 +57,30 @@ def pd():
 
 @pytest.fixture(scope="session")
 def config():
-    config_path = os.path.join(Project.dir, "conf.yaml")
-    with open(config_path, "r", encoding="utf-8") as f:
-        conf = yaml.load(f.read(), Loader=yaml.FullLoader)
-        return conf
+    if _project_dir_assigned():
+        config_path = os.path.join(Project.dir, "conf.yaml")
+        with open(config_path, "r", encoding="utf-8") as f:
+            conf = yaml.load(f.read(), Loader=yaml.FullLoader)
+            return conf
 
 
 @pytest.fixture(scope="session")
 def files_dir():
-    return os.path.join(Project.dir, "files")
+    if _project_dir_assigned():
+        return os.path.join(Project.dir, "files")
 
 
-class _EnvVars:
-    def __init__(self, mapping, env):
-        self.mapping = mapping
-        self.env = env
-        try:
-            # Get all var names in all environment
-            var_names = list(set(jmespath.search("* | [*].keys(@)[]", mapping)))
-            for var_name in var_names:
-                setattr(self, var_name, self.mapping[self.env][var_name])
-        except KeyError:
-            logger.error("env_vars mapping key error")
+class TepVars:
+    def __init__(self):
+        self.vars_ = {}
 
     def put(self, key, value):
-        self.mapping[self.env][key] = value
+        self.vars_[key] = value
 
     def get(self, key):
         value = ""
         try:
-            value = self.mapping[self.env][key]
+            value = self.vars_[key]
         except KeyError:
             logger.error(f"env_vars doesnt have this key: {key}")
         return value
-
-
-@pytest.fixture(scope="session")
-def set_env_vars(config):
-    def func(mapping):
-        return _EnvVars(mapping, config["env"])
-
-    return func
