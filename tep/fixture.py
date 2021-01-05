@@ -9,6 +9,7 @@
 
 import os
 
+import jmespath
 import pytest
 import yaml
 from faker import Faker
@@ -84,3 +85,6 @@ class TepVars:
         except KeyError:
             logger.error(f"env_vars doesnt have this key: {key}")
         return value
+
+
+_jmespath_import_placeholder = jmespath.search("abc", "abc")
