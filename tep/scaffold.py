@@ -13,6 +13,8 @@ import sys
 
 from loguru import logger
 
+from tep import __version__
+
 
 def init_parser_scaffold(subparsers):
     sub_parser_scaffold = subparsers.add_parser(
@@ -52,7 +54,7 @@ def create_scaffold(project_name):
         msg = f"Created file: {path}"
         print(msg)
 
-    def copy_file(relative_path, filename):
+    def copy_demo_file(relative_path, filename):
         tep_demo_path = os.path.join(os.path.dirname(os.path.abspath(__file__)), "demo")
         src = os.path.join(tep_demo_path, relative_path, filename)
         des = os.path.join(project_name, relative_path)
@@ -67,25 +69,61 @@ def create_scaffold(project_name):
     create_folder(os.path.join(project_name, "tests", "sample", "case_reuse"))
     create_folder(os.path.join(project_name, "files"))
 
-    copy_file("", ".gitignore")
-    copy_file("", "conf.yaml")
-    copy_file("", "conftest.py")
-    copy_file("", "pytest.ini")
+    copy_demo_file("", ".gitignore")
+    copy_demo_file("", "conf.yaml")
+    copy_demo_file("", "conftest.py")
+    copy_demo_file("", "pytest.ini")
 
     create_file(os.path.join(project_name, "fixtures", "__init__.py"))
-    copy_file("fixtures", "fixture_admin.py")
-    copy_file("fixtures", "fixture_login.py")
-    copy_file("fixtures", "fixture_your_name.py")
+    copy_demo_file("fixtures", "fixture_admin.py")
+    copy_demo_file("fixtures", "fixture_login.py")
+    copy_demo_file("fixtures", "fixture_your_name.py")
 
     create_file("tests", "__init__.py")
-    copy_file(os.path.join("tests", "sample"), "login_test.py")
-    copy_file(os.path.join("tests", "sample"), "mysql_test.py")
-    copy_file(os.path.join("tests", "sample"), "post_test.py")
-    copy_file(os.path.join("tests", "sample"), "var_reuse_test.py")
+    copy_demo_file(os.path.join("tests", "sample"), "login_test.py")
+    copy_demo_file(os.path.join("tests", "sample"), "mysql_test.py")
+    copy_demo_file(os.path.join("tests", "sample"), "post_test.py")
+    copy_demo_file(os.path.join("tests", "sample"), "var_reuse_test.py")
 
     create_file(os.path.join(project_name, "tests", "sample", "case_reuse", "__init__.py"))
-    copy_file(os.path.join("tests", "sample", "case_reuse"), "a_test.py")
-    copy_file(os.path.join("tests", "sample", "case_reuse"), "reuse_a_test.py")
+    copy_demo_file(os.path.join("tests", "sample", "case_reuse"), "a_test.py")
+    copy_demo_file(os.path.join("tests", "sample", "case_reuse"), "reuse_a_test.py")
+
+
+def update_scaffold():
+    def create_folder(path):
+        os.makedirs(path)
+        msg = f"Created folder: {path}"
+        print(msg)
+
+    def copy_demo_file(relative_path, filename, des):
+        tep_demo_path = os.path.join(os.path.dirname(os.path.abspath(__file__)), "demo")
+        src = os.path.join(tep_demo_path, relative_path, filename)
+        shutil.copy(src, des)
+        msg = f"Updated file: {os.path.join(des, filename)}"
+        print(msg)
+
+    if not os.path.exists("conftest.py"):
+        logger.warning("tep project not found, please relocate to the tep project which contains a conftest.py file.")
+        return
+
+    if __version__ >= "0.6.0":
+        version_dir = f"version{__version__}"
+        version_fixtures_dir = os.path.join(version_dir, "fixtures-upgrade")
+        if os.path.exists(version_dir):
+            logger.warning("Version directory exists, please delete first.")
+            return
+        create_folder(version_dir)
+
+        create_folder(version_fixtures_dir)
+        copy_demo_file("fixtures", "fixture_admin.py", des=version_fixtures_dir)
+        copy_demo_file("fixtures", "fixture_login.py", des=version_fixtures_dir)
+        copy_demo_file("fixtures", "fixture_your_name.py", des=version_fixtures_dir)
+
+        copy_demo_file("", "conftest.py", des=os.getcwd())
+    else:
+        logger.info("There is no need to upgrade scaffold, please check the version of tep.")
+        return
 
 
 def main_scaffold(args):
