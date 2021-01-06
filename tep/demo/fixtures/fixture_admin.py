@@ -13,6 +13,7 @@ def env_vars(config):
     class Clazz(TepVars):
         env = config["env"]
 
+        """Variables define start"""
         # Environment and variables
         mapping = {
             "qa": {
@@ -36,6 +37,7 @@ def env_vars(config):
         # Define properties for auto display
         domain = mapping[env]["domain"]
         mysql_engine = mapping[env]["mysql_engine"]
+        """Variables define end"""
 
     return Clazz()
 
