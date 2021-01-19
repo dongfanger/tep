@@ -8,12 +8,20 @@
 """
 
 from loguru import logger
-from sqlalchemy import create_engine
-from texttable import Texttable
+
+try:
+    from sqlalchemy import create_engine
+    from texttable import Texttable
+except ModuleNotFoundError:
+    pass
 
 
 def mysql_engine(host, port, user, password, db):
-    return create_engine(f"mysql+pymysql://{user}:{password}@{host}:{port}/{db}")
+    try:
+        engine = create_engine(f"mysql+pymysql://{user}:{password}@{host}:{port}/{db}")
+    except NameError:
+        return ""
+    return engine
 
 
 def print_db_table(data_frame):

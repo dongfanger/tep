@@ -10,7 +10,10 @@
 import json
 import time
 
-import numpy as np
+try:
+    import numpy as np
+except ModuleNotFoundError:
+    pass
 
 
 def current_time():
