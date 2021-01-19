@@ -73,6 +73,7 @@ def create_scaffold(project_name):
     copy_demo_file("", "conf.yaml")
     copy_demo_file("", "conftest.py")
     copy_demo_file("", "pytest.ini")
+    copy_demo_file("", "requirements.txt")
 
     create_file(os.path.join(project_name, "fixtures", "__init__.py"))
     copy_demo_file("fixtures", "fixture_admin.py")
