@@ -25,7 +25,11 @@ def pytest_sessionstart(session):
     if not Project.dir:
         # First time run, no pytest_cache, use tests directory to find project directory
         cwd = os.getcwd()
-        Project.dir = cwd[:cwd.find("tests")]
+        tests = cwd.find("tests")
+        if tests == -1:
+            raise FileNotFoundError("'tests' directory not found.")
+        else:
+            Project.dir = cwd[:cwd.find("tests")]
 
 
 @pytest.fixture(scope="session")
