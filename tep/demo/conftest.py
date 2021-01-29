@@ -24,4 +24,7 @@ for root, _, files in os.walk(_fixtures_dir):
         if os.path.isfile(os.path.join(root, file)):
             if file.startswith("fixture_") and file.endswith(".py"):
                 _fixture_name, _ = os.path.splitext(file)
-                exec(f"from fixtures.{_fixture_name} import *")
+                try:
+                    exec(f"from fixtures.{_fixture_name} import *")
+                except:
+                    pass

@@ -80,7 +80,7 @@ def create_scaffold(project_name):
     copy_demo_file("fixtures", "fixture_login.py")
     copy_demo_file("fixtures", "fixture_your_name.py")
 
-    create_file("tests", "__init__.py")
+    create_file(os.path.join(project_name, "tests", "__init__.py"))
     copy_demo_file(os.path.join("tests", "sample"), "login_test.py")
     copy_demo_file(os.path.join("tests", "sample"), "mysql_test.py")
     copy_demo_file(os.path.join("tests", "sample"), "post_test.py")
