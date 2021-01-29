@@ -20,14 +20,12 @@ class Project:
     dir = ""
 
 
-def _project_dir_assigned():
-    while True:
-        if Project.dir:
-            return True
-
-
 def pytest_sessionstart(session):
     Project.dir = session.config.cache.get("project_dir", None)
+    if not Project.dir:
+        # First time run, no pytest_cache, use tests directory to find project directory
+        cwd = os.getcwd()
+        Project.dir = cwd[:cwd.find("tests")]
 
 
 @pytest.fixture(scope="session")
@@ -52,23 +50,24 @@ def faker_en():
 
 @pytest.fixture(scope="session")
 def pd():
-    import pandas
-    return pandas
+    try:
+        import pandas
+        return pandas
+    except ModuleNotFoundError:
+        pass
 
 
 @pytest.fixture(scope="session")
 def config():
-    if _project_dir_assigned():
-        config_path = os.path.join(Project.dir, "conf.yaml")
-        with open(config_path, "r", encoding="utf-8") as f:
-            conf = yaml.load(f.read(), Loader=yaml.FullLoader)
-            return conf
+    config_path = os.path.join(Project.dir, "conf.yaml")
+    with open(config_path, "r", encoding="utf-8") as f:
+        conf = yaml.load(f.read(), Loader=yaml.FullLoader)
+        return conf
 
 
 @pytest.fixture(scope="session")
 def files_dir():
-    if _project_dir_assigned():
-        return os.path.join(Project.dir, "files")
+    return os.path.join(Project.dir, "files")
 
 
 class TepVars:
