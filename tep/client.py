@@ -16,8 +16,6 @@ import urllib3
 from loguru import logger
 from requests import sessions
 
-from tep.funcs import NpEncoder
-
 urllib3.disable_warnings(urllib3.exceptions.InsecureRequestWarning)
 
 
@@ -27,26 +25,21 @@ def request_encapsulate(req):
         response = req(*args, **kwargs)
         end = time.process_time()
         elapsed = str(decimal.Decimal("%.3f" % float(end - start))) + "s"
-
-        # log
+        log4a = "method:{} {} status:{}  response:{}  elapsed:{}"
         try:
-            log4a = {"method": args[0]}
+            kv = ""
             for k, v in kwargs.items():
                 # if not json, str()
                 try:
-                    json.dumps(v)
+                    v = json.dumps(v)
                 except TypeError:
                     v = str(v)
-                log4a.setdefault(k, v)
-            log4a.setdefault("status", response.status_code)
-            log4a.setdefault("response", response.text)
-            log4a.setdefault("elapsed", elapsed)
-            logger.info(json.dumps(log4a, ensure_ascii=False, cls=NpEncoder))
+                kv += f" {k}:{v} "
+            logger.info(log4a.format(args[0], kv, response.status_code, response.text, elapsed))
         except AttributeError:
             logger.error("request failed")
         except TypeError:
             logger.warning(log4a)
-
         return response
 
     return send
