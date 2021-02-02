@@ -77,6 +77,7 @@ def create_scaffold(project_name):
 
     create_file(os.path.join(project_name, "fixtures", "__init__.py"))
     copy_demo_file("fixtures", "fixture_admin.py")
+    copy_demo_file("fixtures", "fixture_env_vars.py")
     copy_demo_file("fixtures", "fixture_login.py")
     copy_demo_file("fixtures", "fixture_your_name.py")
 
