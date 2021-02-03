@@ -31,7 +31,7 @@ def request_encapsulate(req):
             for k, v in kwargs.items():
                 # if not json, str()
                 try:
-                    v = json.dumps(v)
+                    v = json.dumps(v, ensure_ascii=False)
                 except TypeError:
                     v = str(v)
                 kv += f" {k}:{v} "
