@@ -119,6 +119,7 @@ def update_scaffold():
 
         create_folder(version_fixtures_dir)
         copy_demo_file("fixtures", "fixture_admin.py", des=version_fixtures_dir)
+        copy_demo_file("fixtures", "fixture_env_vars.py", des=version_fixtures_dir)
         copy_demo_file("fixtures", "fixture_login.py", des=version_fixtures_dir)
         copy_demo_file("fixtures", "fixture_your_name.py", des=version_fixtures_dir)
 
