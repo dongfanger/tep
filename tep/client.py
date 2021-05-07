@@ -11,6 +11,7 @@ import decimal
 import json
 import time
 
+import allure
 import requests
 import urllib3
 from loguru import logger
@@ -35,7 +36,9 @@ def request_encapsulate(req):
                 except TypeError:
                     v = str(v)
                 kv += f" {k}:{v} "
-            logger.info(log4a.format(args[0], kv, response.status_code, response.text, elapsed))
+            request_response = log4a.format(args[0], kv, response.status_code, response.text, elapsed)
+            logger.info(request_response)
+            allure.attach(request_response, 'request & response', allure.attachment_type.TEXT)
         except AttributeError:
             logger.error("request failed")
         except TypeError:
