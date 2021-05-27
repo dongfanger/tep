@@ -34,12 +34,12 @@ def pytest_sessionstart(session):
 
 @pytest.fixture(scope="session")
 def url(env_vars):
-    def domain_and_uri(uri):
-        if not uri.startswith("/"):
-            uri = "/" + uri
-        return env_vars.domain + uri
+    def domain_and_api_path(api_path):
+        if not api_path.startswith("/"):
+            api_path = "/" + api_path
+        return env_vars.domain + api_path
 
-    return domain_and_uri
+    return domain_and_api_path
 
 
 @pytest.fixture(scope="session")
