@@ -11,7 +11,7 @@ import argparse
 import sys
 
 from tep import __description__, __version__
-from tep.scaffold import init_parser_scaffold, main_scaffold, update_scaffold
+from tep.scaffold import init_parser_scaffold, main_scaffold
 
 
 def main():
@@ -39,9 +39,6 @@ def main():
         elif sys.argv[1] == "startproject":
             # tep startproject
             sub_parser_scaffold.print_help()
-        elif sys.argv[1] in ["-U", "--upgrade"]:
-            # tep -U
-            update_scaffold()
         sys.exit(0)
 
     args = parser.parse_args()
