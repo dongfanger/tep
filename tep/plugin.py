@@ -17,7 +17,7 @@ from allure_pytest.listener import AllureListener
 from allure_pytest.plugin import cleanup_factory
 
 from tep.fixture import Project
-from tep.funcs import current_time
+from tep.func import current_time
 
 allure_temp = tempfile.mkdtemp()
 

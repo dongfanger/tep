@@ -7,8 +7,11 @@
 @Desc    :
 """
 
+import copy
+import itertools
 import json
 import time
+from sys import stdout
 
 try:
     import numpy as np
@@ -22,6 +25,57 @@ def current_time():
 
 def current_date():
     return time.strftime("%Y-%m-%d", time.localtime(time.time()))
+
+
+def progress_bar(i):
+    c = int(i / 10)
+    progress = '\r %2d%% [%s%s]'
+    a = '■' * c
+    b = '□' * (10 - c)
+    msg = progress % (i, a, b)
+    stdout.write(msg)
+    stdout.flush()
+
+
+def pairwise(option):
+    cp = []  # cartesian product
+    pair = []  # pair
+    for x in eval('itertools.product' + str(tuple(option))):
+        cp.append(x)
+        pair.append([i for i in itertools.combinations(x, 2)])
+    print('cartesian product total:%s' % len(cp))
+    del_row = []
+    progress_bar(0)
+    pair_copy = copy.deepcopy(pair)
+    for i in range(len(pair)):  # match each row of case
+        if (i % 100) == 0 or i == len(pair) - 1:
+            progress_bar(int(100 * i / (len(pair) - 1)))
+        t = 0
+        for j in range(len(pair[i])):  # judge whether each row of case appears in other rows
+            flag = False
+            for i2 in [x for x in range(len(pair_copy)) if pair_copy[x] != pair[i]]:  # find the same column
+                if pair[i][j] == pair_copy[i2][j]:
+                    t = t + 1
+                    flag = True
+                    break
+            if not flag:  # not found in one column, no need to continue other columns
+                break
+        if t == len(pair[i]):
+            del_row.append(i)
+            pair_copy.remove(pair[i])
+    return [cp[i] for i in range(len(cp)) if i not in del_row]
+
+
+def body_pair(body_enum):
+    body_enum_copy = copy.deepcopy(body_enum)
+    v = []
+    k = []
+    for i in body_enum_copy:
+        k.append(i)
+        v.append(list(body_enum_copy[i]) if isinstance(body_enum_copy[i], tuple) else [body_enum_copy[i]])
+    pairs = [dict(zip(k, list(p))) for p in pairwise(v)]
+    print(f'\npair total:{len(pairs)}')
+    return pairs
 
 
 class NpEncoder(json.JSONEncoder):
