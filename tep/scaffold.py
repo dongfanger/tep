@@ -188,12 +188,12 @@ def _jwt_headers(token):
 
 
 @pytest.fixture(scope="session")
-def login(url):
+def login(env_vars):
     # Code your login
     logger.info("Administrator login")
     response = request(
         "post",
-        url=url("/api/users/login"),
+        url=env_vars.domain + "/api/users/login",
         headers={"Content-Type": "application/json"},
         json={
             "username": "admin",
