@@ -8,10 +8,14 @@
 """
 
 import os
-import shutil
+import platform
 import sys
 
 from loguru import logger
+
+
+class ExtraArgument:
+    create_venv = False
 
 
 def init_parser_scaffold(subparsers):
@@ -20,6 +24,12 @@ def init_parser_scaffold(subparsers):
     )
     sub_parser_scaffold.add_argument(
         "project_name", type=str, nargs="?", help="Specify new project name."
+    )
+    sub_parser_scaffold.add_argument(
+        "-venv",
+        dest="create_venv",
+        action="store_true",
+        help="Create virtual environment in the project, and install tep.",
     )
     return sub_parser_scaffold
 
@@ -249,6 +259,23 @@ def share_your_name():
 
     create_file(os.path.join(project_name, "tests", "__init__.py"))
 
+    if ExtraArgument.create_venv:
+        os.chdir(project_name)
+        print("\nCreating virtual environment")
+        os.system("python -m venv .venv")
+        print("Created virtual environment: .venv")
+
+        print("Installing tep")
+        if platform.system().lower() == 'windows':
+            os.chdir(".venv")
+            os.chdir("Scripts")
+            os.system("pip install tep")
+        elif platform.system().lower() == 'linux':
+            os.chdir(".venv")
+            os.chdir("bin")
+            os.system("pip install tep")
+
 
 def main_scaffold(args):
+    ExtraArgument.create_venv = args.create_venv
     sys.exit(create_scaffold(args.project_name))

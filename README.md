@@ -1,6 +1,6 @@
 # tep
 
-tep is a testing tool to help you write pytest more easily. Try Easy Pytest!
+`tep` is a testing tool to help you write pytest more easily. Try Easy Pytest!
 
 # Design Philosophy
 
