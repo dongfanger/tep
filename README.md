@@ -49,10 +49,6 @@ $ tep -V  # tep --version
 
 [fixture_login, reuse a api](https://github.com/dongfanger/tep/blob/master/docs/fixture_login%2C%20reuse%20a%20api.md)
 
-# More Usage
+# Contact me
 
-If you want to know more usages, you can read [pytest docs](https://docs.pytest.org/).
-
-You know pytest.
-
-You know tep.
+WeChat: dongfangpy
