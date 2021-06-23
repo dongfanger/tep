@@ -27,7 +27,7 @@ def pytest_sessionstart(session):
         cwd = os.getcwd()
         tests = cwd.find("tests")
         # tests
-        if tests:
+        if tests > 0:
             Project.dir = cwd[:cwd.find("tests")]
         # root
         else:
