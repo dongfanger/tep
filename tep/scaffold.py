@@ -109,6 +109,10 @@ for root, _, files in os.walk(_fixtures_dir):
                     exec(f"from fixtures.{_fixture_name} import *")
                 except:
                     pass
+                try:
+                    exec(f"from .fixtures.{_fixture_name} import *")
+                except:
+                    pass
 """
     create_file(os.path.join(project_name, "conftest.py"), content)
 
