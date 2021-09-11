@@ -26,7 +26,7 @@ def request_encapsulate(req):
         response = req(*args, **kwargs)
         end = time.process_time()
         elapsed = str(decimal.Decimal("%.3f" % float(end - start))) + "s"
-        log4a = "method:{} {} status:{}  response:{}  elapsed:{}"
+        log4a = "{}{} status:{}  response:{}  elapsed:{}"
         try:
             kv = ""
             for k, v in kwargs.items():
@@ -36,7 +36,11 @@ def request_encapsulate(req):
                 except TypeError:
                     v = str(v)
                 kv += f" {k}:{v} "
-            request_response = log4a.format(args[0], kv, response.status_code, response.text, elapsed)
+            if args:
+                method = f'method:"{args[0]}" '
+            else:
+                method = ""
+            request_response = log4a.format(method, kv, response.status_code, response.text, elapsed)
             logger.info(request_response)
             allure.attach(request_response, 'request & response', allure.attachment_type.TEXT)
         except AttributeError:
