@@ -13,6 +13,8 @@ import sys
 
 from loguru import logger
 
+from tep.sample import *
+
 
 class ExtraArgument:
     create_venv = False
@@ -66,77 +68,23 @@ def create_scaffold(project_name):
     create_folder(os.path.join(project_name, "fixtures"))
     create_folder(os.path.join(project_name, "tests"))
     create_folder(os.path.join(project_name, "files"))
+    create_folder(os.path.join(project_name, "reports"))
 
-    content = """.idea/
-.pytest_cache/
-.tep_allure_tmp/
-__pycache__/
-*.pyc
-reports/
-debug/"""
-    create_file(os.path.join(project_name, ".gitignore"), content)
-
-    content = """env: qa"""
-    create_file(os.path.join(project_name, "conf.yaml"), content)
-
-    content = """#!/usr/bin/python
-# encoding=utf-8
-
-\"\"\" Can only be modified by the administrator. Only fixtures are provided.
-\"\"\"
-
-import os
-
-import pytest
-
-# Initial
-_project_dir = os.path.dirname(os.path.abspath(__file__))
-
-
-@pytest.fixture(scope="session", autouse=True)
-def _project_cache(request):
-    request.config.cache.set("project_dir", _project_dir)
-
-
-# Auto import fixtures
-_fixtures_dir = os.path.join(_project_dir, "fixtures")
-for root, _, files in os.walk(_fixtures_dir):
-    for file in files:
-        if os.path.isfile(os.path.join(root, file)):
-            if file.startswith("fixture_") and file.endswith(".py"):
-                _fixture_name, _ = os.path.splitext(file)
-                try:
-                    exec(f"from fixtures.{_fixture_name} import *")
-                except:
-                    pass
-                try:
-                    exec(f"from .fixtures.{_fixture_name} import *")
-                except:
-                    pass
-"""
-    create_file(os.path.join(project_name, "conftest.py"), content)
-
-    content = """[pytest]
-markers =
-    smoke: smoke test
-    regress: regress test
-"""
-    create_file(os.path.join(project_name, "pytest.ini"), content)
-
-    content = """# Customize third-parties
-# pip install --default-timeout=6000 -i https://pypi.tuna.tsinghua.edu.cn/simple -r requirements.txt
-
-# mysql
-pandas==1.1.0
-SQLAlchemy==1.3.19
-PyMySQL==0.10.0
-texttable==1.6.2
-"""
-    create_file(os.path.join(project_name, "requirements.txt"), content)
-
+    create_file(os.path.join(project_name, ".gitignore"), gitignore_content)
+    create_file(os.path.join(project_name, "conf.yaml"), conf_yaml_content)
+    create_file(os.path.join(project_name, "conftest.py"), conftest_content)
+    create_file(os.path.join(project_name, "pytest.ini"), pytest_ini_content)
+    create_file(os.path.join(project_name, "requirements.txt"), requirements_content)
     create_file(os.path.join(project_name, "fixtures", "__init__.py"))
-
+    create_file(os.path.join(project_name, "fixtures", "fixture_admin.py"), fixture_admin_content)
+    create_file(os.path.join(project_name, "fixtures", "fixture_env_vars.py"), fixture_env_vars_content)
+    create_file(os.path.join(project_name, "fixtures", "fixture_login.py"), fixture_login_content)
+    create_file(os.path.join(project_name, "fixtures", "fixture_your_name.py"), fixture_your_name_content)
     create_file(os.path.join(project_name, "tests", "__init__.py"))
+    create_file(os.path.join(project_name, "tests", "test_login.py"), test_login_content)
+    create_file(os.path.join(project_name, "tests", "test_post.py"), test_post_content)
+    create_file(os.path.join(project_name, "tests", "test_mysql.py"), test_mysql_content)
+    create_file(os.path.join(project_name, "tests", "test_request.py"), test_request_content)
 
     if ExtraArgument.create_venv:
         os.chdir(project_name)
