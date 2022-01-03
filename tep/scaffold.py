@@ -69,12 +69,12 @@ def create_scaffold(project_name):
     create_folder(os.path.join(project_name, "tests"))
     create_folder(os.path.join(project_name, "files"))
     create_folder(os.path.join(project_name, "reports"))
+    create_folder(os.path.join(project_name, "utils"))
 
     create_file(os.path.join(project_name, ".gitignore"), gitignore_content)
     create_file(os.path.join(project_name, "conf.yaml"), conf_yaml_content)
     create_file(os.path.join(project_name, "conftest.py"), conftest_content)
     create_file(os.path.join(project_name, "pytest.ini"), pytest_ini_content)
-    create_file(os.path.join(project_name, "requirements.txt"), requirements_content)
     create_file(os.path.join(project_name, "fixtures", "__init__.py"))
     create_file(os.path.join(project_name, "fixtures", "fixture_admin.py"), fixture_admin_content)
     create_file(os.path.join(project_name, "fixtures", "fixture_env_vars.py"), fixture_env_vars_content)
@@ -85,6 +85,10 @@ def create_scaffold(project_name):
     create_file(os.path.join(project_name, "tests", "test_post.py"), test_post_content)
     create_file(os.path.join(project_name, "tests", "test_mysql.py"), test_mysql_content)
     create_file(os.path.join(project_name, "tests", "test_request.py"), test_request_content)
+    create_file(os.path.join(project_name, "tests", "test_login_pay.py"), test_login_pay_content)
+    create_file(os.path.join(project_name, "tests", "test_login_pay_httprunner.py"), test_login_pay_httprunner_content)
+    create_file(os.path.join(project_name, "utils", "__init__.py"))
+    create_file(os.path.join(project_name, "utils", "flask_mock_api.py"), flask_mock_api_content)
 
     if ExtraArgument.create_venv:
         os.chdir(project_name)

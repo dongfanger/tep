@@ -15,19 +15,13 @@ $ pip install tep
 国内镜像：
 
 ```
-$ pip install tep
-```
-
-or domestic mirror:
-
-```
 $ pip --default-timeout=600 install -i https://pypi.tuna.tsinghua.edu.cn/simple tep
 ```
 
 检查安装成功：
 
 ```
-$ tep -V  # tep --version
+$ tep -V  # 或者 tep --version
 0.2.3
 ```
 
@@ -36,8 +30,13 @@ $ tep -V  # tep --version
 tep提供了脚手架，预置了项目结构和代码，打开cmd，使用`startproject`命令快速创建项目：
 
 ```
-cd some_directory
 tep startproject project_name
+```
+
+并且提供了`-venv`参数，在项目初始化时，可以同时创建一个虚拟环境（推荐）：
+
+```
+tep startproject project_name -venv
 ```
 
 # 输出测试报告
@@ -50,15 +49,15 @@ pytest  --tep-reports
 
 报告文件存放在根目录的`reports/`中。
 
-# 用户手册
+# Mock服务
 
-https://dongfanger.gitee.io/blog/chapters/tep.html
+tep自带了一个Flask应用（`utils/flask_mock_api.py`），提供了登录到下单流程的5个接口，启动后即可一键运行示例中的测试用例。
 
-# 两种开发模式
+# 三种开发模式
 
-tep兼容两种开发模式：用例数据一体（适合新手）和用例数据分离（适合老手）。
+tep兼容三种开发模式：用例数据一体（适合新手）、用例数据分离（适合老手）、HttpRunner（新老皆宜）。
 
-①用例数据一体，用例代码如下所示：
+①用例数据一体，示例代码如下所示：
 
 ```python
 import jmespath
@@ -115,6 +114,82 @@ def test(env_vars, login):
 ②用例数据分离
 
 开发中，敬请期待...
+③HttpRunner，示例代码如下所示：
+
+```python
+from httprunner import HttpRunner, Config, Step, RunRequest
+
+
+class TestLoginPay(HttpRunner):
+    config = (
+        Config("登录到下单流程")
+            .variables(
+            **{
+                "skuNum": "3"
+            }
+        )
+            .base_url("http://127.0.0.1:5000")
+    )
+
+    teststeps = [
+        Step(
+            RunRequest("登录")
+                .post("/login")
+                .with_headers(**{"Content-Type": "application/json"})
+                .with_json({"username": "dongfanger", "password": "123456"})
+                .extract()
+                .with_jmespath("body.token", "token")
+                .validate()
+                .assert_equal("status_code", 200)
+        ),
+        Step(
+            RunRequest("搜索商品")
+                .get("searchSku?skuName=电子书")
+                .with_headers(**{"token": "$token"})
+                .extract()
+                .with_jmespath("body.skuId", "skuId")
+                .with_jmespath("body.price", "skuPrice")
+                .validate()
+                .assert_equal("status_code", 200)
+        ),
+        Step(
+            RunRequest("添加购物车")
+                .post("/addCart")
+                .with_headers(**{"Content-Type": "application/json",
+                                 "token": "$token"})
+                .with_json({"skuId": "$skuId", "skuNum": "$skuNum"})
+                .extract()
+                .with_jmespath("body.totalPrice", "totalPrice")
+                .validate()
+                .assert_equal("status_code", 200)
+        ),
+        Step(
+            RunRequest("下单")
+                .post("/order")
+                .with_headers(**{"Content-Type": "application/json",
+                                 "token": "$token"})
+                .with_json({"skuId": "$skuId", "price": "$skuPrice", "skuNum": "$skuNum", "totalPrice": "$totalPrice"})
+                .extract()
+                .with_jmespath("body.orderId", "orderId")
+                .validate()
+                .assert_equal("status_code", 200)
+        ),
+        Step(
+            RunRequest("支付")
+                .post("/pay")
+                .with_headers(**{"Content-Type": "application/json",
+                                 "token": "$token"})
+                .with_json({"orderId": "$orderId", "payAmount": "6.9"})
+                .validate()
+                .assert_equal("status_code", 200)
+                .assert_equal("body.success", "true")
+        ),
+    ]
+```
+
+# 用户手册
+
+https://dongfanger.gitee.io/blog/chapters/tep.html
 
 # 联系我
 

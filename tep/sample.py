@@ -59,16 +59,6 @@ markers =
     regress: regress test
 """
 
-requirements_content = """# Customize third-parties
-# pip install --default-timeout=6000 -i https://pypi.tuna.tsinghua.edu.cn/simple -r requirements.txt
-
-# mysql
-pandas==1.1.0
-SQLAlchemy==1.3.19
-PyMySQL==0.10.0
-texttable==1.6.2
-"""
-
 fixture_admin_content = """#!/usr/bin/python
 # encoding=utf-8
 
@@ -99,7 +89,7 @@ def env_vars(config):
         # Environment and variables
         mapping = {
             \"qa\": {
-                "domain": "https://qa.com",
+                "domain": "http://127.0.0.1:5000",
                 "mysql_engine": mysql_engine("127.0.0.1",  # host
                                              "2306",  # port
                                              "root",  # username
@@ -138,10 +128,10 @@ def login(env_vars):
     logger.info("Administrator login")
     response = request(
         "post",
-        url=env_vars.domain + "/api/users/login",
+        url=env_vars.domain + "/login",
         headers={"Content-Type": "application/json"},
         json={
-            "username": "admin",
+            "username": "dongfanger",
             "password": "123456",
         }
     )
@@ -254,4 +244,211 @@ request("post",
         },
         verify=False
         )
+"""
+
+flask_mock_api_content = """#!/usr/bin/python
+# encoding=utf-8
+
+import json
+
+from flask import Flask, request
+
+# Flask实例
+app = Flask(__name__)
+
+
+def is_headers_equal(headers, data):
+    # 简单比较请求头是否一致
+    for k, v in data.items():
+        if headers.get(k) != v:
+            return False
+    return True
+
+
+def is_args_equal(args, data):
+    # 简单比较请求参数是否一致
+    for k, v in data.items():
+        if args.get(k) != v:
+            return False
+    return True
+
+
+def is_json_equal(json_, data):
+    # 简单比较请求体是否一致
+    json_ = json.loads(json_)
+    for k, v in data.items():
+        if json_.get(k) != v:
+            return False
+    return True
+
+
+@app.route("/login", methods=["POST"])
+def login():
+    if is_json_equal(request.get_data(), {"username": "dongfanger", "password": "123456"}):
+        return {"token": "de2e3ffu29"}
+    return "", 500
+
+
+@app.route("/searchSku")
+def search_sku():
+    if is_headers_equal(request.headers, {"token": "de2e3ffu29"}) and is_args_equal(request.args, {"skuName": "电子书"}):
+        return {"skuId": "222", "price": "2.3"}
+    return "", 500
+
+
+@app.route("/addCart", methods=["POST"])
+def add_cart():
+    if is_headers_equal(request.headers, {"token": "de2e3ffu29"}) and is_json_equal(request.get_data(),
+                                                                                    {"skuId": "222", "skuNum": "3"}):
+        return {"skuId": "222", "price": "2.3", "skuNum": "3", "totalPrice": "6.9"}
+    return "", 500
+
+
+@app.route("/order", methods=["POST"])
+def order():
+    if is_headers_equal(request.headers, {"token": "de2e3ffu29"}) and is_json_equal(request.get_data(),
+                                                                                    {"skuId": "222", "price": "2.3",
+                                                                                     "skuNum": "3",
+                                                                                     "totalPrice": "6.9"}):
+        return {"orderId": "333"}
+    return "", 500
+
+
+@app.route("/pay", methods=["GET", "POST"])
+def pay():
+    if is_headers_equal(request.headers, {"token": "de2e3ffu29"}) and is_json_equal(request.get_data(),
+                                                                                    {"orderId": "333",
+                                                                                     "payAmount": "6.9"}):
+        return {"success": "true"}
+    return "", 500
+
+
+if __name__ == "__main__":
+    app.run()
+"""
+
+test_login_pay_content = """import jmespath
+from tep.client import request
+
+\"\"\"
+测试登录到下单流程，需要先运行utils/flask_mock_api.py
+\"\"\"
+
+
+def test(env_vars, login):
+    # 搜索商品
+    response = request(
+        "get",
+        url=env_vars.domain + "/searchSku",
+        headers={"token": login.token},
+        params={"skuName": "电子书"}
+    )
+    sku_id = jmespath.search("skuId", response.json())
+    sku_price = jmespath.search("price", response.json())
+    assert response.status_code < 400
+
+    # 添加购物车
+    sku_num = 3
+    response = request(
+        "post",
+        url=env_vars.domain + "/addCart",
+        headers={"token": login.token},
+        json={"skuId": sku_id, "skuNum": str(sku_num)}
+    )
+    total_price = jmespath.search("totalPrice", response.json())
+    assert response.status_code < 400
+
+    # 下单
+    response = request(
+        "post",
+        url=env_vars.domain + "/order",
+        headers={"token": login.token},
+        json={"skuId": sku_id, "price": sku_price, "skuNum": str(sku_num), "totalPrice": total_price}
+    )
+    order_id = jmespath.search("orderId", response.json())
+    assert response.status_code < 400
+
+    # 支付
+    response = request(
+        "post",
+        url=env_vars.domain + "/pay",
+        headers={"token": login.token},
+        json={"orderId": order_id, "payAmount": "6.9"}
+    )
+    assert response.status_code < 400
+    assert response.json()["success"] == "true"
+"""
+
+test_login_pay_httprunner_content = """from httprunner import HttpRunner, Config, Step, RunRequest
+
+\"\"\"
+测试登录到下单流程，需要先运行utils/flask_mock_api.py
+\"\"\"
+
+
+class TestLoginPay(HttpRunner):
+    config = (
+        Config("登录到下单流程")
+            .variables(
+            **{
+                "skuNum": "3"
+            }
+        )
+            .base_url("http://127.0.0.1:5000")
+    )
+
+    teststeps = [
+        Step(
+            RunRequest("登录")
+                .post("/login")
+                .with_headers(**{"Content-Type": "application/json"})
+                .with_json({"username": "dongfanger", "password": "123456"})
+                .extract()
+                .with_jmespath("body.token", "token")
+                .validate()
+                .assert_equal("status_code", 200)
+        ),
+        Step(
+            RunRequest("搜索商品")
+                .get("searchSku?skuName=电子书")
+                .with_headers(**{"token": "$token"})
+                .extract()
+                .with_jmespath("body.skuId", "skuId")
+                .with_jmespath("body.price", "skuPrice")
+                .validate()
+                .assert_equal("status_code", 200)
+        ),
+        Step(
+            RunRequest("添加购物车")
+                .post("/addCart")
+                .with_headers(**{"Content-Type": "application/json",
+                                 "token": "$token"})
+                .with_json({"skuId": "$skuId", "skuNum": "$skuNum"})
+                .extract()
+                .with_jmespath("body.totalPrice", "totalPrice")
+                .validate()
+                .assert_equal("status_code", 200)
+        ),
+        Step(
+            RunRequest("下单")
+                .post("/order")
+                .with_headers(**{"Content-Type": "application/json",
+                                 "token": "$token"})
+                .with_json({"skuId": "$skuId", "price": "$skuPrice", "skuNum": "$skuNum", "totalPrice": "$totalPrice"})
+                .extract()
+                .with_jmespath("body.orderId", "orderId")
+                .validate()
+                .assert_equal("status_code", 200)
+        ),
+        Step(
+            RunRequest("支付")
+                .post("/pay")
+                .with_headers(**{"Content-Type": "application/json",
+                                 "token": "$token"})
+                .with_json({"orderId": "$orderId", "payAmount": "6.9"})
+                .validate()
+                .assert_equal("status_code", 200)
+                .assert_equal("body.success", "true")
+        ),
+    ]
 """
