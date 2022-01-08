@@ -472,7 +472,7 @@ class Login(BaseRequest):
         self.case_vars.put("token", response.jmespath("token"))
 """
 
-SearchSku_content = """from services.http.base import BaseRequest
+SearchSku_content = """from tep.client import BaseRequest
 
 
 class SearchSku(BaseRequest):
