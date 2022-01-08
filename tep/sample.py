@@ -472,23 +472,21 @@ class Login(BaseRequest):
         self.case_vars.put("token", response.jmespath("token"))
 """
 
-SearchSku_content = """from tep.client import BaseRequest
+SearchSku_content = """from services.http.base import BaseRequest
 
 
-class Login(BaseRequest):
+class SearchSku(BaseRequest):
 
-    def post(self):
+    def get(self):
         response = self.request(
-            "post",
-            url=self.case_vars.get("domain") + "/login",
-            headers={"Content-Type": "application/json"},
-            json={
-                "username": "dongfanger",
-                "password": "123456",
-            }
+            "get",
+            url=self.case_vars.get("domain") + "/searchSku",
+            headers={"token": self.case_vars.get("token")},
+            params={"skuName": "电子书"}
         )
+        self.case_vars.put("skuId", response.jmespath("skuId"))
+        self.case_vars.put("skuPrice", response.jmespath("price"))
         assert response.status_code < 400
-        self.case_vars.put("token", response.jmespath("token"))
 """
 
 AddCart_content = """from tep.client import BaseRequest
