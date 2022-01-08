@@ -99,3 +99,22 @@ def request(method, url, **kwargs):
     # cases, and look like a memory leak in others.
     with sessions.Session() as session:
         return session.request(method=method, url=url, **kwargs)
+
+
+class TepResponse(Response):
+    def __init__(self, response):
+        super().__init__()
+        for k, v in response.__dict__.items():
+            self.__dict__[k] = v
+
+    def jmespath(self, expression):
+        return jmespath.search(expression, self.json())
+
+
+class BaseRequest:
+    def __init__(self, clazz):
+        self.case_vars = clazz.case_vars
+
+    def request(self, method, url, **kwargs):
+        response = request(method, url, **kwargs)
+        return TepResponse(response)

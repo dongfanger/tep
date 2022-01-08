@@ -70,6 +70,7 @@ def create_scaffold(project_name):
     create_folder(os.path.join(project_name, "files"))
     create_folder(os.path.join(project_name, "reports"))
     create_folder(os.path.join(project_name, "utils"))
+    create_folder(os.path.join(project_name, "services"))
 
     create_file(os.path.join(project_name, ".gitignore"), gitignore_content)
     create_file(os.path.join(project_name, "conf.yaml"), conf_yaml_content)
@@ -89,6 +90,12 @@ def create_scaffold(project_name):
     create_file(os.path.join(project_name, "tests", "test_login_pay_httprunner.py"), test_login_pay_httprunner_content)
     create_file(os.path.join(project_name, "utils", "__init__.py"))
     create_file(os.path.join(project_name, "utils", "flask_mock_api.py"), flask_mock_api_content)
+    create_file(os.path.join(project_name, "services", "__init__.py"))
+    create_file(os.path.join(project_name, "services", "Login.py"), Login_content)
+    create_file(os.path.join(project_name, "services", "SearchSku.py"), SearchSku_content)
+    create_file(os.path.join(project_name, "services", "AddCart.py"), AddCart_content)
+    create_file(os.path.join(project_name, "services", "Order.py"), Order_content)
+    create_file(os.path.join(project_name, "services", "Pay.py"), Pay_content)
 
     if ExtraArgument.create_venv:
         os.chdir(project_name)

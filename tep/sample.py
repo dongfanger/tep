@@ -452,3 +452,90 @@ class TestLoginPay(HttpRunner):
         ),
     ]
 """
+
+Login_content = """from tep.client import BaseRequest
+
+
+class Login(BaseRequest):
+
+    def post(self):
+        response = self.request(
+            "post",
+            url=self.case_vars.get("domain") + "/login",
+            headers={"Content-Type": "application/json"},
+            json={
+                "username": "dongfanger",
+                "password": "123456",
+            }
+        )
+        assert response.status_code < 400
+        self.case_vars.put("token", response.jmespath("token"))
+"""
+
+SearchSku_content = """from tep.client import BaseRequest
+
+
+class Login(BaseRequest):
+
+    def post(self):
+        response = self.request(
+            "post",
+            url=self.case_vars.get("domain") + "/login",
+            headers={"Content-Type": "application/json"},
+            json={
+                "username": "dongfanger",
+                "password": "123456",
+            }
+        )
+        assert response.status_code < 400
+        self.case_vars.put("token", response.jmespath("token"))
+"""
+
+AddCart_content = """from tep.client import BaseRequest
+
+
+class AddCart(BaseRequest):
+
+    def post(self):
+        response = self.request(
+            "post",
+            url=self.case_vars.get("domain") + "/addCart",
+            headers={"token": self.case_vars.get("token")},
+            json={"skuId": self.case_vars.get("skuId"), "skuNum": self.case_vars.get("skuNum")}
+        )
+        self.case_vars.put("totalPrice", response.jmespath("totalPrice"))
+        assert response.status_code < 400
+"""
+
+Order_content = """from tep.client import BaseRequest
+
+
+class Order(BaseRequest):
+
+    def post(self):
+        response = self.request(
+            "post",
+            url=self.case_vars.get("domain") + "/order",
+            headers={"token": self.case_vars.get("token")},
+            json={"skuId": self.case_vars.get("skuId"), "price": self.case_vars.get("skuPrice"),
+                  "skuNum": self.case_vars.get("skuNum"), "totalPrice": self.case_vars.get("totalPrice")}
+        )
+        self.case_vars.put("orderId", response.jmespath("orderId"))
+        assert response.status_code < 400
+"""
+
+Pay_content = """from tep.client import BaseRequest
+
+
+class Pay(BaseRequest):
+
+    def post(self):
+        response = self.request(
+            "post",
+            url=self.case_vars.get("domain") + "/pay",
+            headers={"token": self.case_vars.get("token")},
+            json={"orderId": self.case_vars.get("orderId"), "payAmount": "6.9"}
+        )
+        assert response.status_code < 400
+        assert response.jmespath("success") == "true"
+"""
