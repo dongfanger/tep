@@ -12,10 +12,11 @@ import json
 import time
 
 import allure
+import jmespath
 import requests
 import urllib3
 from loguru import logger
-from requests import sessions
+from requests import sessions, Response
 
 urllib3.disable_warnings(urllib3.exceptions.InsecureRequestWarning)
 
