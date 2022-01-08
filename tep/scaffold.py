@@ -88,6 +88,7 @@ def create_scaffold(project_name):
     create_file(os.path.join(project_name, "tests", "test_request.py"), test_request_content)
     create_file(os.path.join(project_name, "tests", "test_login_pay.py"), test_login_pay_content)
     create_file(os.path.join(project_name, "tests", "test_login_pay_httprunner.py"), test_login_pay_httprunner_content)
+    create_file(os.path.join(project_name, "tests", "test_login_pay_mvc.py"), test_login_pay_mvc_content)
     create_file(os.path.join(project_name, "utils", "__init__.py"))
     create_file(os.path.join(project_name, "utils", "flask_mock_api.py"), flask_mock_api_content)
     create_file(os.path.join(project_name, "services", "__init__.py"))
