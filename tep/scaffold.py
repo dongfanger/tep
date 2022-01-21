@@ -99,18 +99,22 @@ def _project_cache(request):
 
 
 # Auto import fixtures
-_fixtures_dir = os.path.join(_project_dir, "fixtures")
 for root, _, files in os.walk(_fixtures_dir):
     for file in files:
         if os.path.isfile(os.path.join(root, file)):
             if file.startswith("fixture_") and file.endswith(".py"):
+                parent_path = ""
                 _fixture_name, _ = os.path.splitext(file)
+                fixture_path = _fixture_name
+                if root != _fixtures_dir:
+                    parent_path = os.path.split(root)[-1]
+                    fixture_path = ".".join([parent_path, _fixture_name])
                 try:
-                    exec(f"from fixtures.{_fixture_name} import *")
+                    exec(f"from fixtures.{fixture_path} import *")
                 except:
                     pass
                 try:
-                    exec(f"from .fixtures.{_fixture_name} import *")
+                    exec(f"from .fixtures.{fixture_path} import *")
                 except:
                     pass
 """
