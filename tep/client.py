@@ -23,6 +23,10 @@ urllib3.disable_warnings(urllib3.exceptions.InsecureRequestWarning)
 def request_encapsulate(req):
     def send(*args, **kwargs):
         start = time.process_time()
+        case_title = ""
+        if "case_title" in kwargs:
+            case_title = kwargs.get("case_title") + " "
+            kwargs.pop("case_title")
         response = req(*args, **kwargs)
         end = time.process_time()
         elapsed = str(decimal.Decimal("%.3f" % float(end - start))) + "s"
@@ -38,7 +42,7 @@ def request_encapsulate(req):
                 kv += f" {k}:{v} "
             request_response = log4a.format(args[0], kv, response.status_code, response.text, elapsed)
             logger.info(request_response)
-            allure.attach(request_response, 'request & response', allure.attachment_type.TEXT)
+            allure.attach(request_response, f'{case_title}request & response', allure.attachment_type.TEXT)
         except AttributeError:
             logger.error("request failed")
         except TypeError:
