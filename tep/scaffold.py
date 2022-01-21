@@ -99,6 +99,7 @@ def _project_cache(request):
 
 
 # Auto import fixtures
+_fixtures_dir = os.path.join(_project_dir, "fixtures")
 for root, _, files in os.walk(_fixtures_dir):
     for file in files:
         if os.path.isfile(os.path.join(root, file)):
