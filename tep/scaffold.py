@@ -68,6 +68,79 @@ def create_scaffold(project_name):
     create_folder(os.path.join(project_name, "fixtures"))
     create_folder(os.path.join(project_name, "tests"))
     create_folder(os.path.join(project_name, "files"))
+
+    content = """.idea/
+.pytest_cache/
+.tep_allure_tmp/
+__pycache__/
+*.pyc
+reports/
+debug/"""
+    create_file(os.path.join(project_name, ".gitignore"), content)
+
+    content = """env: qa"""
+    create_file(os.path.join(project_name, "conf.yaml"), content)
+
+    content = """#!/usr/bin/python
+# encoding=utf-8
+
+\"\"\" Can only be modified by the administrator. Only fixtures are provided.
+\"\"\"
+
+import os
+
+import pytest
+
+# Initial
+_project_dir = os.path.dirname(os.path.abspath(__file__))
+
+
+@pytest.fixture(scope="session", autouse=True)
+def _project_cache(request):
+    request.config.cache.set("project_dir", _project_dir)
+
+
+# Auto import fixtures
+_fixtures_dir = os.path.join(_project_dir, "fixtures")
+for root, _, files in os.walk(_fixtures_dir):
+    for file in files:
+        if os.path.isfile(os.path.join(root, file)):
+            if file.startswith("fixture_") and file.endswith(".py"):
+                parent_path = ""
+                _fixture_name, _ = os.path.splitext(file)
+                fixture_path = _fixture_name
+                if root != _fixtures_dir:
+                    parent_path = os.path.split(root)[-1]
+                    fixture_path = ".".join([parent_path, _fixture_name])
+                try:
+                    exec(f"from fixtures.{fixture_path} import *")
+                except:
+                    pass
+                try:
+                    exec(f"from .fixtures.{fixture_path} import *")
+                except:
+                    pass
+"""
+    create_file(os.path.join(project_name, "conftest.py"), content)
+
+    content = """[pytest]
+markers =
+    smoke: smoke test
+    regress: regress test
+"""
+    create_file(os.path.join(project_name, "pytest.ini"), content)
+
+    content = """# Customize third-parties
+# pip install --default-timeout=6000 -i https://pypi.tuna.tsinghua.edu.cn/simple -r requirements.txt
+
+# mysql
+pandas==1.1.0
+SQLAlchemy==1.3.19
+PyMySQL==0.10.0
+texttable==1.6.2
+"""
+    create_file(os.path.join(project_name, "requirements.txt"), content)
+
     create_folder(os.path.join(project_name, "reports"))
     create_folder(os.path.join(project_name, "utils"))
     create_folder(os.path.join(project_name, "services"))
