@@ -13,6 +13,8 @@ import sys
 
 from loguru import logger
 
+from tep.sample import *
+
 
 class ExtraArgument:
     create_venv = False
@@ -139,9 +141,35 @@ texttable==1.6.2
 """
     create_file(os.path.join(project_name, "requirements.txt"), content)
 
-    create_file(os.path.join(project_name, "fixtures", "__init__.py"))
+    create_folder(os.path.join(project_name, "reports"))
+    create_folder(os.path.join(project_name, "utils"))
+    create_folder(os.path.join(project_name, "services"))
 
+    create_file(os.path.join(project_name, ".gitignore"), gitignore_content)
+    create_file(os.path.join(project_name, "conf.yaml"), conf_yaml_content)
+    create_file(os.path.join(project_name, "conftest.py"), conftest_content)
+    create_file(os.path.join(project_name, "pytest.ini"), pytest_ini_content)
+    create_file(os.path.join(project_name, "fixtures", "__init__.py"))
+    create_file(os.path.join(project_name, "fixtures", "fixture_admin.py"), fixture_admin_content)
+    create_file(os.path.join(project_name, "fixtures", "fixture_env_vars.py"), fixture_env_vars_content)
+    create_file(os.path.join(project_name, "fixtures", "fixture_login.py"), fixture_login_content)
+    create_file(os.path.join(project_name, "fixtures", "fixture_your_name.py"), fixture_your_name_content)
     create_file(os.path.join(project_name, "tests", "__init__.py"))
+    create_file(os.path.join(project_name, "tests", "test_login.py"), test_login_content)
+    create_file(os.path.join(project_name, "tests", "test_post.py"), test_post_content)
+    create_file(os.path.join(project_name, "tests", "test_mysql.py"), test_mysql_content)
+    create_file(os.path.join(project_name, "tests", "test_request.py"), test_request_content)
+    create_file(os.path.join(project_name, "tests", "test_login_pay.py"), test_login_pay_content)
+    create_file(os.path.join(project_name, "tests", "test_login_pay_httprunner.py"), test_login_pay_httprunner_content)
+    create_file(os.path.join(project_name, "tests", "test_login_pay_mvc.py"), test_login_pay_mvc_content)
+    create_file(os.path.join(project_name, "utils", "__init__.py"))
+    create_file(os.path.join(project_name, "utils", "flask_mock_api.py"), flask_mock_api_content)
+    create_file(os.path.join(project_name, "services", "__init__.py"))
+    create_file(os.path.join(project_name, "services", "Login.py"), Login_content)
+    create_file(os.path.join(project_name, "services", "SearchSku.py"), SearchSku_content)
+    create_file(os.path.join(project_name, "services", "AddCart.py"), AddCart_content)
+    create_file(os.path.join(project_name, "services", "Order.py"), Order_content)
+    create_file(os.path.join(project_name, "services", "Pay.py"), Pay_content)
 
     if ExtraArgument.create_venv:
         os.chdir(project_name)

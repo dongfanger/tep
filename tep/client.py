@@ -12,10 +12,11 @@ import json
 import time
 
 import allure
+import jmespath
 import requests
 import urllib3
 from loguru import logger
-from requests import sessions
+from requests import sessions, Response
 
 urllib3.disable_warnings(urllib3.exceptions.InsecureRequestWarning)
 
@@ -30,7 +31,7 @@ def request_encapsulate(req):
         response = req(*args, **kwargs)
         end = time.process_time()
         elapsed = str(decimal.Decimal("%.3f" % float(end - start))) + "s"
-        log4a = "method:{} {} status:{}  response:{}  elapsed:{}"
+        log4a = "{}{} status:{}  response:{}  elapsed:{}"
         try:
             kv = ""
             for k, v in kwargs.items():
@@ -40,7 +41,11 @@ def request_encapsulate(req):
                 except TypeError:
                     v = str(v)
                 kv += f" {k}:{v} "
-            request_response = log4a.format(args[0], kv, response.status_code, response.text, elapsed)
+            if args:
+                method = f'method:"{args[0]}" '
+            else:
+                method = ""
+            request_response = log4a.format(method, kv, response.status_code, response.text, elapsed)
             logger.info(request_response)
             allure.attach(request_response, f'{case_title}request & response', allure.attachment_type.TEXT)
         except AttributeError:
@@ -99,3 +104,22 @@ def request(method, url, **kwargs):
     # cases, and look like a memory leak in others.
     with sessions.Session() as session:
         return session.request(method=method, url=url, **kwargs)
+
+
+class TepResponse(Response):
+    def __init__(self, response):
+        super().__init__()
+        for k, v in response.__dict__.items():
+            self.__dict__[k] = v
+
+    def jmespath(self, expression):
+        return jmespath.search(expression, self.json())
+
+
+class BaseRequest:
+    def __init__(self, clazz):
+        self.case_vars = clazz.case_vars
+
+    def request(self, method, url, **kwargs):
+        response = request(method, url, **kwargs)
+        return TepResponse(response)
