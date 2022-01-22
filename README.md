@@ -55,9 +55,9 @@ tep自带了一个Flask应用（`utils/flask_mock_api.py`），提供了登录�
 
 # 三种开发模式
 
-tep兼容三种开发模式：用例数据一体（适合新手）、用例数据分离（适合老手）、HttpRunner（新老皆宜）。
+tep兼容三种开发模式：tep（用例数据一体）、mvc（用例数据分离）、HttpRunner。
 
-①用例数据一体，示例代码如下所示：
+①tep，示例代码如下所示：
 
 ```python
 import jmespath
@@ -111,9 +111,42 @@ def test(env_vars, login):
 
 更多内容请参考[《如何使用teprunner测试平台编写从登录到下单的大流程接口自动化用例》](https://dongfanger.gitee.io/blog/teprunner/012-%E5%A6%82%E4%BD%95%E4%BD%BF%E7%94%A8teprunner%E6%B5%8B%E8%AF%95%E5%B9%B3%E5%8F%B0%E7%BC%96%E5%86%99%E4%BB%8E%E7%99%BB%E5%BD%95%E5%88%B0%E4%B8%8B%E5%8D%95%E7%9A%84%E5%A4%A7%E6%B5%81%E7%A8%8B%E6%8E%A5%E5%8F%A3%E8%87%AA%E5%8A%A8%E5%8C%96%E7%94%A8%E4%BE%8B.html)
 
-②用例数据分离
+②mvc
 
-开发中，敬请期待...
+```python
+from tep.fixture import TepVars
+
+from services.AddCart import AddCart
+from services.Login import Login
+from services.Order import Order
+from services.Pay import Pay
+from services.SearchSku import SearchSku
+
+\"\"\"
+测试登录到下单流程，需要先运行utils / flask_mock_api.py
+\"\"\"
+
+
+class Test:
+    case_vars = TepVars()
+    case_vars.vars_ = {
+        "domain": "http://127.0.0.1:5000",
+        "skuNum": "3"
+    }
+
+    def test(self):
+        # 登录
+        Login(Test).post()
+        # 搜索商品
+        SearchSku(Test).get()
+        # 添加购物车
+        AddCart(Test).post()
+        # 下单
+        Order(Test).post()
+        # 支付
+        Pay(Test).post()
+```
+
 ③HttpRunner，示例代码如下所示：
 
 ```python
@@ -185,6 +218,20 @@ class TestLoginPay(HttpRunner):
                 .assert_equal("body.success", "true")
         ),
     ]
+```
+
+# 可选第三方包安装
+
+```
+# pip install --default-timeout=6000 -i https://pypi.tuna.tsinghua.edu.cn/simple pandas
+
+# mysql
+pandas==1.1.0
+SQLAlchemy==1.3.19
+PyMySQL==0.10.0
+texttable==1.6.2
+
+# more
 ```
 
 # 用户手册

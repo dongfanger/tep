@@ -20,37 +20,36 @@ conf_yaml_content = """env: qa"""
 conftest_content = """#!/usr/bin/python
 # encoding=utf-8
 
-\"\"\" Can only be modified by the administrator. Only fixtures are provided.
+\"\"\" 只能管理员编辑，只对外提供fixture。
 \"\"\"
 
 import os
 
 import pytest
 
-# Initial
+# 项目目录路径
 _project_dir = os.path.dirname(os.path.abspath(__file__))
 
 
+# 设置缓存供tep使用
 @pytest.fixture(scope="session", autouse=True)
 def _project_cache(request):
     request.config.cache.set("project_dir", _project_dir)
 
 
-# Auto import fixtures
+# 自动导入fixtures
 _fixtures_dir = os.path.join(_project_dir, "fixtures")
 for root, _, files in os.walk(_fixtures_dir):
     for file in files:
-        if os.path.isfile(os.path.join(root, file)):
-            if file.startswith("fixture_") and file.endswith(".py"):
-                _fixture_name, _ = os.path.splitext(file)
-                try:
-                    exec(f"from fixtures.{_fixture_name} import *")
-                except:
-                    pass
-                try:
-                    exec(f"from .fixtures.{_fixture_name} import *")
-                except:
-                    pass
+        if file.startswith("fixture_") and file.endswith(".py"):
+            full_path = os.path.join(root, file)
+            import_path = full_path.replace(_fixtures_dir, "").replace("\\\\", ".").replace("/", ".").replace(".py", "")
+            try:
+                fixture_path = "fixtures" + import_path
+                exec(f"from {fixture_path} import *")
+            except:
+                fixture_path = ".fixtures" + import_path
+                exec(f"from {fixture_path} import *")
 """
 
 pytest_ini_content = """[pytest]
@@ -85,8 +84,8 @@ def env_vars(config):
     class Clazz(TepVars):
         env = config["env"]
 
-        \"\"\"Variables define start\"\"\"
-        # Environment and variables
+        \"\"\"变量定义开始\"\"\"
+        # 环境变量
         mapping = {
             \"qa\": {
                 "domain": "http://127.0.0.1:5000",
@@ -104,12 +103,12 @@ def env_vars(config):
                                              "123456",
                                              "release"),
             }
-            # Add your environment and variables
+            # 继续添加
         }
-        # Define properties for auto display
+        # 定义类属性，敲代码时会有智能提示
         domain = mapping[env]["domain"]
         mysql_engine = mapping[env]["mysql_engine"]
-        \"\"\"Variables define end\"\"\"
+        \"\"\"变量定义结束\"\"\"
 
     return Clazz()
 """
@@ -180,6 +179,30 @@ def share_your_name():
     pass
 """
 
+fixture_second_content = """#!/usr/bin/python
+# encoding=utf-8
+
+
+from tep.fixture import *
+
+
+@pytest.fixture
+def fixture_second():
+    logger.info("fixture_second")
+"""
+
+fixture_three_content = """#!/usr/bin/python
+# encoding=utf-8
+
+
+from tep.fixture import *
+
+
+@pytest.fixture
+def fixture_three():
+    logger.info("fixture_three")
+"""
+
 test_login_content = """from loguru import logger
 
 
@@ -246,85 +269,107 @@ request("post",
         )
 """
 
-flask_mock_api_content = """#!/usr/bin/python
+fastapi_mock_content = """#!/usr/bin/python
 # encoding=utf-8
 
-import json
+import uvicorn
+from fastapi import FastAPI, Request
 
-from flask import Flask, request
-
-# Flask实例
-app = Flask(__name__)
+app = FastAPI()
 
 
-def is_headers_equal(headers, data):
-    # 简单比较请求头是否一致
-    for k, v in data.items():
-        if headers.get(k) != v:
-            return False
-    return True
-
-
-def is_args_equal(args, data):
-    # 简单比较请求参数是否一致
-    for k, v in data.items():
-        if args.get(k) != v:
-            return False
-    return True
-
-
-def is_json_equal(json_, data):
-    # 简单比较请求体是否一致
-    json_ = json.loads(json_)
-    for k, v in data.items():
-        if json_.get(k) != v:
-            return False
-    return True
-
-
-@app.route("/login", methods=["POST"])
-def login():
-    if is_json_equal(request.get_data(), {"username": "dongfanger", "password": "123456"}):
+@app.post("/login")
+async def login(req: Request):
+    body = await req.json()
+    if body["username"] == "dongfanger" and body["password"] == "123456":
         return {"token": "de2e3ffu29"}
-    return "", 500
+    return ""
 
 
-@app.route("/searchSku")
-def search_sku():
-    if is_headers_equal(request.headers, {"token": "de2e3ffu29"}) and is_args_equal(request.args, {"skuName": "电子书"}):
+@app.get("/searchSku")
+def search_sku(req: Request):
+    if req.headers.get("token") == "de2e3ffu29" and req.query_params.get("skuName") == "电子书":
         return {"skuId": "222", "price": "2.3"}
-    return "", 500
+    return ""
 
 
-@app.route("/addCart", methods=["POST"])
-def add_cart():
-    if is_headers_equal(request.headers, {"token": "de2e3ffu29"}) and is_json_equal(request.get_data(),
-                                                                                    {"skuId": "222", "skuNum": "3"}):
+@app.post("/addCart")
+async def add_cart(req: Request):
+    body = await req.json()
+    if req.headers.get("token") == "de2e3ffu29" and body["skuId"] == "222":
         return {"skuId": "222", "price": "2.3", "skuNum": "3", "totalPrice": "6.9"}
-    return "", 500
+    return ""
 
 
-@app.route("/order", methods=["POST"])
-def order():
-    if is_headers_equal(request.headers, {"token": "de2e3ffu29"}) and is_json_equal(request.get_data(),
-                                                                                    {"skuId": "222", "price": "2.3",
-                                                                                     "skuNum": "3",
-                                                                                     "totalPrice": "6.9"}):
+@app.post("/order")
+async def order(req: Request):
+    body = await req.json()
+    if req.headers.get("token") == "de2e3ffu29" and body["skuId"] == "222":
         return {"orderId": "333"}
-    return "", 500
+    return ""
 
 
-@app.route("/pay", methods=["GET", "POST"])
-def pay():
-    if is_headers_equal(request.headers, {"token": "de2e3ffu29"}) and is_json_equal(request.get_data(),
-                                                                                    {"orderId": "333",
-                                                                                     "payAmount": "6.9"}):
+@app.post("/pay")
+async def pay(req: Request):
+    body = await req.json()
+    if req.headers.get("token") == "de2e3ffu29" and body["orderId"] == "333":
         return {"success": "true"}
-    return "", 500
+    return ""
 
 
-if __name__ == "__main__":
-    app.run()
+if __name__ == '__main__':
+    uvicorn.run("fastapi_mock:app", host="127.0.0.1", port=5000)
+"""
+
+http_client_content = """#!/usr/bin/python
+# encoding=utf-8
+
+import decimal
+import json
+import time
+
+import allure
+from loguru import logger
+from tep import client
+from tep.client import TepResponse
+
+
+def request_monkey_patch(req, *args, **kwargs):
+    start = time.process_time()
+    desc = ""
+    if "desc" in kwargs:
+        desc = kwargs.get("desc")
+        kwargs.pop("desc")
+    response = req(*args, **kwargs)
+    end = time.process_time()
+    elapsed = str(decimal.Decimal("%.3f" % float(end - start))) + "s"
+    log4a = "{}\\n{}status:{}\\nresponse:{}\\nelapsed:{}"
+    try:
+        kv = ""
+        for k, v in kwargs.items():
+            # if not json, str()
+            try:
+                v = json.dumps(v, ensure_ascii=False)
+            except TypeError:
+                v = str(v)
+            kv += f"{k}:{v}\\n"
+        if args:
+            method = f'\\nmethod:"{args[0]}" '
+        else:
+            method = ""
+        request_response = log4a.format(method, kv, response.status_code, response.text, elapsed)
+        logger.info(request_response)
+        allure.attach(request_response, f'{desc} request & response', allure.attachment_type.TEXT)
+    except AttributeError:
+        logger.error("request failed")
+    except TypeError:
+        logger.warning(log4a)
+    return TepResponse(response)
+
+
+def request(method, url, **kwargs):
+    client.tep_request_monkey_patch = request_monkey_patch
+    return client.request(method, url, **kwargs)
 """
 
 test_login_pay_content = """import jmespath
@@ -538,8 +583,7 @@ class Pay(BaseRequest):
         assert response.jmespath("success") == "true"
 """
 
-test_login_pay_mvc_content = """import allure
-from tep.fixture import TepVars
+test_login_pay_mvc_content = """from tep.fixture import TepVars
 
 from services.AddCart import AddCart
 from services.Login import Login
@@ -570,4 +614,29 @@ class Test:
         Order(Test).post()
         # 支付
         Pay(Test).post()
+"""
+
+test_multi_fixture_content = """#!/usr/bin/python
+# encoding=utf-8
+
+
+def test(fixture_second, fixture_three):
+    pass
+"""
+
+test_request_monkey_patch_content = """from utils.http_client import request
+
+
+def test_login(env_vars):
+    response = request(
+        "post",
+        url=env_vars.domain + "/login",
+        desc="登录",
+        headers={"Content-Type": "application/json"},
+        json={
+            "username": "dongfanger",
+            "password": "123456",
+        }
+    )
+    assert response.status_code < 400
 """

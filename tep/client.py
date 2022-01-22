@@ -21,43 +21,43 @@ from requests import sessions, Response
 urllib3.disable_warnings(urllib3.exceptions.InsecureRequestWarning)
 
 
-def request_encapsulate(req):
+def tep_request_monkey_patch(req, *args, **kwargs):
+    start = time.process_time()
+    response = req(*args, **kwargs)
+    end = time.process_time()
+    elapsed = str(decimal.Decimal("%.3f" % float(end - start))) + "s"
+    log4a = "{}{} status:{}  response:{}  elapsed:{}"
+    try:
+        kv = ""
+        for k, v in kwargs.items():
+            # if not json, str()
+            try:
+                v = json.dumps(v, ensure_ascii=False)
+            except TypeError:
+                v = str(v)
+            kv += f" {k}:{v} "
+        if args:
+            method = f'method:"{args[0]}" '
+        else:
+            method = ""
+        request_response = log4a.format(method, kv, response.status_code, response.text, elapsed)
+        logger.info(request_response)
+        allure.attach(request_response, f'request & response', allure.attachment_type.TEXT)
+    except AttributeError:
+        logger.error("request failed")
+    except TypeError:
+        logger.warning(log4a)
+    return TepResponse(response)
+
+
+def request_wrapper(req):
     def send(*args, **kwargs):
-        start = time.process_time()
-        case_title = ""
-        if "case_title" in kwargs:
-            case_title = kwargs.get("case_title") + " "
-            kwargs.pop("case_title")
-        response = req(*args, **kwargs)
-        end = time.process_time()
-        elapsed = str(decimal.Decimal("%.3f" % float(end - start))) + "s"
-        log4a = "{}{} status:{}  response:{}  elapsed:{}"
-        try:
-            kv = ""
-            for k, v in kwargs.items():
-                # if not json, str()
-                try:
-                    v = json.dumps(v, ensure_ascii=False)
-                except TypeError:
-                    v = str(v)
-                kv += f" {k}:{v} "
-            if args:
-                method = f'method:"{args[0]}" '
-            else:
-                method = ""
-            request_response = log4a.format(method, kv, response.status_code, response.text, elapsed)
-            logger.info(request_response)
-            allure.attach(request_response, f'{case_title}request & response', allure.attachment_type.TEXT)
-        except AttributeError:
-            logger.error("request failed")
-        except TypeError:
-            logger.warning(log4a)
-        return response
+        return tep_request_monkey_patch(req, *args, **kwargs)
 
     return send
 
 
-@request_encapsulate
+@request_wrapper
 def request(method, url, **kwargs):
     """Constructs and sends a :class:`Request <Request>`.
 
