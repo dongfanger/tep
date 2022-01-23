@@ -353,11 +353,15 @@ def request_monkey_patch(req, *args, **kwargs):
             except TypeError:
                 v = str(v)
             kv += f"{k}:{v}\\n"
-        if args:
-            method = f'\\nmethod:"{args[0]}" '
-        else:
-            method = ""
-        request_response = log4a.format(method, kv, response.status_code, response.text, elapsed)
+        args = list(args)
+        args += ["", ""]
+        method, url, *t = args
+        method_url = ""
+        if method:
+            method_url = f'\\nmethod:"{method}" '
+        if url:
+            method_url += f'\\nurl:"{url}" '
+        request_response = log4a.format(method_url, kv, response.status_code, response.text, elapsed)
         logger.info(request_response)
         allure.attach(request_response, f'{desc} request & response', allure.attachment_type.TEXT)
     except AttributeError:
