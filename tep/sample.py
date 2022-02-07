@@ -39,17 +39,14 @@ def _project_cache(request):
 
 # 自动导入fixtures
 _fixtures_dir = os.path.join(_project_dir, "fixtures")
+_fixtures_paths = []
 for root, _, files in os.walk(_fixtures_dir):
     for file in files:
         if file.startswith("fixture_") and file.endswith(".py"):
             full_path = os.path.join(root, file)
             import_path = full_path.replace(_fixtures_dir, "").replace("\\\\", ".").replace("/", ".").replace(".py", "")
-            try:
-                fixture_path = "fixtures" + import_path
-                exec(f"from {fixture_path} import *")
-            except:
-                fixture_path = ".fixtures" + import_path
-                exec(f"from {fixture_path} import *")
+            _fixtures_paths.append("fixtures" + import_path)
+pytest_plugins = _fixtures_paths
 """
 
 pytest_ini_content = """[pytest]
