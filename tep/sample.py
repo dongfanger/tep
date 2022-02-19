@@ -24,6 +24,7 @@ conftest_content = """#!/usr/bin/python
 \"\"\"
 
 import os
+import time
 
 import pytest
 
@@ -47,6 +48,17 @@ for root, _, files in os.walk(_fixtures_dir):
             import_path = full_path.replace(_fixtures_dir, "").replace("\\\\", ".").replace("/", ".").replace(".py", "")
             _fixtures_paths.append("fixtures" + import_path)
 pytest_plugins = _fixtures_paths
+
+
+# pytest hook函数
+# https://docs.pytest.org/en/latest/reference/reference.html#hooks
+def pytest_terminal_summary(terminalreporter, exitstatus, config):
+    total = terminalreporter._numcollected
+    passed = len(terminalreporter.stats.get('passed', []))
+    failed = len(terminalreporter.stats.get('failed', []))
+    error = len(terminalreporter.stats.get('error', []))
+    skipped = len(terminalreporter.stats.get('skipped', []))
+    duration = time.time() - terminalreporter._sessionstarttime
 """
 
 pytest_ini_content = """[pytest]
@@ -640,4 +652,108 @@ def test_login(env_vars):
         }
     )
     assert response.status_code < 400
+"""
+
+mitm_content = """#!/usr/bin/python
+# encoding=utf-8
+
+# mitmproxy录制流量自动生成用例
+
+import os
+import time
+
+from mitmproxy import ctx
+
+project_dir = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+tests_dir = os.path.join(project_dir, "tests")
+# tests/mitm
+mitm_dir = os.path.join(tests_dir, "mitm")
+if not os.path.exists(mitm_dir):
+    os.mkdir(mitm_dir)
+# 当前时间作为文件名
+filename = time.strftime("%Y%m%d_%H_%M_%S", time.localtime()) + ".py"
+case_file = os.path.join(mitm_dir, filename)
+# 生成用例文件
+template = \"\"\"from tep.client import request
+
+
+def test():
+\"\"\"
+if not os.path.exists(case_file):
+    with open(case_file, "w", encoding="utf8") as fw:
+        fw.write(template)
+
+
+class Record:
+    def __init__(self, domains):
+        self.domains = domains
+
+    def response(self, flow):
+        if self.match(flow.request.url):
+            # method
+            method = flow.request.method.lower()
+            ctx.log.error(method)
+            # url
+            url = flow.request.url
+            ctx.log.error(url)
+            # headers
+            headers = dict(flow.request.headers)
+            ctx.log.error(headers)
+            # body
+            body = flow.request.text or {}
+            ctx.log.error(body)
+            with open(case_file, "a", encoding="utf8") as fa:
+                fa.write(self.step(method, url, headers, body))
+
+    def match(self, url):
+        if not self.domains:
+            ctx.log.error("必须配置过滤域名")
+            exit(-1)
+        for domain in self.domains:
+            if domain in url:
+                return True
+        return False
+
+    def step(self, method, url, headers, body):
+        if method == "get":
+            body_grammar = f"params={body}"
+        else:
+            body_grammar = f"json={body}"
+        return f\"\"\"
+    # 接口描述
+    # 数据
+    # 请求
+    response = request(
+        "{method}",
+        url="{url}",
+        headers={headers},
+        {body_grammar}
+    )
+    # 数据提取
+    # var = response.jmespath("expression")
+    # 断言
+    assert response.status_code < 400
+\"\"\"
+
+
+# ==================================配置开始==================================
+addons = [
+    Record(
+        # 过滤域名
+        [
+            "http://www.httpbin.org",
+            "http://127.0.0.1:5000"
+        ],
+    )
+]
+# ==================================配置结束==================================
+
+\"\"\"
+==================================命令说明开始==================================
+# 正向代理
+mitmdump -s mitm.py
+# 反向代理
+mitmdump -s mitm.py --mode reverse:http://127.0.0.1:5000 --listen-host 127.0.0.1 --listen-port 8000
+==================================命令说明结束==================================
+\"\"\"
 """

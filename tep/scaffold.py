@@ -100,6 +100,7 @@ def create_scaffold(project_name):
     create_file(os.path.join(project_name, "utils", "__init__.py"))
     create_file(os.path.join(project_name, "utils", "fastapi_mock.py"), fastapi_mock_content)
     create_file(os.path.join(project_name, "utils", "http_client.py"), http_client_content)
+    create_file(os.path.join(project_name, "utils", "mitm.py"), mitm_content)
     create_file(os.path.join(project_name, "services", "__init__.py"))
     create_file(os.path.join(project_name, "services", "Login.py"), Login_content)
     create_file(os.path.join(project_name, "services", "SearchSku.py"), SearchSku_content)
