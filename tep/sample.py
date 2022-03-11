@@ -63,22 +63,8 @@ def pytest_terminal_summary(terminalreporter, exitstatus, config):
 
 pytest_ini_content = """[pytest]
 markers =
-    smoke: smoke test
-    regress: regress test
-"""
-
-fixture_admin_content = """#!/usr/bin/python
-# encoding=utf-8
-
-\"\"\" Can only be modified by the administrator. Only fixtures are provided.
-\"\"\"
-
-from tep.fixture import *
-
-
-@pytest.fixture
-def common_created_by_admin():
-    pass
+    smoke: 冒烟测试
+    regress: 回归测试
 """
 
 fixture_env_vars_content = """#!/usr/bin/python
@@ -96,16 +82,16 @@ def env_vars(config):
         \"\"\"变量定义开始\"\"\"
         # 环境变量
         mapping = {
-            \"qa\": {
-                "domain": "http://127.0.0.1:5000",
+            "qa": {  # qa环境
+                "domain": "http://127.0.0.1:5000",  # 变量名:变量值
                 "mysql_engine": mysql_engine("127.0.0.1",  # host
                                              "2306",  # port
                                              "root",  # username
                                              "123456",  # password
-                                             "qa"),  # db_name
+                                             "qa"),  # dbname
             },
-            "release": {
-                "domain": "https://release.com",
+            "release": {  # release环境
+                "domain": "https://release.com",  # 变量名:变量值
                 "mysql_engine": mysql_engine("127.0.0.1",
                                              "2306",
                                              "root",
@@ -114,7 +100,7 @@ def env_vars(config):
             }
             # 继续添加
         }
-        # 定义类属性，敲代码时会有智能提示
+        # 定义类属性，敲代码时会自动补全
         domain = mapping[env]["domain"]
         mysql_engine = mapping[env]["mysql_engine"]
         \"\"\"变量定义结束\"\"\"
@@ -132,7 +118,7 @@ def _jwt_headers(token):
 
 @pytest.fixture(scope="session")
 def login(env_vars):
-    # Code your login
+    # 封装登录接口
     logger.info("Administrator login")
     response = request(
         "post",
@@ -153,96 +139,11 @@ def login(env_vars):
     return Clazz
 """
 
-fixture_your_name_content = """#!/usr/bin/python
-# encoding=utf-8
-
-\"\"\" Please define your own fixture.
-\"\"\"
-
-from tep.fixture import *
-
-
-@pytest.fixture(scope="session")
-def env_vars_your_name(config):
-    class Clazz:
-        env = config["env"]
-
-        # Environment and variables
-        mapping = {
-            "qa": {
-                "your_var": "123",
-            },
-            "release": {
-                "your_var": "456",
-            }
-            # Add your environment and variables
-        }
-        # Define properties for auto display
-        your_var = mapping[env]["your_var"]
-
-    return Clazz()
-
-
-@pytest.fixture
-def share_your_name():
-    pass
-"""
-
-fixture_second_content = """#!/usr/bin/python
-# encoding=utf-8
-
-
-from tep.fixture import *
-
-
-@pytest.fixture
-def fixture_second():
-    logger.info("fixture_second")
-"""
-
-fixture_three_content = """#!/usr/bin/python
-# encoding=utf-8
-
-
-from tep.fixture import *
-
-
-@pytest.fixture
-def fixture_three():
-    logger.info("fixture_three")
-"""
-
 test_login_content = """from loguru import logger
 
 
 def test_login(login):
     logger.info(login.token)
-"""
-
-test_post_content = """import jmespath
-from loguru import logger
-
-from tep.client import request
-
-
-def test_post(faker_ch, url, login):
-    # description
-    logger.info("test post")
-    # data
-    fake = faker_ch
-    # request
-    response = request(
-        "post",
-        url=url("/api/users"),
-        headers=login.jwt_headers,
-        json={
-            "name": fake.name()
-        }
-    )
-    # assert
-    assert response.status_code < 400
-    # extract
-    user_id = jmespath.search("id", response.json())
 """
 
 test_mysql_content = """from loguru import logger
@@ -254,14 +155,39 @@ def test_mysql(pd, env_vars):
     logger.info(print_db_table(data))
 """
 
-test_request_content = """from tep.client import request
+test_request_content = """from urllib.parse import urlencode
 
-request("get", url="", headers={}, json={})
-request("post", url="", headers={}, params={})
-request("put", url="", headers={}, json={})
-request("delete", url="", headers={})
+from tep.client import request
 
-# upload excel
+# -------------------------------get开始-------------------------------
+# 不带参数
+request("get", url="/api/xxx", headers={})
+# json参数
+request("get", url="/api/xxx", headers={}, params={})
+# queryset
+request("get", url="/api/xxx?a=1&b=2", headers={})
+# json转queryset
+query = {}
+request("get", url="/api/xxx" + "?" + urlencode(query), headers={})
+# -------------------------------get结束-------------------------------
+
+# -------------------------------post开始-------------------------------
+# json参数
+request("post", url="/api/xxx", headers={}, json={})
+
+# dict参数
+request("post", url="/api/xxx", headers={}, data={})
+# -------------------------------post结束-------------------------------
+
+# -------------------------------put开始-------------------------------
+request("put", url="/api/xxx", headers={}, json={})
+# -------------------------------post结束-------------------------------
+
+# -------------------------------delete开始-------------------------------
+request("delete", url=f"/api/xxx", headers={})
+# -------------------------------delete结束-------------------------------
+
+# -------------------------------上传excel开始-------------------------------
 file_name = ""
 file_path = ""
 request("post",
@@ -276,6 +202,7 @@ request("post",
         },
         verify=False
         )
+# -------------------------------上传excel结束-------------------------------
 """
 
 fastapi_mock_content = """#!/usr/bin/python
@@ -389,7 +316,7 @@ test_login_pay_content = """import jmespath
 from tep.client import request
 
 \"\"\"
-测试登录到下单流程，需要先运行utils/flask_mock_api.py
+测试登录到下单流程，需要先运行utils/fastapi_mock.py
 \"\"\"
 
 
@@ -440,7 +367,7 @@ def test(env_vars, login):
 test_login_pay_httprunner_content = """from httprunner import HttpRunner, Config, Step, RunRequest
 
 \"\"\"
-测试登录到下单流程，需要先运行utils/flask_mock_api.py
+测试登录到下单流程，需要先运行utils/fastapi_mock.py
 \"\"\"
 
 
@@ -598,14 +525,14 @@ class Pay(BaseRequest):
 
 test_login_pay_mvc_content = """from tep.fixture import TepVars
 
-from services.AddCart import AddCart
-from services.Login import Login
-from services.Order import Order
-from services.Pay import Pay
-from services.SearchSku import SearchSku
+from samples.login_pay.mvc.services.AddCart import AddCart
+from samples.login_pay.mvc.services.Login import Login
+from samples.login_pay.mvc.services.Order import Order
+from samples.login_pay.mvc.services.Pay import Pay
+from samples.login_pay.mvc.services.SearchSku import SearchSku
 
 \"\"\"
-测试登录到下单流程，需要先运行utils / flask_mock_api.py
+测试登录到下单流程，需要先运行utils / fastapi_mock.py
 \"\"\"
 
 
@@ -627,14 +554,6 @@ class Test:
         Order(Test).post()
         # 支付
         Pay(Test).post()
-"""
-
-test_multi_fixture_content = """#!/usr/bin/python
-# encoding=utf-8
-
-
-def test(fixture_second, fixture_three):
-    pass
 """
 
 test_request_monkey_patch_content = """from utils.http_client import request
@@ -671,7 +590,7 @@ mitm_dir = os.path.join(tests_dir, "mitm")
 if not os.path.exists(mitm_dir):
     os.mkdir(mitm_dir)
 # 当前时间作为文件名
-filename = time.strftime("%Y%m%d_%H_%M_%S", time.localtime()) + ".py"
+filename = f'test_{time.strftime("%Y%m%d_%H%M%S", time.localtime())}.py'
 case_file = os.path.join(mitm_dir, filename)
 # 生成用例文件
 template = \"\"\"from tep.client import request
@@ -750,10 +669,35 @@ addons = [
 
 \"\"\"
 ==================================命令说明开始==================================
-# 正向代理
+# 正向代理（需要手动打开代理）
 mitmdump -s mitm.py
 # 反向代理
 mitmdump -s mitm.py --mode reverse:http://127.0.0.1:5000 --listen-host 127.0.0.1 --listen-port 8000
 ==================================命令说明结束==================================
 \"\"\"
+"""
+
+structure_content = """项目结构说明：
+files：文件
+fixtures：pytest fixture
+reports：allure测试报告
+samples：示例代码
+  db：数据库
+    test_mysql.py：连接MySQL
+  http：requests请求
+    test_request.py：requests常见用法
+    test_request_monkey_patch.py：tep request猴子补丁测试
+  login_pay：登陆到下单流程
+    httprunner：httprunner示例
+    mvc：mvc接口用例分离示例（不推荐）
+    tep：极速写法（强烈推荐）
+tests：测试用例
+utils：工具
+  fastapi_mock.py：自带fastapi项目
+  http_client.py：tep request猴子补丁
+  mitm.py：mitmproxy抓包自动生成用例
+.gitignore：Git忽略文件规则
+conf.yaml：项目配置
+conftest.py：pytest conftest
+pytest.ini：pytest配置
 """
