@@ -639,7 +639,7 @@ class Record:
         else:
             body_grammar = f"json={body}"
         return f\"\"\"
-    # 接口描述
+    # 描述
     # 数据
     # 请求
     response = request(
@@ -648,7 +648,7 @@ class Record:
         headers={headers},
         {body_grammar}
     )
-    # 数据提取
+    # 提取
     # var = response.jmespath("expression")
     # 断言
     assert response.status_code < 400
