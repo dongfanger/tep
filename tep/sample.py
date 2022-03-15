@@ -598,7 +598,7 @@ from tep.client import request
 
 
 @allure.title("")
-def test():
+def test(env_vars):
 \"\"\"
 if not os.path.exists(case_file):
     with open(case_file, "w", encoding="utf8") as fw:
