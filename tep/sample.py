@@ -593,9 +593,11 @@ if not os.path.exists(mitm_dir):
 filename = f'test_{time.strftime("%Y%m%d_%H%M%S", time.localtime())}.py'
 case_file = os.path.join(mitm_dir, filename)
 # 生成用例文件
-template = \"\"\"from tep.client import request
+template = \"\"\"import allure
+from tep.client import request
 
 
+@allure.title("")
 def test():
 \"\"\"
 if not os.path.exists(case_file):
@@ -649,7 +651,6 @@ class Record:
         {body_grammar}
     )
     # 提取
-    # var = response.jmespath("expression")
     # 断言
     assert response.status_code < 400
 \"\"\"
