@@ -17,16 +17,17 @@ from tep.sample import *
 
 
 class ExtraArgument:
+    """命令行附加参数映射
+    """
+    # 是否创建Python虚拟环境
     create_venv = False
 
 
 def init_parser_scaffold(subparsers):
-    sub_parser_scaffold = subparsers.add_parser(
-        "startproject", help="Create a new project with template structure."
-    )
-    sub_parser_scaffold.add_argument(
-        "project_name", type=str, nargs="?", help="Specify new project name."
-    )
+    """定义参数
+    """
+    sub_parser_scaffold = subparsers.add_parser("startproject", help="Create a new project with template structure.")
+    sub_parser_scaffold.add_argument("project_name", type=str, nargs="?", help="Specify new project name.")
     sub_parser_scaffold.add_argument(
         "-venv",
         dest="create_venv",
@@ -37,7 +38,7 @@ def init_parser_scaffold(subparsers):
 
 
 def create_scaffold(project_name):
-    """ Create scaffold with specified project name.
+    """ 创建项目脚手架
     """
     if os.path.isdir(project_name):
         logger.warning(
@@ -117,11 +118,13 @@ def create_scaffold(project_name):
     create_file(os.path.join(project_name, "项目结构说明.txt"), structure_content)
 
     if ExtraArgument.create_venv:
+        # 创建Python虚拟环境
         os.chdir(project_name)
         print("\nCreating virtual environment")
         os.system("python -m venv .venv")
         print("Created virtual environment: .venv")
 
+        # 在Python虚拟环境中安装tep
         print("Installing tep")
         if platform.system().lower() == 'windows':
             os.chdir(".venv")

@@ -4,7 +4,7 @@
 """
 @Author  :  Don
 @Date    :  2020/12/30 9:30
-@Desc    :  Provide some fixtures
+@Desc    :  预置fixture
 """
 
 import os
@@ -21,31 +21,36 @@ class Project:
 
 
 def pytest_sessionstart(session):
+    # 从缓存中获取项目根目录
     Project.dir = session.config.cache.get("project_dir", None)
     if not Project.dir:
-        # First time run, no pytest_cache
+        # 第一次运行没有pytest_cache
+        # （约定了只会在项目根目录或tests目录执行pytest）
         cwd = os.getcwd()
         tests = cwd.find("tests")
-        # tests
+        # 当前路径包含tests目录
         if tests > 0:
             Project.dir = cwd[:cwd.find("tests")]
-        # root
+        # 当前路径是项目根目录
         else:
             Project.dir = cwd
 
 
 @pytest.fixture(scope="session")
 def faker_ch():
+    """中文造数据"""
     return Faker(locale="zh_CN")
 
 
 @pytest.fixture(scope="session")
 def faker_en():
+    """英文造数据"""
     return Faker()
 
 
 @pytest.fixture(scope="session")
 def pd():
+    """pandas库"""
     try:
         import pandas
         return pandas
@@ -55,6 +60,7 @@ def pd():
 
 @pytest.fixture(scope="session")
 def config():
+    """读取conf.yaml配置文件"""
     config_path = os.path.join(Project.dir, "conf.yaml")
     with open(config_path, "r", encoding="utf-8") as f:
         conf = yaml.load(f.read(), Loader=yaml.FullLoader)
@@ -63,10 +69,13 @@ def config():
 
 @pytest.fixture(scope="session")
 def files_dir():
+    """files目录的路径"""
     return os.path.join(Project.dir, "files")
 
 
 class TepVars:
+    """全局变量池"""
+
     def __init__(self):
         self.vars_ = {}
 
@@ -82,4 +91,6 @@ class TepVars:
         return value
 
 
-_jmespath_import_placeholder = jmespath.search("abc", "abc")
+# 预先import某些包，fixtures/下脚本只需要from tep.fixture import *即可
+# 无实际意义
+_nothing = jmespath.search("abc", "abc")

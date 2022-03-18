@@ -4,7 +4,7 @@
 """
 @Author  :  Don
 @Date    :  7/17/2020 3:49 PM
-@Desc    :  Command line.
+@Desc    :  命令行
 """
 
 import argparse
@@ -15,12 +15,8 @@ from tep.scaffold import init_parser_scaffold, main_scaffold
 
 
 def main():
-    """Parse command line options and run commands.
-    """
     parser = argparse.ArgumentParser(description=__description__)
-    parser.add_argument(
-        "-V", "--version", dest="version", action="store_true", help="show version"
-    )
+    parser.add_argument("-V", "--version", dest="version", action="store_true", help="show version")
     subparsers = parser.add_subparsers(help="sub-command help")
     sub_parser_scaffold = init_parser_scaffold(subparsers)
 
@@ -29,12 +25,13 @@ def main():
         parser.print_help()
         sys.exit(0)
     elif len(sys.argv) == 2:
-        # print help for sub-commands
         if sys.argv[1] in ["-V", "--version"]:
             # tep -V
+            # tep --version
             print(f"{__version__}")
         elif sys.argv[1] in ["-h", "--help"]:
             # tep -h
+            # tep --help
             parser.print_help()
         elif sys.argv[1] == "startproject":
             # tep startproject
@@ -48,4 +45,5 @@ def main():
         sys.exit(0)
 
     if sys.argv[1] == "startproject":
+        # tep startproject project_name
         main_scaffold(args)

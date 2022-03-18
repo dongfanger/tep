@@ -4,7 +4,7 @@
 """
 @Author  :  Don
 @Date    :  9/2/2020 11:32 AM
-@Desc    :  
+@Desc    :  访问数据库
 """
 
 from loguru import logger
@@ -25,6 +25,7 @@ def mysql_engine(host, port, user, password, db):
 
 
 def print_db_table(data_frame):
+    """以表格形式打印数据表"""
     tb = Texttable()
     tb.header(data_frame.columns.array)
     tb.set_max_width(0)

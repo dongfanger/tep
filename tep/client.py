@@ -4,7 +4,7 @@
 """
 @Author  :  Don
 @Date    :  7/25/2020 2:02 PM
-@Desc    :
+@Desc    :  轻度封装requests库
 """
 
 import decimal
@@ -62,7 +62,7 @@ def request_wrapper(req):
 
 
 @request_wrapper
-def request(method, url, **kwargs):
+def request(method, url, **kwargs):  # 从requests库原样拷贝而来
     """Constructs and sends a :class:`Request <Request>`.
 
     :param method: method for the new :class:`Request` object: ``GET``, ``OPTIONS``, ``HEAD``, ``POST``, ``PUT``, ``PATCH``, or ``DELETE``.
