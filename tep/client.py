@@ -51,7 +51,7 @@ def tep_request_monkey_patch(req, *args, **kwargs):
         logger.error("request failed")
     except TypeError:
         logger.warning(log4a)
-    return TepResponse(response)
+    return response
 
 
 def request_wrapper(req):

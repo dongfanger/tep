@@ -20,18 +20,23 @@ class Project:
     dir = ""
 
 
-def pytest_sessionstart(session):
-    Project.dir = session.config.cache.get("project_dir", None)
-    if not Project.dir:
-        # First time run, no pytest_cache
+def _project_dir(session):
+    project_dir = session.config.cache.get("project_dir", None)
+    if not project_dir:
         cwd = os.getcwd()
         tests = cwd.find("tests")
-        # tests
+        samples = cwd.find("samples")
         if tests > 0:
-            Project.dir = cwd[:cwd.find("tests")]
-        # root
+            project_dir = cwd[:cwd.find("tests")]
+        elif samples > 0:
+            project_dir = cwd[:cwd.find("samples")]
         else:
-            Project.dir = cwd
+            project_dir = cwd
+    return project_dir
+
+
+def pytest_sessionstart(session):
+    Project.dir = _project_dir(session)
 
 
 @pytest.fixture(scope="session")

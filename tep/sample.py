@@ -267,7 +267,6 @@ import time
 import allure
 from loguru import logger
 from tep import client
-from tep.client import TepResponse
 
 
 def request_monkey_patch(req, *args, **kwargs):
@@ -304,7 +303,7 @@ def request_monkey_patch(req, *args, **kwargs):
         logger.error("request failed")
     except TypeError:
         logger.warning(log4a)
-    return TepResponse(response)
+    return response
 
 
 def request(method, url, **kwargs):
@@ -362,80 +361,6 @@ def test(env_vars, login):
     )
     assert response.status_code < 400
     assert response.json()["success"] == "true"
-"""
-
-test_login_pay_httprunner_content = """from httprunner import HttpRunner, Config, Step, RunRequest
-
-\"\"\"
-测试登录到下单流程，需要先运行utils/fastapi_mock.py
-\"\"\"
-
-
-class TestLoginPay(HttpRunner):
-    config = (
-        Config("登录到下单流程")
-            .variables(
-            **{
-                "skuNum": "3"
-            }
-        )
-            .base_url("http://127.0.0.1:5000")
-    )
-
-    teststeps = [
-        Step(
-            RunRequest("登录")
-                .post("/login")
-                .with_headers(**{"Content-Type": "application/json"})
-                .with_json({"username": "dongfanger", "password": "123456"})
-                .extract()
-                .with_jmespath("body.token", "token")
-                .validate()
-                .assert_equal("status_code", 200)
-        ),
-        Step(
-            RunRequest("搜索商品")
-                .get("searchSku?skuName=电子书")
-                .with_headers(**{"token": "$token"})
-                .extract()
-                .with_jmespath("body.skuId", "skuId")
-                .with_jmespath("body.price", "skuPrice")
-                .validate()
-                .assert_equal("status_code", 200)
-        ),
-        Step(
-            RunRequest("添加购物车")
-                .post("/addCart")
-                .with_headers(**{"Content-Type": "application/json",
-                                 "token": "$token"})
-                .with_json({"skuId": "$skuId", "skuNum": "$skuNum"})
-                .extract()
-                .with_jmespath("body.totalPrice", "totalPrice")
-                .validate()
-                .assert_equal("status_code", 200)
-        ),
-        Step(
-            RunRequest("下单")
-                .post("/order")
-                .with_headers(**{"Content-Type": "application/json",
-                                 "token": "$token"})
-                .with_json({"skuId": "$skuId", "price": "$skuPrice", "skuNum": "$skuNum", "totalPrice": "$totalPrice"})
-                .extract()
-                .with_jmespath("body.orderId", "orderId")
-                .validate()
-                .assert_equal("status_code", 200)
-        ),
-        Step(
-            RunRequest("支付")
-                .post("/pay")
-                .with_headers(**{"Content-Type": "application/json",
-                                 "token": "$token"})
-                .with_json({"orderId": "$orderId", "payAmount": "6.9"})
-                .validate()
-                .assert_equal("status_code", 200)
-                .assert_equal("body.success", "true")
-        ),
-    ]
 """
 
 Login_content = """from tep.client import BaseRequest
@@ -689,7 +614,6 @@ samples：示例代码
     test_request.py：requests常见用法
     test_request_monkey_patch.py：tep request猴子补丁测试
   login_pay：登陆到下单流程
-    httprunner：httprunner示例
     mvc：mvc接口用例分离示例（不推荐）
     tep：极速写法（强烈推荐）
 tests：测试用例
