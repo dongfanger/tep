@@ -139,17 +139,21 @@ def login(env_vars):
     return Clazz
 """
 
-test_login_content = """from loguru import logger
+test_login_content = """import allure
+from loguru import logger
 
 
+@allure.title("登录")
 def test_login(login):
     logger.info(login.token)
 """
 
-test_mysql_content = """from loguru import logger
+test_mysql_content = """import allure
+from loguru import logger
 from tep.dao import print_db_table
 
 
+@allure.title("连接数据库")
 def test_mysql(pd, env_vars):
     data = pd.read_sql("select 1 from dual", env_vars.mysql_engine)
     logger.info(print_db_table(data))
@@ -311,7 +315,8 @@ def request(method, url, **kwargs):
     return client.request(method, url, **kwargs)
 """
 
-test_login_pay_content = """import jmespath
+test_login_pay_content = """import allure
+import jmespath
 from tep.client import request
 
 \"\"\"
@@ -319,6 +324,7 @@ from tep.client import request
 \"\"\"
 
 
+@allure.title("登录--搜索商品--添加购物车--下单--支付")
 def test(env_vars, login):
     # 搜索商品
     response = request(
@@ -448,7 +454,8 @@ class Pay(BaseRequest):
         assert response.jmespath("success") == "true"
 """
 
-test_login_pay_mvc_content = """from tep.fixture import TepVars
+test_login_pay_mvc_content = """import allure
+from tep.fixture import TepVars
 
 from samples.login_pay.mvc.services.AddCart import AddCart
 from samples.login_pay.mvc.services.Login import Login
@@ -461,6 +468,7 @@ from samples.login_pay.mvc.services.SearchSku import SearchSku
 \"\"\"
 
 
+@allure.title("用例数据分离")
 class Test:
     case_vars = TepVars()
     case_vars.vars_ = {
@@ -481,9 +489,12 @@ class Test:
         Pay(Test).post()
 """
 
-test_request_monkey_patch_content = """from utils.http_client import request
+test_request_monkey_patch_content = """import allure
+
+from utils.http_client import request
 
 
+@allure.title("request猴子补丁")
 def test_login(env_vars):
     response = request(
         "post",
@@ -496,6 +507,109 @@ def test_login(env_vars):
         }
     )
     assert response.status_code < 400
+"""
+
+test_assert = """import allure
+
+
+@allure.title("等于")
+def test_assert_equal():
+    assert 1 == 1
+
+
+@allure.title("不等于")
+def test_assert_not_equal():
+    assert 1 != 2
+
+
+@allure.title("大于")
+def test_assert_greater_than():
+    assert 2 > 1
+
+
+@allure.title("小于")
+def test_assert_less_than():
+    assert 1 < 2
+
+
+@allure.title("大于等于")
+def test_assert_less_or_equals():
+    assert 2 >= 1
+    assert 2 >= 2
+
+
+@allure.title("小于等于")
+def test_assert_greater_or_equals():
+    assert 1 <= 2
+    assert 1 <= 1
+
+
+@allure.title("长度相等")
+def test_assert_length_equal():
+    assert len("abc") == len("123")
+
+
+@allure.title("长度大于")
+def test_assert_length_greater_than():
+    assert len("hello") > len("123")
+
+
+@allure.title("长度小于")
+def test_assert_length_less_than():
+    assert len("hi") < len("123")
+
+
+@allure.title("长度大于等于")
+def test_assert_length_greater_or_equals():
+    assert len("hello") >= len("123")
+    assert len("123") >= len("123")
+
+
+@allure.title("长度小于等于")
+def test_assert_length_less_or_equals():
+    assert len("123") <= len("hello")
+    assert len("123") <= len("123")
+
+
+@allure.title("字符串相等")
+def test_assert_string_equals():
+    assert "dongfanger" == "dongfanger"
+
+
+@allure.title("以...开头")
+def test_assert_startswith():
+    assert "dongfanger".startswith("don")
+
+
+@allure.title("以...结尾")
+def test_assert_startswith():
+    assert "dongfanger".endswith("er")
+
+
+@allure.title("正则匹配")
+def test_assert_regex_match():
+    import re
+    assert re.findall(r"don.*er", "dongfanger")
+
+
+@allure.title("包含")
+def test_assert_contains():
+    assert "fang" in "dongfanger"
+    assert 2 in [2, 3]
+    assert "x" in {"x": "y"}.keys()
+
+
+@allure.title("类型匹配")
+def test_assert_type_match():
+    assert isinstance(1, int)
+    assert isinstance(0.2, float)
+    assert isinstance(True, bool)
+    assert isinstance(3e+26j, complex)
+    assert isinstance("hi", str)
+    assert isinstance([1, 2], list)
+    assert isinstance((1, 2), tuple)
+    assert isinstance({"a", "b", "c"}, set)
+    assert isinstance({"x": 1}, dict)
 """
 
 mitm_content = """#!/usr/bin/python
