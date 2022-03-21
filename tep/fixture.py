@@ -20,20 +20,25 @@ class Project:
     dir = ""
 
 
-def pytest_sessionstart(session):
+def _project_dir(session):
     # 从缓存中获取项目根目录
-    Project.dir = session.config.cache.get("project_dir", None)
-    if not Project.dir:
-        # 第一次运行没有pytest_cache
-        # （约定了只会在项目根目录或tests目录执行pytest）
+    project_dir = session.config.cache.get("project_dir", None)
+    if not project_dir:
+        # 第一次运行没有.pytest_cache
         cwd = os.getcwd()
         tests = cwd.find("tests")
-        # 当前路径包含tests目录
+        samples = cwd.find("samples")
         if tests > 0:
-            Project.dir = cwd[:cwd.find("tests")]
-        # 当前路径是项目根目录
+            project_dir = cwd[:cwd.find("tests")]
+        elif samples > 0:
+            project_dir = cwd[:cwd.find("samples")]
         else:
-            Project.dir = cwd
+            project_dir = cwd
+    return project_dir
+
+
+def pytest_sessionstart(session):
+    Project.dir = _project_dir(session)
 
 
 @pytest.fixture(scope="session")

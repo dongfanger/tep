@@ -74,6 +74,9 @@ def create_scaffold(project_name):
     create_folder(os.path.join(project_name, "reports"))
     create_folder(os.path.join(project_name, "samples"))
     create_file(os.path.join(project_name, "samples", "__init__.py"))
+    create_folder(os.path.join(project_name, "samples", "assert"))
+    create_file(os.path.join(project_name, "samples", "assert", "__init__.py"))
+    create_file(os.path.join(project_name, "samples", "assert", "test_assert.py"), test_assert)
     create_folder(os.path.join(project_name, "samples", "db"))
     create_file(os.path.join(project_name, "samples", "db", "__init__.py"))
     create_file(os.path.join(project_name, "samples", "db", "test_mysql.py"), test_mysql_content)
@@ -84,10 +87,6 @@ def create_scaffold(project_name):
                 test_request_monkey_patch_content)
     create_folder(os.path.join(project_name, "samples", "login_pay"))
     create_file(os.path.join(project_name, "samples", "login_pay", "__init__.py"))
-    create_folder(os.path.join(project_name, "samples", "login_pay", "httprunner"))
-    create_file(os.path.join(project_name, "samples", "login_pay", "httprunner", "__init__.py"))
-    create_file(os.path.join(project_name, "samples", "login_pay", "httprunner", "test_login_pay_httprunner.py"),
-                test_login_pay_httprunner_content)
     create_folder(os.path.join(project_name, "samples", "login_pay", "mvc"))
     create_file(os.path.join(project_name, "samples", "login_pay", "mvc", "__init__.py"))
     create_file(os.path.join(project_name, "samples", "login_pay", "mvc", "test_login_pay_mvc.py"),
