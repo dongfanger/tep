@@ -2,9 +2,9 @@
 # encoding=utf-8
 
 """
-@Author  :  Don
+@Author  :  dongfanger
 @Date    :  2021/11/13 17:50
-@Desc    :  
+@Desc    :  项目脚手架模板代码
 """
 
 gitignore_content = """.idea/

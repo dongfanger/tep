@@ -2,9 +2,9 @@
 # encoding=utf-8
 
 """
-@Author  :  Don
+@Author  :  dongfanger
 @Date    :  7/23/2020 8:12 PM
-@Desc    :
+@Desc    :  项目脚手架
 """
 
 import os
@@ -17,15 +17,13 @@ from tep.sample import *
 
 
 class ExtraArgument:
-    """命令行附加参数映射
-    """
+    """命令行附加参数映射"""
     # 是否创建Python虚拟环境
     create_venv = False
 
 
 def init_parser_scaffold(subparsers):
-    """定义参数
-    """
+    """定义参数"""
     sub_parser_scaffold = subparsers.add_parser("startproject", help="Create a new project with template structure.")
     sub_parser_scaffold.add_argument("project_name", type=str, nargs="?", help="Specify new project name.")
     sub_parser_scaffold.add_argument(
@@ -38,8 +36,7 @@ def init_parser_scaffold(subparsers):
 
 
 def create_scaffold(project_name):
-    """ 创建项目脚手架
-    """
+    """ 创建项目脚手架"""
     if os.path.isdir(project_name):
         logger.warning(
             f"Project folder {project_name} exists, please specify a new project name."
@@ -136,5 +133,6 @@ def create_scaffold(project_name):
 
 
 def main_scaffold(args):
+    # 项目脚手架处理程序入口
     ExtraArgument.create_venv = args.create_venv
     sys.exit(create_scaffold(args.project_name))

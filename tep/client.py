@@ -2,7 +2,7 @@
 # encoding=utf-8
 
 """
-@Author  :  Don
+@Author  :  dongfanger
 @Date    :  7/25/2020 2:02 PM
 @Desc    :  轻度封装requests库
 """
@@ -22,6 +22,7 @@ urllib3.disable_warnings(urllib3.exceptions.InsecureRequestWarning)
 
 
 def tep_request_monkey_patch(req, *args, **kwargs):
+    # 猴子补丁
     start = time.process_time()
     response = req(*args, **kwargs)
     end = time.process_time()
@@ -55,14 +56,16 @@ def tep_request_monkey_patch(req, *args, **kwargs):
 
 
 def request_wrapper(req):
+    # 装饰器
     def send(*args, **kwargs):
         return tep_request_monkey_patch(req, *args, **kwargs)
 
     return send
 
 
+# 从requests库原样拷贝而来，没有任何修改，只加了装饰器
 @request_wrapper
-def request(method, url, **kwargs):  # 从requests库原样拷贝而来
+def request(method, url, **kwargs):
     """Constructs and sends a :class:`Request <Request>`.
 
     :param method: method for the new :class:`Request` object: ``GET``, ``OPTIONS``, ``HEAD``, ``POST``, ``PUT``, ``PATCH``, or ``DELETE``.
@@ -111,16 +114,19 @@ def request(method, url, **kwargs):  # 从requests库原样拷贝而来
 
 
 class TepResponse(Response):
+    # 包装requests.Response，用于mvc模式
     def __init__(self, response):
         super().__init__()
         for k, v in response.__dict__.items():
             self.__dict__[k] = v
 
     def jmespath(self, expression):
+        # response.jmespath()
         return jmespath.search(expression, self.json())
 
 
 class BaseRequest:
+    # mvc模式基类
     def __init__(self, clazz):
         self.case_vars = clazz.case_vars
 

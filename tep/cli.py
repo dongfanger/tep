@@ -2,7 +2,7 @@
 # encoding=utf-8
 
 """
-@Author  :  Don
+@Author  :  dongfanger
 @Date    :  7/17/2020 3:49 PM
 @Desc    :  命令行
 """
@@ -15,6 +15,7 @@ from tep.scaffold import init_parser_scaffold, main_scaffold
 
 
 def main():
+    # 命令行处理程序入口
     parser = argparse.ArgumentParser(description=__description__)
     parser.add_argument("-V", "--version", dest="version", action="store_true", help="show version")
     subparsers = parser.add_subparsers(help="sub-command help")

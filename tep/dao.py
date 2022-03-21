@@ -2,7 +2,7 @@
 # encoding=utf-8
 
 """
-@Author  :  Don
+@Author  :  dongfanger
 @Date    :  9/2/2020 11:32 AM
 @Desc    :  访问数据库
 """
@@ -17,6 +17,7 @@ except ModuleNotFoundError:
 
 
 def mysql_engine(host, port, user, password, db):
+    # sqlalchemy create_engine
     try:
         engine = create_engine(f"mysql+pymysql://{user}:{password}@{host}:{port}/{db}")
     except NameError:

@@ -2,7 +2,7 @@
 # encoding=utf-8
 
 """
-@Author  :  Don
+@Author  :  dongfanger
 @Date    :  8/14/2020 9:16 AM
 @Desc    :  插件
 """
@@ -19,12 +19,14 @@ from allure_pytest.plugin import cleanup_factory
 from tep.fixture import Project
 from tep.func import current_time
 
+# allure临时目录
 allure_temp = tempfile.mkdtemp()
 
 
 class Plugin:
     @staticmethod
     def pytest_addoption(parser):
+        # allure测试报告 命令行参数
         parser.addoption(
             "--tep-reports",
             action="store_const",
@@ -34,6 +36,7 @@ class Plugin:
 
     @staticmethod
     def _tep_reports(config):
+        # 判断参数是否生效，防止跟allure自带参数冲突
         if config.getoption("--tep-reports") and not config.getoption("allure_report_dir"):
             return True
         else:
@@ -54,10 +57,12 @@ class Plugin:
 
     @staticmethod
     def pytest_sessionfinish(session):
+        # 测试运行结束后生成allure报告
         if Plugin._tep_reports(session.config):
             reports_dir = os.path.join(Project.dir, "reports")
             new_report = os.path.join(reports_dir, "report-" + current_time().replace(":", "-").replace(" ", "-"))
             if os.path.exists(reports_dir):
+                # 复制历史报告，填充allure趋势图数据
                 his_reports = os.listdir(reports_dir)
                 if his_reports:
                     latest_report_history = os.path.join(reports_dir, his_reports[-1], "history")
