@@ -4,5 +4,5 @@
 
 官方认证的持续维护教程：
 
-[【最新】tep完整教程帮你突破pytest](https://dongfanger.gitee.io/blog/tep/000-【最新】tep完整教程帮你突破pytest.html)
+[【最新】tep完整教程帮你突破pytest](https://dongfanger.gitee.io/blog/%E6%B5%8B%E8%AF%95%E5%B7%A5%E5%85%B7/000-%E3%80%90%E6%9C%80%E6%96%B0%E3%80%91tep%E5%AE%8C%E6%95%B4%E6%95%99%E7%A8%8B%E5%B8%AE%E4%BD%A0%E7%AA%81%E7%A0%B4pytest.html)
 
