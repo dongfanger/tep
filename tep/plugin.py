@@ -16,8 +16,8 @@ from allure_commons.logger import AllureFileLogger
 from allure_pytest.listener import AllureListener
 from allure_pytest.plugin import cleanup_factory
 
+from tep import func
 from tep.fixture import Project
-from tep.func import current_time
 
 # allure临时目录
 allure_temp = tempfile.mkdtemp()
@@ -60,7 +60,8 @@ class Plugin:
         # 测试运行结束后生成allure报告
         if Plugin._tep_reports(session.config):
             reports_dir = os.path.join(Project.dir, "reports")
-            new_report = os.path.join(reports_dir, "report-" + current_time().replace(":", "-").replace(" ", "-"))
+            new_report = os.path.join(reports_dir,
+                                      "report-" + func.time_current().replace(":", "-").replace(" ", "-"))
             if os.path.exists(reports_dir):
                 # 复制历史报告，填充allure趋势图数据
                 his_reports = os.listdir(reports_dir)

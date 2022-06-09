@@ -1,4 +1,11 @@
-"""常考算法题"""
+#!/usr/bin/python
+# encoding=utf-8
+
+"""
+@Author  :  dongfanger
+@Date    :  5/16/2022 5:41 PM
+@Desc    :  常考算法题
+"""
 
 
 def test_bubble():
