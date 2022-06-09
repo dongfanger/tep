@@ -33,7 +33,8 @@ def data_fake(locale="zh_CN"):
 def data_textbox():
     """文本框输入数据"""
     with open(os.path.join(files_dir, "文本框输入数据.txt")) as f:
-        return f.read().splitlines()
+        # PyCharm会自动去掉行尾空格 用``把源数据包起来 输出时去掉
+        return [x[1:-1] for x in f.read().splitlines()]
 
 
 # ---------------- 造数据结束 ---------------------
