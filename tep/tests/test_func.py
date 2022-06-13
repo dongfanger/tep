@@ -13,6 +13,7 @@ from tep import func
 def test_data():
     """造数据"""
     print(func.data_fake().name())  # 姓名
+    print(func.data_fake(locale="en").name())  # 英文
     print(func.data_textbox())  # 文本输入框各类型数据
 
 
@@ -31,7 +32,7 @@ def test_print():
 def test_case():
     """测试用例"""
     pl = [['M', 'O', 'P'], ['W', 'L', 'I'], ['C', 'E']]
-    a = func.case_pairwise(pl)
+    a = func.case_pairwise(pl)  # 笛卡尔积:18 过滤后:9
     print()
     for i in a:
         print(i)
