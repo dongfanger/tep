@@ -1,0 +1,46 @@
+#!/usr/bin/python
+# encoding=utf-8
+
+import decimal
+import time
+
+import allure
+import jmespath
+import requests
+import urllib3
+from loguru import logger
+from requests import Response
+
+urllib3.disable_warnings(urllib3.exceptions.InsecureRequestWarning)
+
+
+def request(method, url, **kwargs):
+    start = time.process_time()
+    response = requests.request(method, url, **kwargs)  # requests.request原生用法
+    end = time.process_time()
+    elapsed = str(decimal.Decimal("%.3f" % float(end - start))) + "s"
+    request_log = f"{method} {url} status_code:{response.status_code}  response:{response.text}  elapsed:{elapsed}"
+    logger.info(request_log)
+    allure.attach(request_log, f'request & response', allure.attachment_type.TEXT)
+    return response
+
+
+class TepResponse(Response):
+    # 包装requests.Response，用于mvc模式
+    def __init__(self, response):
+        super().__init__()
+        for k, v in response.__dict__.items():
+            self.__dict__[k] = v
+
+    def jmespath(self, expression):
+        return jmespath.search(expression, self.json())
+
+
+class BaseRequest:
+    # mvc模式基类
+    def __init__(self, clazz):
+        self.case_vars = clazz.case_vars
+
+    def request(self, method, url, **kwargs):
+        response = request(method, url, **kwargs)
+        return TepResponse(response)

@@ -1,0 +1,8 @@
+#!/usr/bin/python
+# encoding=utf-8
+
+
+from tep.plugin import tep_plugins
+
+# 加载tep插件
+pytest_plugins = tep_plugins()

@@ -6,18 +6,18 @@
 @Date    :  8/14/2020 9:16 AM
 @Desc    :  插件
 """
-
+import inspect
 import os
 import shutil
 import tempfile
+import time
 
 import allure_commons
 from allure_commons.logger import AllureFileLogger
 from allure_pytest.listener import AllureListener
 from allure_pytest.plugin import cleanup_factory
 
-from tep import func
-from tep.fixture import Project
+from tep.config import Config, fixture_paths
 
 # allure临时目录
 allure_temp = tempfile.mkdtemp()
@@ -59,9 +59,9 @@ class Plugin:
     def pytest_sessionfinish(session):
         # 测试运行结束后生成allure报告
         if Plugin._tep_reports(session.config):
-            reports_dir = os.path.join(Project.dir, "reports")
-            new_report = os.path.join(reports_dir,
-                                      "report-" + func.time_current().replace(":", "-").replace(" ", "-"))
+            reports_dir = os.path.join(Config.project_root_dir, "reports")
+            current_time = time.strftime("%Y-%m-%d-%H-%M-%S", time.localtime(time.time()))
+            new_report = os.path.join(reports_dir, "report-" + current_time)
             if os.path.exists(reports_dir):
                 # 复制历史报告，填充allure趋势图数据
                 his_reports = os.listdir(reports_dir)
@@ -70,3 +70,10 @@ class Plugin:
                     shutil.copytree(latest_report_history, os.path.join(allure_temp, "history"))
             os.system(f"allure generate {allure_temp} -o {new_report}  --clean")
             shutil.rmtree(allure_temp)
+
+
+def tep_plugins():
+    caller = inspect.stack()[1]
+    Config.project_root_dir = os.path.dirname(caller.filename)
+    plugins = fixture_paths()  # +[其他插件]
+    return plugins

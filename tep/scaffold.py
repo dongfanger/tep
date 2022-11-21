@@ -13,8 +13,6 @@ import sys
 
 from loguru import logger
 
-from tep.sample import *
-
 
 class ExtraArgument:
     """命令行附加参数映射"""
@@ -48,7 +46,7 @@ def create_scaffold(project_name):
         )
         return 1
 
-    logger.info(f"Create new project: {project_name}")
+    print(f"Create new project: {project_name}")
     print(f"Project root dir: {os.path.join(os.getcwd(), project_name)}\n")
 
     def create_folder(path):
@@ -63,55 +61,17 @@ def create_scaffold(project_name):
         print(msg)
 
     create_folder(project_name)
-    create_folder(os.path.join(project_name, "files"))
-    create_folder(os.path.join(project_name, "fixtures"))
-    create_file(os.path.join(project_name, "fixtures", "__init__.py"))
-    create_file(os.path.join(project_name, "fixtures", "fixture_env_vars.py"), fixture_env_vars_content)
-    create_file(os.path.join(project_name, "fixtures", "fixture_login.py"), fixture_login_content)
-    create_folder(os.path.join(project_name, "reports"))
-    create_folder(os.path.join(project_name, "samples"))
-    create_file(os.path.join(project_name, "samples", "__init__.py"))
-    create_folder(os.path.join(project_name, "samples", "assert"))
-    create_file(os.path.join(project_name, "samples", "assert", "__init__.py"))
-    create_file(os.path.join(project_name, "samples", "assert", "test_assert.py"), test_assert)
-    create_folder(os.path.join(project_name, "samples", "db"))
-    create_file(os.path.join(project_name, "samples", "db", "__init__.py"))
-    create_file(os.path.join(project_name, "samples", "db", "test_mysql.py"), test_mysql_content)
-    create_folder(os.path.join(project_name, "samples", "http"))
-    create_file(os.path.join(project_name, "samples", "http", "__init__.py"))
-    create_file(os.path.join(project_name, "samples", "http", "test_request.py"), test_request_content)
-    create_file(os.path.join(project_name, "samples", "http", "test_request_monkey_patch.py"),
-                test_request_monkey_patch_content)
-    create_folder(os.path.join(project_name, "samples", "login_pay"))
-    create_file(os.path.join(project_name, "samples", "login_pay", "__init__.py"))
-    create_folder(os.path.join(project_name, "samples", "login_pay", "mvc"))
-    create_file(os.path.join(project_name, "samples", "login_pay", "mvc", "__init__.py"))
-    create_file(os.path.join(project_name, "samples", "login_pay", "mvc", "test_login_pay_mvc.py"),
-                test_login_pay_mvc_content)
-    create_folder(os.path.join(project_name, "samples", "login_pay", "mvc", "services"))
-    create_file(os.path.join(project_name, "samples", "login_pay", "mvc", "services", "__init__.py"))
-    create_file(os.path.join(project_name, "samples", "login_pay", "mvc", "services", "AddCart.py"), AddCart_content)
-    create_file(os.path.join(project_name, "samples", "login_pay", "mvc", "services", "Login.py"), Login_content)
-    create_file(os.path.join(project_name, "samples", "login_pay", "mvc", "services", "Order.py"), Order_content)
-    create_file(os.path.join(project_name, "samples", "login_pay", "mvc", "services", "Pay.py"), Pay_content)
-    create_file(os.path.join(project_name, "samples", "login_pay", "mvc", "services", "SearchSku.py"),
-                SearchSku_content)
-    create_folder(os.path.join(project_name, "samples", "login_pay", "tep"))
-    create_file(os.path.join(project_name, "samples", "login_pay", "tep", "__init__.py"))
-    create_file(os.path.join(project_name, "samples", "login_pay", "tep", "test_login.py"), test_login_content)
-    create_file(os.path.join(project_name, "samples", "login_pay", "tep", "test_login_pay.py"), test_login_pay_content)
-    create_folder(os.path.join(project_name, "tests"))
-    create_file(os.path.join(project_name, "tests", "__init__.py"))
-    create_folder(os.path.join(project_name, "utils"))
-    create_file(os.path.join(project_name, "utils", "__init__.py"))
-    create_file(os.path.join(project_name, "utils", "fastapi_mock.py"), fastapi_mock_content)
-    create_file(os.path.join(project_name, "utils", "http_client.py"), http_client_content)
-    create_file(os.path.join(project_name, "utils", "mitm.py"), mitm_content)
-    create_file(os.path.join(project_name, ".gitignore"), gitignore_content)
-    create_file(os.path.join(project_name, "conf.yaml"), conf_yaml_content)
-    create_file(os.path.join(project_name, "conftest.py"), conftest_content)
-    create_file(os.path.join(project_name, "pytest.ini"), pytest_ini_content)
-    create_file(os.path.join(project_name, "项目结构说明.txt"), structure_content)
+    template_path = os.path.join(os.path.dirname(os.path.abspath(__file__)), "template")
+    for root, dirs, files in os.walk(template_path):
+        relative_path = root.replace(template_path, "").lstrip("\\").lstrip("/")
+        if dirs:
+            print(relative_path)
+            for dir_ in dirs:
+                create_folder(os.path.join(project_name, relative_path, dir_))
+        if files:
+            for file in files:
+                with open(os.path.join(root, file), encoding="utf-8") as f:
+                    create_file(os.path.join(project_name, relative_path, file.rstrip(".tep")), f.read())
 
     if ExtraArgument.create_venv:
         # 创建Python虚拟环境
@@ -136,3 +96,7 @@ def main_scaffold(args):
     # 项目脚手架处理程序入口
     ExtraArgument.create_venv = args.create_venv
     sys.exit(create_scaffold(args.project_name))
+
+
+if __name__ == '__main__':
+    create_scaffold("demo")
