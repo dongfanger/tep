@@ -4,5 +4,5 @@
 
 原创教程：
 
-[https://dongfanger.gitee.io/blog/tep/readme.html](https://dongfanger.gitee.io/blog/tep/readme.html)
+[https://dongfanger.gitee.io/blog/tep.html](https://dongfanger.gitee.io/blog/tep.html)
 
