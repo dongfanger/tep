@@ -9,8 +9,7 @@ def _jwt_headers(token):
     return {"Content-Type": "application/json", "authorization": f"Bearer {token}"}
 
 
-@pytest.fixture(scope="session")
-def login(env_vars):
+def _login_request(env_vars):
     # 封装登录接口
     logger.info("Administrator login")
     response = request(
@@ -25,8 +24,14 @@ def login(env_vars):
     assert response.status_code < 400
     response_token = jmespath.search("token", response.json())
 
-    class Clazz:
-        token = response_token
-        jwt_headers = _jwt_headers(response_token)
+    data = {
+        "token": response_token,
+        "jwt_headers": _jwt_headers(response_token)
+    }
 
-    return Clazz
+    return data
+
+
+@pytest.fixture(scope="session")
+def login(tep_context_manager, env_vars):
+    return tep_context_manager(_login_request, env_vars)
