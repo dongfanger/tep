@@ -323,11 +323,11 @@ url = "https://pypi.tuna.tsinghua.edu.cn/simple"
 
 [[package]]
 category = "main"
-description = "JSON Matching Expressions"
-name = "jmespath"
+description = "An XPath for JSON"
+name = "jsonpath"
 optional = false
 python-versions = "*"
-version = "0.9.5"
+version = "0.82"
 
 [package.source]
 reference = "tsinghua"
@@ -748,7 +748,7 @@ type = "legacy"
 url = "https://pypi.tuna.tsinghua.edu.cn/simple"
 
 [metadata]
-content-hash = "784c10d6270bd27adc1fdc2a1edfd7bd34112d85fbfd025c2293f303171c4806"
+content-hash = "627e567484abd27a8819dc27e41d7f4bb358063cc3206cb702ded9c86fc635fe"
 lock-version = "1.0"
 python-versions = "^3.7"
 
@@ -825,9 +825,8 @@ iniconfig = [
     {file = "iniconfig-1.1.1-py2.py3-none-any.whl", hash = "sha256:011e24c64b7f47f6ebd835bb12a743f2fbe9a26d4cecaa7f53bc4f35ee9da8b3"},
     {file = "iniconfig-1.1.1.tar.gz", hash = "sha256:bc3af051d7d14b2ee5ef9969666def0cd1a000e121eaea580d4a313df4b37f32"},
 ]
-jmespath = [
-    {file = "jmespath-0.9.5-py2.py3-none-any.whl", hash = "sha256:695cb76fa78a10663425d5b73ddc5714eb711157e52704d69be03b1a02ba4fec"},
-    {file = "jmespath-0.9.5.tar.gz", hash = "sha256:cca55c8d153173e21baa59983015ad0daf603f9cb799904ff057bfb8ff8dc2d9"},
+jsonpath = [
+    {file = "jsonpath-0.82.tar.gz", hash = "sha256:46d3fd2016cd5b842283d547877a02c418a0fe9aa7a6b0ae344115a2c990fef4"},
 ]
 loguru = [
     {file = "loguru-0.4.1-py3-none-any.whl", hash = "sha256:074b3caa6748452c1e4f2b302093c94b65d5a4c5a4d7743636b4121e06437b0e"},

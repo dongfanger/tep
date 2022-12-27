@@ -1,6 +1,6 @@
 [tool.poetry]
 name = "tep"
-version = "0.11.1"
+version = "1.0.0"
 description = "tep is a testing tool to help you write pytest more easily. Try Easy Pytest!"
 license = "Apache-2.0"
 readme = "README.md"
@@ -32,7 +32,6 @@ allure-pytest = "^2.8.16"
 allure-python-commons = "^2.8.16"
 pyyaml = "^5.4.1"
 pytest-assume = "^2.4.2"
-jmespath = "^0.9.5"
 loguru = "^0.4.1"
 fastapi = "^0.72.0"
 uvicorn = "^0.17.0"
@@ -40,6 +39,7 @@ pydantic = "^1.9.0"
 pytest = "^7.1.1"
 pytest-xdist = "^3.1.0"
 filelock = "^3.8.2"
+jsonpath = "^0.82"
 
 
 [tool.poetry.dev-dependencies]

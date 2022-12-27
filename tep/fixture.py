@@ -17,24 +17,12 @@ from loguru import logger
 from tep.config import tep_config, Config
 
 
-class TepVars:
+@pytest.fixture(scope="session")
+def global_vars():
     """
-    动态变量池
+    全局变量，读取resources/global_vars.yaml，返回字典
     """
-
-    def __init__(self):
-        self.vars_ = {}
-
-    def put(self, key, value):
-        self.vars_[key] = value
-
-    def get(self, key):
-        value = ""
-        try:
-            value = self.vars_[key]
-        except KeyError:
-            logger.error(f"env_vars doesnt have this key: {key}")
-        return value
+    return _load_yaml(os.path.join(Config.project_root_dir, "resources", "global_vars.yaml"))
 
 
 @pytest.fixture(scope="session")
@@ -42,36 +30,39 @@ def env_vars():
     """
     环境变量，读取resources/env_vars下的变量模板，返回字典
     """
-
-    class Clazz(TepVars):
-        def dict_(self):
-            env_active = tep_config()['env']["active"]
-            env_filename = f"env_vars_{env_active}.yaml"
-            with open(
-                    os.path.join(Config.project_root_dir, "resources", "env_vars", env_filename)) as f:
-                return yaml.load(f.read(), Loader=yaml.FullLoader)
-
-    return Clazz().dict_()
+    env_active = tep_config()['env']["active"]
+    env_filename = f"env_vars_{env_active}.yaml"
+    return _load_yaml(os.path.join(Config.project_root_dir, "resources", "env_vars", env_filename))
 
 
 @pytest.fixture(scope="session")
-def global_vars():
+def case_vars():
     """
-    全局变量，读取resources/global_vars.yaml，返回字典
+    测试用例的动态变量，1条测试用例1个实例，彼此隔离
     """
 
-    class Clazz(TepVars):
-        def dict_(self):
-            with open(os.path.join(Config.project_root_dir, "resources", "global_vars.yaml")) as f:
-                return yaml.load(f.read(), Loader=yaml.FullLoader)
+    class CaseVars:
+        def __init__(self):
+            self.dict_in_memory = {}
 
-    return Clazz().dict_()
+        def put(self, key, value):
+            self.dict_in_memory[key] = value
+
+        def get(self, key):
+            value = ""
+            try:
+                value = self.dict_in_memory[key]
+            except KeyError:
+                logger.error(f"获取用例变量的key不存在，返回空串: {key}")
+            return value
+
+    return CaseVars()
 
 
 @pytest.fixture(scope="session")
 def tep_context_manager(tmp_path_factory, worker_id):
     """
-    tep上下文管理器，在xdist分布式执行时，仅初始化一次
+    tep上下文管理器，在xdist分布式执行时，多个session也只执行一次
     参考：https://pytest-xdist.readthedocs.io/en/latest/how-to.html#making-session-scoped-fixtures-execute-only-once
     命令不带-n auto也能正常执行，不受影响
     """
@@ -95,3 +86,13 @@ def tep_context_manager(tmp_path_factory, worker_id):
         return data
 
     return inner
+
+
+def _load_yaml(path: str) -> dict:
+    """
+    加载yaml文件
+    :param path:
+    :return:
+    """
+    with open(path, encoding="utf8") as f:
+        return yaml.load(f.read(), Loader=yaml.FullLoader)
