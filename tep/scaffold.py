@@ -1,49 +1,26 @@
 #!/usr/bin/python
 # encoding=utf-8
 
-"""
-@Author  :  dongfanger
-@Date    :  7/23/2020 8:12 PM
-@Desc    :  项目脚手架
-"""
-
 import os
 import platform
 import sys
 
 from loguru import logger
 
-
-class ExtraArgument:
-    """命令行附加参数映射"""
-    # 是否创建Python虚拟环境
-    create_venv = False
+from tep.libraries.Config import Config
 
 
-def init_parser_scaffold(subparsers):
-    """定义参数"""
-    sub_parser_scaffold = subparsers.add_parser("startproject", help="Create a new project with template structure.")
-    sub_parser_scaffold.add_argument("project_name", type=str, nargs="?", help="Specify new project name.")
-    sub_parser_scaffold.add_argument(
-        "-venv",
-        dest="create_venv",
-        action="store_true",
-        help="Create virtual environment in the project, and install tep.",
-    )
-    return sub_parser_scaffold
+def scaffold(args):
+    Config.CREATE_ENV = args.create_venv
+    sys.exit(create_scaffold(args.startproject))
 
 
 def create_scaffold(project_name):
-    """ 创建项目脚手架"""
     if os.path.isdir(project_name):
-        logger.warning(
-            f"Project folder {project_name} exists, please specify a new project name."
-        )
+        logger.warning(f"Project folder {project_name} exists, please specify a new project name")
         return 1
     elif os.path.isfile(project_name):
-        logger.warning(
-            f"Project name {project_name} conflicts with existed file, please specify a new one."
-        )
+        logger.warning(f"Project name {project_name} conflicts with existed file, please specify a new one")
         return 1
 
     print(f"Create new project: {project_name}")
@@ -61,26 +38,49 @@ def create_scaffold(project_name):
         print(msg)
 
     create_folder(project_name)
-    template_path = os.path.join(os.path.dirname(os.path.abspath(__file__)), "template")
-    for root, dirs, files in os.walk(template_path):
-        relative_path = root.replace(template_path, "").lstrip("\\").lstrip("/")
-        if dirs:
-            print(relative_path)
-            for dir_ in dirs:
-                create_folder(os.path.join(project_name, relative_path, dir_))
-        if files:
-            for file in files:
-                with open(os.path.join(root, file), encoding="utf-8") as f:
-                    create_file(os.path.join(project_name, relative_path, file.rstrip(".tep")), f.read())
+    create_folder(os.path.join(project_name, "case"))
+    create_folder(os.path.join(project_name, "data"))
+    create_folder(os.path.join(project_name, "report"))
 
-    if ExtraArgument.create_venv:
-        # 创建Python虚拟环境
+    run_content = """from tep.libraries.Run import Run
+
+if __name__ == '__main__':
+    settings = {
+        "path": ["test_demo.py"],  # Path to run, relative path to case
+        "report": False,  # Output test report or not
+        "report_type": "pytest-html"  # "pytest-html" "allure"
+    }
+    Run(settings)
+"""
+    create_file(os.path.join(project_name, "run.py"), run_content)
+    conftest_content = """from tep.plugin import tep_plugins
+
+pytest_plugins = tep_plugins()
+"""
+    create_file(os.path.join(project_name, "conftest.py"), conftest_content)
+    create_file(os.path.join(project_name, "pytest.ini"), "")
+    gitignore_content = """.idea
+.pytest_cache/
+__pycache__/
+"""
+    create_file(os.path.join(project_name, ".gitignore.py"), gitignore_content)
+    create_file(os.path.join(project_name, "case", "__init__.py"), "")
+    demo_content = """def test(HTTPRequestKeyword):
+    ro = HTTPRequestKeyword("get", url="http://httpbin.org/status/200")
+    assert ro.response.status_code == 200
+"""
+    create_file(os.path.join(project_name, "case", "test_demo.py"), demo_content)
+    user_defined_variables_content = 'name: "公众号测试开发刚哥"'
+    create_file(os.path.join(project_name, "data", "UserDefinedVariables.yaml"), user_defined_variables_content)
+
+    if Config.CREATE_ENV:
+        # Create Python virtual Environment
         os.chdir(project_name)
         print("\nCreating virtual environment")
         os.system("python -m venv .venv")
         print("Created virtual environment: .venv")
 
-        # 在Python虚拟环境中安装tep
+        # Install tep in the Python virtual Environment
         print("Installing tep")
         if platform.system().lower() == 'windows':
             os.chdir(".venv")
@@ -90,13 +90,3 @@ def create_scaffold(project_name):
             os.chdir(".venv")
             os.chdir("bin")
             os.system("pip install tep")
-
-
-def main_scaffold(args):
-    # 项目脚手架处理程序入口
-    ExtraArgument.create_venv = args.create_venv
-    sys.exit(create_scaffold(args.project_name))
-
-
-if __name__ == '__main__':
-    create_scaffold("demo")

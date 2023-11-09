@@ -1,7 +1,7 @@
 [tool.poetry]
 name = "tep"
-version = "1.0.0"
-description = "tep is a testing tool to help you write pytest more easily. Try Easy Pytest!"
+version = "2.0.0"
+description = "tep is a testing framework to help you write pytest more easily. Try Easy Pytest!"
 license = "Apache-2.0"
 readme = "README.md"
 authors = ["dongfanger <dongfanger@outlook.com>"]
@@ -24,12 +24,10 @@ classifiers = [
 ]
 
 [tool.poetry.dependencies]
-python = "^3.7"
+python = "^3.8"
 faker = "^4.1.1"
-urllib3 = "^1.25.9"
+urllib3 = "^2.0.7"
 requests = "^2.22.0"
-allure-pytest = "^2.8.16"
-allure-python-commons = "^2.8.16"
 pyyaml = "^5.4.1"
 pytest-assume = "^2.4.2"
 loguru = "^0.4.1"
@@ -40,6 +38,10 @@ pytest = "^7.1.1"
 pytest-xdist = "^3.1.0"
 filelock = "^3.8.2"
 jsonpath = "^0.82"
+pymysql = "^1.1.0"
+pytest-html = "^4.0.2"
+allure-pytest = "^2.13.2"
+allure-python-commons = "^2.13.2"
 
 
 [tool.poetry.dev-dependencies]
@@ -47,7 +49,7 @@ wget = "^3.2"
 
 [[tool.poetry.source]]
 name = "tsinghua"
-default = true
+priority = "default"
 url = "https://pypi.tuna.tsinghua.edu.cn/simple"
 
 [tool.poetry.scripts]

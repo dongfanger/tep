@@ -1,15 +1,7 @@
 #!/usr/bin/python
 # encoding=utf-8
-
-"""
-@Author  :  dongfanger
-@Date    :  8/14/2020 9:16 AM
-@Desc    :  插件
-"""
 import inspect
 import os
-
-import time
 import shutil
 
 import allure_commons
@@ -17,15 +9,22 @@ from allure_commons.logger import AllureFileLogger
 from allure_pytest.listener import AllureListener
 from allure_pytest.plugin import cleanup_factory
 
-from tep.config import Config, fixture_paths
+from tep.libraries.Config import Config
 
-# allure源文件临时目录，那一堆json文件，生成HTML报告会删除
-allure_source_path = ".allure.source.temp"
+
+def tep_plugins():
+    """
+    Must be placed at the top, execute first to initialize base dir
+    """
+    caller = inspect.stack()[1]
+    Config.BASE_DIR = os.path.abspath(os.path.dirname(caller.filename))
+    plugins = _keyword_path() + _fixture_path()  # +[other plugins]
+    return plugins
 
 
 def _tep_reports(config):
     """
-    --tep-reports命令行参数不能和allure命令行参数同时使用，否则可能出错
+    --tep-reports cannot be used together with the allure command line parameter, otherwise an error may occur
     """
     if config.getoption("--tep-reports") and not config.getoption("allure_report_dir"):
         return True
@@ -34,19 +33,36 @@ def _tep_reports(config):
 
 def _is_master(config):
     """
-    pytest-xdist分布式执行时，判断是主节点master还是子节点
-    主节点没有workerinput属性
+    During pytest-xdist distributed execution, determine whether it is the master node or a child node
+    The main node does not have a workerinput attribute
+    config: session.config
     """
     return not hasattr(config, 'workerinput')
 
 
-class Plugin:
-    reports_path = os.path.join(Config.project_root_dir, "reports")
+def _keyword_path() -> list:
+    return ["tep.keywords.api"]
 
+
+def _fixture_path():
+    _fixture_dir = os.path.join(Config.BASE_DIR, "fixture")
+    paths = []
+    # 项目下的fixtures
+    for root, _, files in os.walk(_fixture_dir):
+        for file in files:
+            if file.startswith("fixture_") and file.endswith(".py"):
+                full_path = os.path.join(root, file)
+                import_path = full_path.replace(_fixture_dir, "").replace("\\", ".")
+                import_path = import_path.replace("/", ".").replace(".py", "")
+                paths.append("fixture" + import_path)
+    return paths
+
+
+class Plugin:
     @staticmethod
     def pytest_addoption(parser):
         """
-        allure测试报告 命令行参数
+        Allure test report, command line parameters
         """
         parser.addoption(
             "--tep-reports",
@@ -58,45 +74,36 @@ class Plugin:
     @staticmethod
     def pytest_configure(config):
         """
-        这段代码源自：https://github.com/allure-framework/allure-python/blob/master/allure-pytest/src/plugin.py
-        目的是生成allure源文件，用于生成HTML报告
+        Reference: https://github.com/allure-framework/allure-python/blob/master/allure-pytest/src/plugin.py
+        In order to generate an allure source file for generating HTML reports
         """
         if _tep_reports(config):
-            if os.path.exists(allure_source_path):
-                shutil.rmtree(allure_source_path)
+            if os.path.exists(Config.ALLURE_SOURCE_PATH):
+                shutil.rmtree(Config.ALLURE_SOURCE_PATH)
             test_listener = AllureListener(config)
             config.pluginmanager.register(test_listener)
             allure_commons.plugin_manager.register(test_listener)
             config.add_cleanup(cleanup_factory(test_listener))
 
             clean = config.option.clean_alluredir
-            file_logger = AllureFileLogger(allure_source_path, clean)  # allure_source
+            file_logger = AllureFileLogger(Config.ALLURE_SOURCE_PATH, clean)  # allure_source
             allure_commons.plugin_manager.register(file_logger)
             config.add_cleanup(cleanup_factory(file_logger))
 
     @staticmethod
     def pytest_sessionfinish(session):
         """
-        测试运行结束后生成allure报告
+        Generate an allure report after the test run ends
         """
-        reports_path = os.path.join(Config.project_root_dir, "reports")
+        reports_path = os.path.join(Config.BASE_DIR, "reports")
         if _tep_reports(session.config):
-            if _is_master(session.config):  # 只在master节点才生成报告
-                # 最近一份报告的历史数据，填充allure趋势图
+            if _is_master(session.config):  # Generate reports only at the master node
+                # Historical data from the latest report, filling in the allure trend chart
                 if os.path.exists(reports_path):
                     his_reports = os.listdir(reports_path)
                     if his_reports:
                         latest_report_history = os.path.join(reports_path, his_reports[-1], "history")
-                        shutil.copytree(latest_report_history, os.path.join(allure_source_path, "history"))
+                        shutil.copytree(latest_report_history, os.path.join(Config.ALLURE_SOURCE_PATH, "history"))
 
-                current_time = time.strftime("%Y-%m-%d-%H-%M-%S", time.localtime(time.time()))
-                html_report_name = os.path.join(reports_path, "report-" + current_time)
-                os.system(f"allure generate {allure_source_path} -o {html_report_name}  --clean")
-                shutil.rmtree(allure_source_path)
-
-
-def tep_plugins():
-    caller = inspect.stack()[1]
-    Config.project_root_dir = os.path.dirname(caller.filename)
-    plugins = fixture_paths()  # +[其他插件]
-    return plugins
+                os.system(f"allure generate {Config.ALLURE_SOURCE_PATH} -o {Config().HTML_REPORT_PATH}  --clean")
+                shutil.rmtree(Config.ALLURE_SOURCE_PATH)

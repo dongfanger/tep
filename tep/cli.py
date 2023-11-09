@@ -1,50 +1,44 @@
 #!/usr/bin/python
 # encoding=utf-8
 
-"""
-@Author  :  dongfanger
-@Date    :  7/17/2020 3:49 PM
-@Desc    :  命令行
-"""
-
 import argparse
 import sys
 
 from tep import __description__, __version__
-from tep.scaffold import init_parser_scaffold, main_scaffold
+from tep.scaffold import scaffold
 
 
 def main():
-    # 命令行处理程序入口
     parser = argparse.ArgumentParser(description=__description__)
-    parser.add_argument("-V", "--version", dest="version", action="store_true", help="show version")
-    subparsers = parser.add_subparsers(help="sub-command help")
-    sub_parser_scaffold = init_parser_scaffold(subparsers)
+    parser.add_argument("-v", "--version", dest="version", action="store_true", help="show version")
+    parser.add_argument("-s", "--startproject", metavar='project_name', type=str, help="Create a new project with template structure")
+    parser.add_argument("-venv", dest="create_venv", action="store_true", help="Create virtual environment in the project, and install tep")
 
     if len(sys.argv) == 1:
         # tep
         parser.print_help()
         sys.exit(0)
     elif len(sys.argv) == 2:
-        if sys.argv[1] in ["-V", "--version"]:
-            # tep -V
-            # tep --version
-            print(f"{__version__}")
+        if sys.argv[1] in ["-v", "--version"]:
+            print(f"Current Version: V{__version__}")
+            print(r"""
+ ____o__ __o____   o__ __o__/_   o__ __o
+  /   \   /   \   <|    v       <|     v\
+       \o/        < >           / \     <\
+        |          |            \o/     o/
+       < >         o__/_         |__  _<|/
+        |          |             |
+        o         <o>           <o>
+       <|          |             |
+       / \        / \  _\o__/_  / \
+""")
         elif sys.argv[1] in ["-h", "--help"]:
-            # tep -h
-            # tep --help
             parser.print_help()
-        elif sys.argv[1] == "startproject":
-            # tep startproject
-            sub_parser_scaffold.print_help()
+        elif sys.argv[1] in ["-s", "--startproject"]:
+            parser.print_help()
         sys.exit(0)
 
     args = parser.parse_args()
 
-    if args.version:
-        print(f"{__version__}")
-        sys.exit(0)
-
-    if sys.argv[1] == "startproject":
-        # tep startproject project_name
-        main_scaffold(args)
+    if sys.argv[1] in ["-s", "--startproject"]:
+        scaffold(args)
