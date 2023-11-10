@@ -1,4 +1,4 @@
-![](https://img2023.cnblogs.com/blog/1629545/202311/1629545-20231109234440942-1865385033.png)
+![Snip20231106_197](https://github.com/dongfanger/tep/assets/44184507/459c9254-6fe6-41ab-a752-a77408d0bb04)
 
 # **tep简介**
 
