@@ -9,7 +9,7 @@ authors = ["dongfanger <dongfanger@outlook.com>"]
 homepage = "https://github.com/dongfanger/tep"
 repository = "https://github.com/dongfanger/tep"
 
-keywords = ["testing", "pytest"]
+keywords = ["testing", "keyword driven", "framework", "pytest"]
 
 classifiers = [
     "Topic :: Software Development :: Testing",
@@ -18,9 +18,9 @@ classifiers = [
     "Operating System :: MacOS",
     "Operating System :: POSIX :: Linux",
     "Operating System :: Microsoft :: Windows",
-    "Programming Language :: Python :: 3.6",
-    "Programming Language :: Python :: 3.7",
-    "Programming Language :: Python :: 3.8"
+    "Programming Language :: Python :: 3.8",
+    "Programming Language :: Python :: 3.9",
+    "Programming Language :: Python :: 3.10"
 ]
 
 [tool.poetry.dependencies]

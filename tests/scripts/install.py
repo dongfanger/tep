@@ -19,7 +19,7 @@ if __name__ == '__main__':
 
     proc = subprocess.Popen(["pip", "uninstall", "tep"], stdin=subprocess.PIPE)
     proc.communicate(input="y".encode())
-    os.chdir(r"/Users/wanggang424/Desktop/PycharmProjects/tep/venv/lib/python3.8/site-packages")
+    os.chdir(r"/Users/wanggang888/Desktop/PycharmProjects/tep/venv/lib/python3.8/site-packages")
     for dir_name in os.listdir():
         if dir_name.startswith("tep"):
             shutil.rmtree(dir_name)
