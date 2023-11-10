@@ -41,7 +41,18 @@ tep -v
 ```
 
 ```Plain
-Current Version: V2.0.0 ____o__ __o____   o__ __o__/_   o__ __o  /   \   /   \   <|    v       <|     v\       \o/        < >           / \     <\        |          |            \o/     o/       < >         o__/_         |__  _<|/        |          |             |        o         <o>           <o>       <|          |             |       / \        / \  _\o__/_  / \
+Current Version: V2.0.0
+
+ ____o__ __o____   o__ __o__/_   o__ __o
+  /   \   /   \   <|    v       <|     v\
+       \o/        < >           / \     <\
+        |          |            \o/     o/
+       < >         o__/_         |__  _<|/
+        |          |             |
+        o         <o>           <o>
+       <|          |             |
+       / \        / \  _\o__/_  / \
+
 ```
 
 ## **新建项目**
@@ -50,8 +61,18 @@ Current Version: V2.0.0 ____o__ __o____   o__ __o__/_   o__ __o  /   \   /   \  
 tep -s demo
 ```
 
-```Bash
-Created folder: demoCreated folder: demo/caseCreated folder: demo/dataCreated folder: demo/reportCreated file:   demo/run.pyCreated file:   demo/conftest.pyCreated file:   demo/pytest.iniCreated file:   demo/.gitignore.pyCreated file:   demo/case/__init__.pyCreated file:   demo/case/test_demo.pyCreated file:   demo/data/UserDefinedVariables.yaml
+```Plain
+Created folder: demo
+Created folder: demo/case
+Created folder: demo/data
+Created folder: demo/report
+Created file:   demo/run.py
+Created file:   demo/conftest.py
+Created file:   demo/pytest.ini
+Created file:   demo/.gitignore.py
+Created file:   demo/case/__init__.py
+Created file:   demo/case/test_demo.py
+Created file:   demo/data/UserDefinedVariables.yaml
 ```
 
 ## 编写用例
@@ -59,13 +80,21 @@ Created folder: demoCreated folder: demo/caseCreated folder: demo/dataCreated fo
 在`case/test_demo.py`编写用例，脚手架已自动生成：
 
 ```Python
-def test(HTTPRequestKeyword):    ro = HTTPRequestKeyword("get", url="http://httpbin.org/status/200")    assert ro.response.status_code == 200
+def test(HTTPRequestKeyword):
+    ro = HTTPRequestKeyword("get", url="http://httpbin.org/status/200")
+    assert ro.response.status_code == 200
 ```
 
 执行`run.py`后出现以下日志：
 
 ```Plain
-URL: http://httpbin.org/status/200Method: GETHeaders: {"User-Agent": "python-requests/2.31.0", "Accept-Encoding": "gzip, deflate", "Accept": "*/*", "Connection": "keep-alive"}Request Body: NoneStatus Code: 200Response Body: Elapsed: 0.61046s
+URL: http://httpbin.org/status/200
+Method: GET
+Headers: {"User-Agent": "python-requests/2.31.0", "Accept-Encoding": "gzip, deflate", "Accept": "*/*", "Connection": "keep-alive"}
+Request Body: None
+Status Code: 200
+Response Body: 
+Elapsed: 0.61046s
 ```
 
 恭喜您，上手成功！
