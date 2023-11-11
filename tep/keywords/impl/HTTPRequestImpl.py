@@ -5,6 +5,7 @@ import json
 from typing import Any
 from urllib.parse import unquote
 
+import httpx
 import requests
 import urllib3
 from loguru import logger
@@ -27,6 +28,11 @@ _template = """\n
 
 
 def HTTPRequestImpl(method, url, **kwargs) -> Result:
+    use_http2 = kwargs.pop("http2", False)
+    return _http2(method, url, **kwargs) if use_http2 else _http1(method, url, **kwargs)
+
+
+def _http1(method, url, **kwargs):
     """
     Requests.request native usage, adding response callbacks
     """
@@ -40,6 +46,14 @@ def HTTPRequestImpl(method, url, **kwargs) -> Result:
     return result
 
 
+def _http2(method, url, **kwargs) -> Result:
+    with httpx.Client(event_hooks={'response': [_response2_callback]}) as client:
+        r = client.request(method, url, **kwargs)
+        result = Result()
+        result.response = r
+        return result
+
+
 def _response_callback(response, *args, **kwargs):
     """
     Response callback, recording request meta information
@@ -49,6 +63,23 @@ def _response_callback(response, *args, **kwargs):
         method=response.request.method,
         headers=_json_text(response.request.headers),
         request_body=_json_text(response.request.body),
+        status_code=response.status_code,
+        response_body=response.text,
+        elapsed=response.elapsed.total_seconds()
+    )
+    logger.info(log)
+
+
+def _response2_callback(response: httpx.Response):
+    """
+    Response callback, recording request meta information
+    """
+    response.read()
+    log = _template.format(
+        url=response.request.url,
+        method=response.request.method,
+        headers=_json_text(response.request.headers),
+        request_body=_json_text(response.request.content),
         status_code=response.status_code,
         response_body=response.text,
         elapsed=response.elapsed.total_seconds()
