@@ -24,7 +24,7 @@
 
 ✌️只需要一点点Python基础，就能轻松搞定接口自动化。
 
-在线文档，用户手册，请戳链接访问：
+框架教程、开发指南，请访问在线文档：
 
 [【原创】tep关键字驱动框架教程](https://eqgvpqzl6c.feishu.cn/docx/DZVed7YptocKE1xYIgici1DynTe)
 
