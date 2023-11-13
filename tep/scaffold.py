@@ -10,9 +10,21 @@ from loguru import logger
 from tep.libraries.Config import Config
 
 
+def init_parser_scaffold(subparsers):
+    sub_parser_scaffold = subparsers.add_parser("new", help="Create a new project with template structure.")
+    sub_parser_scaffold.add_argument("project_name", type=str, nargs="?", help="Specify new project name.")
+    sub_parser_scaffold.add_argument(
+        "-venv",
+        dest="create_venv",
+        action="store_true",
+        help="Create virtual environment in the project, and install tep.",
+    )
+    return sub_parser_scaffold
+
+
 def scaffold(args):
     Config.CREATE_ENV = args.create_venv
-    sys.exit(create_scaffold(args.startproject))
+    sys.exit(create_scaffold(args.project_name))
 
 
 def create_scaffold(project_name):

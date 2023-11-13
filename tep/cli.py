@@ -5,21 +5,21 @@ import argparse
 import sys
 
 from tep import __description__, __version__
-from tep.scaffold import scaffold
+from tep.scaffold import init_parser_scaffold, scaffold
 
 
 def main():
     parser = argparse.ArgumentParser(description=__description__)
-    parser.add_argument("-v", "--version", dest="version", action="store_true", help="show version")
-    parser.add_argument("-s", "--startproject", metavar='project_name', type=str, help="Create a new project with template structure")
-    parser.add_argument("-venv", dest="create_venv", action="store_true", help="Create virtual environment in the project, and install tep")
+    parser.add_argument("-V", "--version", dest="version", action="store_true", help="show version")
+    subparsers = parser.add_subparsers(help="sub-command help")
+    sub_parser_scaffold = init_parser_scaffold(subparsers)
 
     if len(sys.argv) == 1:
         # tep
         parser.print_help()
         sys.exit(0)
     elif len(sys.argv) == 2:
-        if sys.argv[1] in ["-v", "--version"]:
+        if sys.argv[1] in ["-V", "--version"]:
             print(f"Current Version: V{__version__}")
             print(r"""
  ____o__ __o____   o__ __o__/_   o__ __o
@@ -34,11 +34,11 @@ def main():
 """)
         elif sys.argv[1] in ["-h", "--help"]:
             parser.print_help()
-        elif sys.argv[1] in ["-s", "--startproject"]:
-            parser.print_help()
+        elif sys.argv[1] == "new":
+            sub_parser_scaffold.print_help()
         sys.exit(0)
 
     args = parser.parse_args()
 
-    if sys.argv[1] in ["-s", "--startproject"]:
+    if sys.argv[1] == "new":
         scaffold(args)
