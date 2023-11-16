@@ -112,6 +112,22 @@ url = "https://pypi.tuna.tsinghua.edu.cn/simple"
 reference = "tsinghua"
 
 [[package]]
+name = "cached-property"
+version = "1.5.2"
+description = "A decorator for caching properties in classes."
+optional = false
+python-versions = "*"
+files = [
+    {file = "cached-property-1.5.2.tar.gz", hash = "sha256:9fa5755838eecbb2d234c3aa390bd80fbd3ac6b6869109bfc1b499f7bd89a130"},
+    {file = "cached_property-1.5.2-py2.py3-none-any.whl", hash = "sha256:df4f613cf7ad9a588cc381aaf4a512d26265ecebd5eb9e1ba12f1319eb85a6a0"},
+]
+
+[package.source]
+type = "legacy"
+url = "https://pypi.tuna.tsinghua.edu.cn/simple"
+reference = "tsinghua"
+
+[[package]]
 name = "certifi"
 version = "2023.7.22"
 description = "Python package for providing Mozilla's CA Bundle."
@@ -381,6 +397,26 @@ files = [
     {file = "h11-0.14.0-py3-none-any.whl", hash = "sha256:e3fe4ac4b851c468cc8363d500db52c2ead036020723024a109d37346efaa761"},
     {file = "h11-0.14.0.tar.gz", hash = "sha256:8f19fbbe99e72420ff35c00b27a34cb9937e902a8b810e2c88300c6f0a3b699d"},
 ]
+
+[package.source]
+type = "legacy"
+url = "https://pypi.tuna.tsinghua.edu.cn/simple"
+reference = "tsinghua"
+
+[[package]]
+name = "haralyzer"
+version = "2.4.0"
+description = "A python framework for getting useful stuff out of HAR files"
+optional = false
+python-versions = ">=3.6"
+files = [
+    {file = "haralyzer-2.4.0-py3-none-any.whl", hash = "sha256:b66d2bf873fc70d0288def5db8885ee005024f088cf745ef918beadafd2d7df2"},
+    {file = "haralyzer-2.4.0.tar.gz", hash = "sha256:1154162a328a5226bc6d1d9626be19536ae049dd44b0a160081054f4808326a5"},
+]
+
+[package.dependencies]
+cached-property = "*"
+python-dateutil = "*"
 
 [package.source]
 type = "legacy"
@@ -1113,4 +1149,4 @@ reference = "tsinghua"
 [metadata]
 lock-version = "2.0"
 python-versions = "^3.8"
-content-hash = "0748101d8efef0f4e8ab2f6e1ad89e4af3cf2a795631cc64a275f8f2672712e6"
+content-hash = "0b7f80c7d0d6d669bd788a7aa6a1e8e25514828b234a4c3e2b2e105f3ffa4b6e"

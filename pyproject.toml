@@ -43,6 +43,7 @@ pytest-html = "^4.0.2"
 allure-pytest = "^2.13.2"
 allure-python-commons = "^2.13.2"
 httpx = "^0.25.1"
+haralyzer = "^2.4.0"
 
 
 [tool.poetry.dev-dependencies]

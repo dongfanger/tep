@@ -8,10 +8,11 @@ from typing import Any
 from tep.libraries.Result import Result
 
 
-def BodyImpl(json_str: str, expr: dict) -> Result:
+def BodyImpl(json_str: str, expr: dict = None) -> Result:
     json_obj = json.loads(json_str)
-    for json_path, value in expr.items():
-        _assign(json_obj, json_path, value)
+    if expr:
+        for json_path, value in expr.items():
+            _assign(json_obj, json_path, value)
     result = Result()
     result.data = json_obj
     return result

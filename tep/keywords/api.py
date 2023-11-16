@@ -25,7 +25,11 @@ def HTTPRequestKeyword():
 @pytest.fixture(scope="session")
 def BodyKeyword():
     def _function(*args, **kwargs) -> Result:
-        json_str, expr, kwargs = Args.parse(["json_str", "expr"], args, kwargs)
+        try:
+            json_str, expr, kwargs = Args.parse(["json_str", "expr"], args, kwargs)
+        except Exception:
+            json_str, kwargs = Args.parse(["json_str", "expr"], args, kwargs)
+            expr = None
         return BodyImpl(json_str, expr)
 
     return _function
