@@ -10,6 +10,7 @@ class After:
     def __init__(self):
         self.extractor: list = []
         self.assertion: list = []
+        self.replay: list = []
 
 
 class Step:

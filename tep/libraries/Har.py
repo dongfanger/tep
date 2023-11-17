@@ -1,8 +1,11 @@
+import base64
 import os
+import uuid
 
 from haralyzer import HarParser
 from loguru import logger
 
+from tep.libraries.Sqlite import Sqlite
 from tep.libraries.Step import Step
 
 
@@ -12,11 +15,26 @@ class Har:
     {steps}
 """
 
+    TEMPLATE_IMPORT_REPLAY = """from tep.libraries.Diff import Diff
+from tep.libraries.Sqlite import Sqlite
+
+
+"""
+
+    TEMPLATE_DIFF = """
+    Diff.make(var["caseId"], var["diffDir"])
+"""
+
     def __init__(self, har_file: str, profile: dict):
         self.har_file = har_file
         self.profile = profile
+        self.replay = profile.get("replay", False)
         filepath = os.path.splitext(self.har_file)[0]
-        self.case_file = "{}.py".format(filepath)
+        self.case_file = "{}_test.py".format(filepath)
+        self.replay_dff_dir = "{}-replay-diff".format(filepath)
+        # Generate a unique ID based on the file path
+        self.case_id = str(uuid.uuid5(uuid.UUID("3fa83108-6f0a-4cf0-b687-bbdd294ce7fb"), self.har_file)).replace("-", "")
+        self.request_order = 1
 
     def har2case(self):
         logger.info("Start to generate case")
@@ -28,11 +46,24 @@ class Har:
         steps = self._prepare_steps()
 
         content = Har.TEMPLATE.format(var=var, steps=steps)
+
+        if self.replay:
+            content = Har.TEMPLATE_IMPORT_REPLAY + content
+            if not os.path.exists(self.replay_dff_dir):
+                os.makedirs(self.replay_dff_dir)
+            content += Har.TEMPLATE_DIFF
+
         with open(self.case_file, "w") as f:
             f.write(content)
 
     def _prepare_var(self) -> str:
         var = {}
+        if self.replay:
+            var = {
+                "caseId": self.case_id,
+                "requestOrder": 1,
+                "diffDir": self.replay_dff_dir
+            }
         return str(var)
 
     def _prepare_steps(self) -> str:
@@ -54,7 +85,12 @@ class Har:
         self._make_before_param(step, entry)
         self._make_after_extract(step, entry)
         self._make_after_assert(step, entry)
-        return self._make_statement(step)
+
+        if self.replay:
+            self._make_after_replay(step, entry)
+            self._save_replay(step, entry)  # Save replay data to sqlite
+
+        return self._make_statement(step, entry)
 
     def _make_request_method(self, step, entry):
         step.request.method = entry.request.method
@@ -103,26 +139,60 @@ class Har:
         ]
         step.after.assertion = stmt
 
-    def _make_statement(self, step) -> list:
+    def _make_after_replay(self, step, entry):
+        stmt = [
+            'Sqlite.record_actual((ro.response.text, var["caseId"], var["requestOrder"], "{}", "{}"), var)'.format(step.request.method, step.request.url)
+        ]
+        step.after.replay = stmt
+
+    def _make_statement(self, step, entry) -> list:
         stmt = []
         stmt += step.before.parametrize
         stmt += [
-            'ro = HTTPRequestKeyword({})'.format(self._request_param(step))
+            'ro = HTTPRequestKeyword({})'.format(self._request_param(step, entry))
         ]
         stmt += step.after.extractor
         stmt += step.after.assertion
+        stmt += step.after.replay
         return stmt
 
-    def _request_param(self, step) -> str:
+    def _request_param(self, step, entry) -> str:
         param = ""
+        mime_type = entry.request.mimeType
+        b = 'data=body' if mime_type and mime_type.startswith("application/x-www-form-urlencoded") else 'json=body'
         if step.request.method == "GET":
             param = '"get", url=url, headers=headers, params=body' if step.request.body else '"get", url=url, headers=headers'
         if step.request.method == "POST":
-            param = '"post", url=url, headers=headers, json=body'
+            param = '"post", url=url, headers=headers, '
+            param += b
         if step.request.method == "PUT":
-            param = '"put", url=url, headers=headers, json=body'
+            param = '"put", url=url, headers=headers, '
+            param += b
         if step.request.method == "DELETE":
             param = '"delete", url=url, headers=headers'
         if self.profile.get("http2", False):
             param += ', http2=True'
         return param
+
+    def _save_replay(self, step, entry):
+        Sqlite.create_table_replay()
+        data = (
+            self.case_id,
+            self.request_order,
+            step.request.method,
+            step.request.url,
+            self._decode_text(entry)
+        )
+        Sqlite.insert_into_replay_expect(data)
+        self.request_order += 1
+
+    def _decode_text(self, entry):
+        text = entry.response.text
+        if text:
+            mime_type = entry.response.mimeType
+            if mime_type and mime_type.startswith("application/json"):
+                encoding = entry.response.textEncoding
+                if encoding and encoding == "base64":
+                    content = base64.b64decode(text).decode('utf-8')
+                    return content
+        return text
