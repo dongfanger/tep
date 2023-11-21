@@ -1,5 +1,7 @@
 import os
 
+from loguru import logger
+
 from tep.libraries.Config import Config
 from tep.libraries.Har import Har
 
