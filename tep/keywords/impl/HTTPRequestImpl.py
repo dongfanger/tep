@@ -29,7 +29,9 @@ _template = """\n
 
 def HTTPRequestImpl(method, url, **kwargs) -> Result:
     use_http2 = kwargs.pop("http2", False)
-    return _http2(method, url, **kwargs) if use_http2 else _http1(method, url, **kwargs)
+    if use_http2:
+        return _http2(method, url, **kwargs)
+    return _http1(method, url, **kwargs)
 
 
 def _http1(method, url, **kwargs):

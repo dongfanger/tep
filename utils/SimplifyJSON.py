@@ -3,7 +3,7 @@ import json
 
 def simplify_json(json_str: str) -> str:
     data = json.loads(json_str)
-    return json.dumps(data, separators=(',', ':'))
+    return json.dumps(data, separators=(',', ':'), ensure_ascii=False)
 
 
 if __name__ == '__main__':

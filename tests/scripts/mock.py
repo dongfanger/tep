@@ -13,7 +13,7 @@ async def login(req: Request):
 
 
 @app.get("/searchSku")
-def search_sku(req: Request):
+async def search_sku(req: Request):
     if req.headers.get("Cookie") == "de2e3ffu29" and req.query_params.get("skuName") == "book":
         return {"skuId": "222", "price": "2.3"}
     return ""
@@ -41,6 +41,11 @@ async def pay(req: Request):
     if req.headers.get("Cookie") == "de2e3ffu29" and body["orderId"] == "333":
         return {"success": "true"}
     return ""
+
+
+@app.get("/retry/code", status_code=500)
+async def retry_code(req: Request):
+    return {"success": "false"}
 
 
 if __name__ == '__main__':
