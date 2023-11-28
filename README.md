@@ -4,5 +4,5 @@
 
 原创教程：
 
-[https://dongfanger.gitee.io/blog/tep.html](https://dongfanger.gitee.io/blog/tep.html)
+[tep1.0.0教程](https://dongfanger.gitee.io/blog/历史杂文/000018-tep1.0.0教程.html)
 
