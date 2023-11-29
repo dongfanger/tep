@@ -54,6 +54,17 @@ def create_scaffold(project_name):
     create_folder(os.path.join(project_name, "data"))
     create_folder(os.path.join(project_name, "report"))
 
+    replay_content = """import os
+
+from tep.libraries.Config import Config
+from tep.libraries.Har import Har
+
+if __name__ == '__main__':
+    har_file = os.path.join(Config.BASE_DIR, "case", "replay_demo.har")
+    profile = {}
+    Har(har_file, profile).har2case()
+"""
+    create_file(os.path.join(project_name, "replay.py"), replay_content)
     run_content = """from tep.libraries.Run import Run
 
 if __name__ == '__main__':
@@ -74,8 +85,9 @@ pytest_plugins = tep_plugins()
     gitignore_content = """.idea
 .pytest_cache/
 __pycache__/
+.har
 """
-    create_file(os.path.join(project_name, ".gitignore.py"), gitignore_content)
+    create_file(os.path.join(project_name, ".gitignore"), gitignore_content)
     create_file(os.path.join(project_name, "case", "__init__.py"), "")
     demo_content = """def test(HTTPRequestKeyword):
     ro = HTTPRequestKeyword("get", url="http://httpbin.org/status/200")
