@@ -28,7 +28,6 @@ python = "^3.8"
 faker = "^4.1.1"
 urllib3 = "^2.0.7"
 requests = "^2.22.0"
-pyyaml = "^5.4.1"
 pytest-assume = "^2.4.2"
 loguru = "^0.4.1"
 fastapi = "^0.72.0"
@@ -46,6 +45,7 @@ httpx = "^0.25.1"
 haralyzer = "^2.4.0"
 deepdiff = "^6.7.1"
 tenacity = "^8.2.3"
+pyyaml = "^6.0.1"
 
 
 [tool.poetry.dev-dependencies]
