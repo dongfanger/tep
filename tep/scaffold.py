@@ -52,6 +52,7 @@ def create_scaffold(project_name):
     create_folder(project_name)
     create_folder(os.path.join(project_name, "case"))
     create_folder(os.path.join(project_name, "data"))
+    create_folder(os.path.join(project_name, "data", "har"))
     create_folder(os.path.join(project_name, "report"))
 
     replay_content = """import os
@@ -60,9 +61,11 @@ from tep.libraries.Config import Config
 from tep.libraries.Har import Har
 
 if __name__ == '__main__':
-    har_file = os.path.join(Config.BASE_DIR, "case", "replay_demo.har")
-    profile = {}
-    Har(har_file, profile).har2case()
+    profile = {
+        "harDir": os.path.join(Config.BASE_DIR, "data", "har"),
+        "desDir": os.path.join(Config.BASE_DIR, "case", "replay")
+    }
+    Har(profile).har2case()
 """
     create_file(os.path.join(project_name, "replay.py"), replay_content)
     run_content = """from tep.libraries.Run import Run

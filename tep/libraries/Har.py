@@ -25,18 +25,46 @@ from tep.libraries.Sqlite import Sqlite
     Diff.make(var["caseId"], var["diffDir"])
 """
 
-    def __init__(self, har_file: str, profile: dict):
-        self.har_file = har_file
+    def __init__(self, profile: dict):
         self.profile = profile
+        self.har_file = profile.get("harFile", "")
+        self.har_dir = profile.get("harDir", "")
+        self.des_dir = profile.get("desDir", "")
+        self.mode = profile.get("mode", "inc")
         self.replay = profile.get("replay", False)
-        filepath = os.path.splitext(self.har_file)[0]
-        self.case_file = "{}_test.py".format(filepath)
-        self.replay_dff_dir = "{}-replay-diff".format(filepath)
-        # Generate a unique ID based on the file path
-        self.case_id = str(uuid.uuid5(uuid.UUID("3fa83108-6f0a-4cf0-b687-bbdd294ce7fb"), self.har_file)).replace("-", "")
-        self.request_order = 1
+
+        self.request_order = None
+        self.case_id = None
+        self.replay_dff_dir = None
+        self.case_file = None
 
     def har2case(self):
+        if self.har_file:
+            self._convert(os.path.splitext(self.har_file)[0])
+        elif self.har_dir and self.des_dir:
+            for root, _, files in os.walk(self.har_dir):
+                for file in files:
+                    if file.endswith(".har"):
+                        self.har_file = os.path.join(root, file)
+                        self._convert(os.path.splitext(file)[0])
+        else:
+            logger.error("harFile is null, or, harDir and desDir is null")
+
+    def _convert(self, filename: str):
+        if self.des_dir:
+            if not os.path.exists(self.des_dir):
+                os.makedirs(self.des_dir)
+            self.case_file = os.path.join(self.des_dir, "{}_test.py".format(filename))
+            self.replay_dff_dir = os.path.join(self.des_dir, "{}-replay-diff".format(filename))
+        else:
+            self.case_file = "{}_test.py".format(filename)
+            self.replay_dff_dir = "{}-replay-diff".format(filename)
+        if self.mode == "inc" and os.path.exists(self.case_file):
+            logger.warning('Mode: inc, case file existed, skip "{}"', self.case_file)
+            return
+        # Generate a unique ID based on the file path
+        self.case_id = str(uuid.uuid5(uuid.UUID("3fa83108-6f0a-4cf0-b687-bbdd294ce7fb"), self.case_file)).replace("-", "")
+        self.request_order = 1
         logger.info("Start to generate case")
         self._make_case()
         logger.info("Case generated: {}".format(self.case_file))
