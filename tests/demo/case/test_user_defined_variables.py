@@ -1,3 +1,3 @@
 def test(UserDefinedVariablesKeyword):
-    ro = UserDefinedVariablesKeyword()
-    print(ro.data)
+    data = UserDefinedVariablesKeyword()
+    print(data)

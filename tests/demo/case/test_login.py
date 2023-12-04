@@ -1,3 +1,3 @@
 def test(login):
-    ro = login()
-    print(ro.data)
+    headers = login()
+    print(headers)

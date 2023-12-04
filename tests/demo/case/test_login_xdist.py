@@ -1,3 +1,3 @@
 def test(login_xdist):
-    ro = login_xdist()
-    print(ro.data)
+    response = login_xdist()
+    print(response)

@@ -1,10 +1,6 @@
-from tep.libraries.Diff import Diff
-from tep.libraries.Sqlite import Sqlite
-
-
 def test(HTTPRequestKeyword, JSONKeyword, VarKeyword):
-    var = VarKeyword({'caseId': '67fe99a8dc1b54349661481292b053d8', 'requestOrder': 1, 'diffDir': '/Users/wanggang424/Desktop/PycharmProjects/tep/tests/demo/case/har/demo-replay-diff'})
-
+    var = VarKeyword({})
+    
     url = "https://postman-echo.com/get?foo1=HDnY8&foo2=34.5"
     headers = JSONKeyword(r"""
 {
@@ -16,8 +12,7 @@ def test(HTTPRequestKeyword, JSONKeyword, VarKeyword):
     response = HTTPRequestKeyword("get", url=url, headers=headers)
     # user_defined_var = response.jsonpath("$.jsonpath")
     assert response.status_code < 400
-    Sqlite.record_actual((response.text, var["caseId"], var["requestOrder"], "GET", "https://postman-echo.com/get?foo1=HDnY8&foo2=34.5"), var)
-
+    
     url = "https://postman-echo.com/post"
     headers = JSONKeyword(r"""
 {
@@ -39,8 +34,7 @@ def test(HTTPRequestKeyword, JSONKeyword, VarKeyword):
     response = HTTPRequestKeyword("post", url=url, headers=headers, json=body)
     # user_defined_var = response.jsonpath("$.jsonpath")
     assert response.status_code < 400
-    Sqlite.record_actual((response.text, var["caseId"], var["requestOrder"], "POST", "https://postman-echo.com/post"), var)
-
+    
     url = "https://postman-echo.com/post"
     headers = JSONKeyword(r"""
 {
@@ -56,6 +50,3 @@ def test(HTTPRequestKeyword, JSONKeyword, VarKeyword):
     response = HTTPRequestKeyword("post", url=url, headers=headers, data=body)
     # user_defined_var = response.jsonpath("$.jsonpath")
     assert response.status_code < 400
-    Sqlite.record_actual((response.text, var["caseId"], var["requestOrder"], "POST", "https://postman-echo.com/post"), var)
-
-    Diff.make(var["caseId"], var["diffDir"])

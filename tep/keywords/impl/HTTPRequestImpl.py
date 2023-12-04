@@ -11,7 +11,6 @@ import urllib3
 from loguru import logger
 from requests.structures import CaseInsensitiveDict
 
-from tep.libraries.Result import Result
 from tep.libraries.TepResponse import TepResponse
 
 urllib3.disable_warnings(urllib3.exceptions.InsecureRequestWarning)
@@ -27,7 +26,7 @@ _template = """\n
         """
 
 
-def HTTPRequestImpl(method, url, **kwargs) -> Result:
+def HTTPRequestImpl(method, url, **kwargs):
     use_http2 = kwargs.pop("http2", False)
     if use_http2:
         return _http2(method, url, **kwargs)
@@ -43,17 +42,13 @@ def _http1(method, url, **kwargs):
         hooks={'response': _response_callback},
         **kwargs
     )
-    result = Result()
-    result.response = TepResponse(response)
-    return result
+    return TepResponse(response)
 
 
-def _http2(method, url, **kwargs) -> Result:
+def _http2(method, url, **kwargs):
     with httpx.Client(event_hooks={'response': [_response2_callback]}) as client:
         r = client.request(method, url, **kwargs)
-        result = Result()
-        result.response = r
-        return result
+        return r
 
 
 def _response_callback(response, *args, **kwargs):

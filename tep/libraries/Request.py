@@ -1,5 +1,5 @@
 class Request:
     method: str = ""
     url: str = ""
-    headers: dict = {}
-    body: dict = {}
+    headers: str = ""
+    body: str = ""

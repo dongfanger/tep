@@ -1,17 +1,19 @@
 import base64
+import json
 import os
 import uuid
 
 from haralyzer import HarParser
 from loguru import logger
 
+from tep.libraries.JSON import JSON
 from tep.libraries.Sqlite import Sqlite
 from tep.libraries.Step import Step
 
 
 class Har:
-    TEMPLATE = """def test(HTTPRequestKeyword, BodyKeyword):
-    var = {var}
+    TEMPLATE = """def test(HTTPRequestKeyword, JSONKeyword, VarKeyword):
+    var = VarKeyword({var})
     {steps}
 """
 
@@ -30,8 +32,9 @@ from tep.libraries.Sqlite import Sqlite
         self.har_file = profile.get("harFile", "")
         self.har_dir = profile.get("harDir", "")
         self.des_dir = profile.get("desDir", "")
-        self.mode = profile.get("mode", "inc")
+        self.overwrite = profile.get("overwrite", False)
         self.replay = profile.get("replay", False)
+        self.json_indent = profile.get("jsonIndent", 4)
 
         self.request_order = None
         self.case_id = None
@@ -59,8 +62,8 @@ from tep.libraries.Sqlite import Sqlite
         else:
             self.case_file = "{}_test.py".format(filename)
             self.replay_dff_dir = "{}-replay-diff".format(filename)
-        if self.mode == "inc" and os.path.exists(self.case_file):
-            logger.warning('Mode: inc, case file existed, skip "{}"', self.case_file)
+        if not self.overwrite and os.path.exists(self.case_file):
+            logger.warning('Case file existed, skip "{}"', self.case_file)
             return
         # Generate a unique ID based on the file path
         self.case_id = str(uuid.uuid5(uuid.UUID("3fa83108-6f0a-4cf0-b687-bbdd294ce7fb"), self.case_file)).replace("-", "")
@@ -134,22 +137,25 @@ from tep.libraries.Sqlite import Sqlite
             h[header["name"]] = header["value"]
         for cookie in cookies:
             h[cookie["name"]] = cookie["value"]
-        step.request.headers = h
+        if self.json_indent:
+            step.request.headers = JSON.beautify_json(json.dumps(h, ensure_ascii=False), self.json_indent)
+        else:
+            step.request.headers = str(h)
 
     def _make_request_body(self, step, entry):
-        step.request.body = entry.request.text
+        if self.json_indent and entry.request.text:
+            step.request.body = JSON.beautify_json(entry.request.text, self.json_indent)
+        else:
+            step.request.body = entry.request.text
 
     def _make_before_param(self, step, entry):
         stmt = [
             '',  # Blank line, distinguishing paragraphs
             'url = "{}"'.format(step.request.url),
-            'headers = {}'.format(step.request.headers),
+            'headers = JSONKeyword(r"""\n{}\n""")'.format(step.request.headers),
         ]
         body_stmt = [
-            'body = r"""{}"""'.format(step.request.body),
-            'ro = BodyKeyword(body)',
-            '# ro = BodyKeyword(body, {"$.jsonpath": "value"})',
-            'body = ro.data'
+            'body = JSONKeyword(r"""\n{}\n""")'.format(step.request.body),
         ]
         if step.request.body:
             stmt += body_stmt
@@ -157,19 +163,19 @@ from tep.libraries.Sqlite import Sqlite
 
     def _make_after_extract(self, step, entry):
         stmt = [
-            '# user_defined_var = ro.response.jsonpath("$.jsonpath")'
+            '# user_defined_var = response.jsonpath("$.jsonpath")'
         ]
         step.after.extractor = stmt
 
     def _make_after_assert(self, step, entry):
         stmt = [
-            'assert ro.response.status_code < 400'
+            'assert response.status_code < 400'
         ]
         step.after.assertion = stmt
 
     def _make_after_replay(self, step, entry):
         stmt = [
-            'Sqlite.record_actual((ro.response.text, var["caseId"], var["requestOrder"], "{}", "{}"), var)'.format(step.request.method, step.request.url)
+            'Sqlite.record_actual((response.text, var["caseId"], var["requestOrder"], "{}", "{}"), var)'.format(step.request.method, step.request.url)
         ]
         step.after.replay = stmt
 
@@ -177,7 +183,7 @@ from tep.libraries.Sqlite import Sqlite
         stmt = []
         stmt += step.before.parametrize
         stmt += [
-            'ro = HTTPRequestKeyword({})'.format(self._request_param(step, entry))
+            'response = HTTPRequestKeyword({})'.format(self._request_param(step, entry))
         ]
         stmt += step.after.extractor
         stmt += step.after.assertion

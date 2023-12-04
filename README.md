@@ -4,7 +4,15 @@
 
 🌟更新日志🌟
 
-- ✅V2.1.2
+- ✅V2.2.0
+  - 重要：BodyKeyword改名为JSONKeyword
+  - 重要：headers和body均为String，多行字符串表示，用JSONKeyword转为dict
+  - 重要：新增关键字VarKeyword，与JSONKeyword结合使用，实现${}用法，在字符串中直接替换变量
+  - 重要：去掉Result类，无须指定返回类型和定义中间变量，让关键字返回动态起来
+  - 抓包自动生成用例，配置新增jsonIndent，默认设置为4，换行且4个空格缩进，可设置None不换行
+  - 抓包自动生成用例，配置mode改名为overwrite，默认跳过，True则覆盖
+  - 抓包自动生成用例，根据新特性，优化模版代码
+- V2.1.2
   - 优化Har，支持指定目录，按增量/全量转换pytest用例
 - V2.1.1
   - HAR包转换pytest用例功能纳入脚手架，主推，内容写入教程“快速入门”章节

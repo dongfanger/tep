@@ -93,8 +93,8 @@ __pycache__/
     create_file(os.path.join(project_name, ".gitignore"), gitignore_content)
     create_file(os.path.join(project_name, "case", "__init__.py"), "")
     demo_content = """def test(HTTPRequestKeyword):
-    ro = HTTPRequestKeyword("get", url="http://httpbin.org/status/200")
-    assert ro.response.status_code == 200
+    response = HTTPRequestKeyword("get", url="http://httpbin.org/status/200")
+    assert response.status_code == 200
 """
     create_file(os.path.join(project_name, "case", "test_demo.py"), demo_content)
     user_defined_variables_content = 'name: "公众号测试开发刚哥"'

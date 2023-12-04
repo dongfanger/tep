@@ -3,8 +3,6 @@ import json
 import pytest
 from filelock import FileLock
 
-from tep.libraries.Result import Result
-
 
 @pytest.fixture(scope="session")
 def login_xdist(HTTPRequestKeyword, tmp_path_factory, worker_id):
@@ -17,12 +15,9 @@ def login_xdist(HTTPRequestKeyword, tmp_path_factory, worker_id):
         url = "http://127.0.0.1:5000/login"
         headers = {"Content-Type": "application/json"}
         body = {"username": "dongfanger", "password": "123456"}
-        ro = HTTPRequestKeyword("post", url=url, headers=headers, json=body)
-        response = ro.response
+        response = HTTPRequestKeyword("post", url=url, headers=headers, json=body)
         assert response.status_code < 400
-        ro = Result()
-        ro.data = {"Content-Type": "application/json", "Cookie": f"{response.json()['Cookie']}"}
-        return ro
+        return {"Content-Type": "application/json", "Cookie": f"{response.json()['Cookie']}"}
 
     if worker_id == "master":
         # not executing in with multiple workers, just produce the data and let

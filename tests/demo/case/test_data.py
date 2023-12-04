@@ -1,3 +1,3 @@
 def test(DataKeyword):
-    ro = DataKeyword("data.json")
-    print(ro.data)
+    data = DataKeyword("data.json")
+    print(data)

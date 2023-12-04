@@ -9,8 +9,8 @@ from tenacity import retry, stop_after_attempt, wait_fixed
     after=lambda _: logger.info("Retry completed.")
 )
 def test_req(HTTPRequestKeyword):
-    ro = HTTPRequestKeyword("get", url="http://127.0.0.1:5000/retry/code")
-    ro.response.raise_for_status()  # Add this statement
+    response = HTTPRequestKeyword("get", url="http://127.0.0.1:5000/retry/code")
+    response.raise_for_status()  # Add this statement
 
 
 def test():

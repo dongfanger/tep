@@ -5,17 +5,31 @@ import json
 import re
 from typing import Any
 
-from tep.libraries.Result import Result
+from tep.keywords.impl.VarImpl import VarImpl
 
 
-def BodyImpl(json_str: str, expr: dict = None) -> Result:
-    json_obj = json.loads(json_str)
+def JSONImpl(json_str: str, expr: dict = None) -> dict:
+    var_list = _parse_var(json_str)
+    if var_list:
+        json_str = json_str.replace('{', '{{').replace('}', '}}')
+        case_var = VarImpl()
+        for var in var_list:
+            start_index = json_str.find('${{' + var + '}}')
+            end_index = start_index + len(var) + 5  # 加上${{}}的长度
+            dollar_var = json_str[start_index: end_index]
+            json_str = json_str.replace(dollar_var, '{' + var + '}')
+            if var not in case_var:
+                case_var[var] = "null"
+        json_str = json_str.format(**case_var)
+        return json.loads(json_str)
+
     if expr:
+        json_obj = json.loads(json_str)
         for json_path, value in expr.items():
             _assign(json_obj, json_path, value)
-    result = Result()
-    result.data = json_obj
-    return result
+        return json_obj
+
+    return json.loads(json_str)
 
 
 def _jsonpath_to_dict_expr(jsonpath: str) -> str:
@@ -65,3 +79,10 @@ def _assign(json_obj: [dict, list], json_path: str, value: Any):
     dict_expr = _jsonpath_to_dict_expr(json_path)
     keys = _parse_dict_expr(dict_expr)
     _nested_modify(json_obj, keys, value)
+
+
+def _parse_var(json_str: str) -> list:
+    json_str = json_str.replace('{', '{{').replace('}', '}}')
+    pattern = r'\${{([^}]+)}}'
+    matches = re.findall(pattern, json_str)
+    return matches

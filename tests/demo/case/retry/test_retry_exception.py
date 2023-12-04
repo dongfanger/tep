@@ -10,5 +10,5 @@ from tenacity import retry, stop_after_attempt, wait_fixed, retry_if_exception_t
     after=lambda _: logger.info("Retry completed.")
 )
 def test_exception(HTTPRequestKeyword):
-    ro = HTTPRequestKeyword("get", url="http://127.0.0.1:5000/retry/200")
+    HTTPRequestKeyword("get", url="http://127.0.0.1:5000/retry/200")
     raise TypeError
