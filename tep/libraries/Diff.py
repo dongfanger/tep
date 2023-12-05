@@ -49,6 +49,6 @@ class Diff:
         with open(os.path.join(diff_dir, Diff.DIFF_TXT_FILE), "w") as f:
             f.write("\n\n".join(diffs))
 
-        styled_html = f"<style>td {{width: 50%;}}</style>\n{diff_html}"
+        styled_html = f"<style>{{width: 50%;}}</style>\n{diff_html}"
         with open(os.path.join(diff_dir, Diff.DIFF_HTML_FILE), "w") as f:
             f.write(styled_html)
