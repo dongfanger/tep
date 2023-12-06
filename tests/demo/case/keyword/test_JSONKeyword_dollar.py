@@ -26,4 +26,4 @@ def test(JSONKeyword, VarKeyword):
     }
 }
 """)
-    logger.info(JSON.beautify_json(JSON.to_json_str(body)))
+    logger.info('\n' + JSON.beautify_json(JSON.to_json_str(body)))

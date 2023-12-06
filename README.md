@@ -1,11 +1,16 @@
 [关键字驱动框架教程](https://dongfanger.gitee.io/blog/%E6%9B%B4%E5%A4%9A%E8%AF%AD%E8%A8%80/000001-%E3%80%90%E5%BC%80%E6%BA%90%E6%A1%86%E6%9E%B6%E3%80%91%E5%85%B3%E9%94%AE%E5%AD%97%E9%A9%B1%E5%8A%A8%E6%A1%86%E6%9E%B6.html)
 
 🌟更新日志🌟
-
-- ✅V2.2.0
+- ✅V2.2.1
+  - 新增关键字StringKeyword，url使用`${}`替换变量
+  - 回放配置添加hookVar，可自定义变量池
+  - 回放配置添加hookUrl，可自定义url
+  - 回放配置添加hookHeaders，可自定义headers
+  - 修复BUG，回放对比生成HTML，删除顶部多余td
+- V2.2.0
   - 重要：BodyKeyword改名为JSONKeyword
   - 重要：headers和body均为String，多行字符串表示，用JSONKeyword转为dict
-  - 重要：新增关键字VarKeyword，与JSONKeyword结合使用，实现${}用法，在字符串中直接替换变量
+  - 重要：新增关键字VarKeyword，与JSONKeyword结合使用，实现`${}`用法，在字符串中直接替换变量
   - 重要：去掉Result类，无须指定返回类型和定义中间变量，让关键字返回动态起来
   - 抓包自动生成用例，配置新增jsonIndent，默认设置为4，换行且4个空格缩进，可设置None不换行
   - 抓包自动生成用例，配置mode改名为overwrite，默认跳过，True则覆盖

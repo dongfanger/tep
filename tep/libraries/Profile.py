@@ -7,3 +7,6 @@ class Profile:
         self.replay: bool = False
         self.json_indent: int = 4
         self.http2: bool = False
+        self.hook_var: dict = {}
+        self.hook_url: dict = {}
+        self.hook_headers: dict = {}

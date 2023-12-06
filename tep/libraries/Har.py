@@ -13,7 +13,7 @@ from tep.libraries.Step import Step
 
 
 class Har:
-    TEMPLATE = """def test(HTTPRequestKeyword, JSONKeyword, VarKeyword):
+    TEMPLATE = """def test(HTTPRequestKeyword, VarKeyword, StringKeyword, JSONKeyword):
     var = VarKeyword({var})
     {steps}
 """
@@ -37,6 +37,9 @@ from tep.libraries.Sqlite import Sqlite
         self.profile.replay = profile.get("replay", False)
         self.profile.json_indent = profile.get("jsonIndent", 4)
         self.profile.http2 = profile.get("http2", False)
+        self.profile.hook_var = profile.get("hookVar", {})
+        self.profile.hook_url = profile.get("hookUrl", {})
+        self.profile.hook_headers = profile.get("hookHeaders", {})
 
         self.request_order = None
         self.case_id = None
@@ -91,12 +94,18 @@ from tep.libraries.Sqlite import Sqlite
 
     def _prepare_var(self) -> str:
         var = {}
+        if self.profile.hook_var:
+            var = self.profile.hook_var
+        if self.profile.hook_headers:
+            var.update({
+                "headers": self.profile.hook_headers
+            })
         if self.profile.replay:
-            var = {
+            var.update({
                 "caseId": self.case_id,
                 "requestOrder": 1,
                 "diffDir": self.replay_dff_dir
-            }
+            })
         return str(var)
 
     def _prepare_steps(self) -> str:
@@ -135,14 +144,17 @@ from tep.libraries.Sqlite import Sqlite
         headers = entry.request.headers
         cookies = entry.request.cookies
         h = dict()
-        for header in headers:
-            h[header["name"]] = header["value"]
-        for cookie in cookies:
-            h[cookie["name"]] = cookie["value"]
-        if self.profile.json_indent:
-            step.request.headers = JSON.beautify_json(json.dumps(h, ensure_ascii=False), self.profile.json_indent)
+        if self.profile.hook_headers:
+            step.request.headers = None  # Move headers to variable pool
         else:
-            step.request.headers = str(h)
+            for header in headers:
+                h[header["name"]] = header["value"]
+            for cookie in cookies:
+                h[cookie["name"]] = cookie["value"]
+            if self.profile.json_indent:
+                step.request.headers = JSON.beautify_json(json.dumps(h, ensure_ascii=False), self.profile.json_indent)
+            else:
+                step.request.headers = str(h)
 
     def _make_request_body(self, step, entry):
         if self.profile.json_indent and entry.request.text:
@@ -151,11 +163,18 @@ from tep.libraries.Sqlite import Sqlite
             step.request.body = entry.request.text
 
     def _make_before_param(self, step, entry):
+        url = step.request.url
+        if self.profile.hook_url:
+            for k, v in self.profile.hook_url.items():
+                url = url.replace(k, v)
         stmt = [
             '',  # Blank line, distinguishing paragraphs
-            'url = "{}"'.format(step.request.url),
-            'headers = JSONKeyword(r"""\n{}\n""")'.format(step.request.headers),
+            'url = StringKeyword("{}")'.format(url)
         ]
+        if not self.profile.hook_headers:  # If config hookHeaders, move headers to variable pool
+            stmt += [
+                'headers = JSONKeyword(r"""\n{}\n""")'.format(step.request.headers),
+            ]
         body_stmt = [
             'body = JSONKeyword(r"""\n{}\n""")'.format(step.request.body),
         ]
@@ -195,18 +214,24 @@ from tep.libraries.Sqlite import Sqlite
     def _request_param(self, step, entry) -> str:
         param = ""
         mime_type = entry.request.mimeType
+        headers = 'headers'
+        if self.profile.hook_headers:
+            headers = 'var["headers"]'
         b = 'data=body' if mime_type and mime_type.startswith("application/x-www-form-urlencoded") else 'json=body'
         if step.request.method == "GET":
-            param = '"get", url=url, headers=headers, params=body' if step.request.body else '"get", url=url, headers=headers'
+            if step.request.body:
+                param = '"get", url=url, headers={}, params=body'.format(headers)
+            else:
+                param = '"get", url=url, headers={}'.format(headers)
         if step.request.method == "POST":
-            param = '"post", url=url, headers=headers, '
+            param = '"post", url=url, headers={}, '.format(headers)
             param += b
         if step.request.method == "PUT":
-            param = '"put", url=url, headers=headers, '
+            param = '"put", url=url, headers={}, '.format(headers)
             param += b
         if step.request.method == "DELETE":
-            param = '"delete", url=url, headers=headers'
-        if  self.profile.http2:
+            param = '"delete", url=url, headers={}'.format(headers)
+        if self.profile.http2:
             param += ', http2=True'
         return param
 

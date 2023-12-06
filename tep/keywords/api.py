@@ -4,6 +4,7 @@ from tep.keywords.impl.JSONImpl import JSONImpl
 from tep.keywords.impl.DataImpl import DataImpl
 from tep.keywords.impl.DbcImpl import DbcImpl
 from tep.keywords.impl.HTTPRequestImpl import HTTPRequestImpl
+from tep.keywords.impl.StringImpl import StringImpl
 from tep.keywords.impl.UserDefinedVariablesImpl import UserDefinedVariablesImpl
 from tep.keywords.impl.VarImpl import VarImpl
 from tep.libraries.Args import Args
@@ -31,6 +32,18 @@ def JSONKeyword():
             json_str, kwargs = Args.parse(["json_str", "expr"], args, kwargs)
             expr = None
         return JSONImpl(json_str, expr)
+
+    return _function
+
+
+@pytest.fixture(scope="session")
+def StringKeyword():
+    def _function(*args, **kwargs):
+        try:
+            str_param, kwargs = Args.parse(["str_param"], args, kwargs)
+        except Exception:
+            str_param, kwargs = Args.parse(["str_param"], args, kwargs)
+        return StringImpl(str_param)
 
     return _function
 

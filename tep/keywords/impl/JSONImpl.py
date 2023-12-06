@@ -5,23 +5,13 @@ import json
 import re
 from typing import Any
 
-from tep.keywords.impl.VarImpl import VarImpl
+from tep.keywords.impl.VarImpl import replace_var
 
 
 def JSONImpl(json_str: str, expr: dict = None) -> dict:
-    var_list = _parse_var(json_str)
-    if var_list:
-        json_str = json_str.replace('{', '{{').replace('}', '}}')
-        case_var = VarImpl()
-        for var in var_list:
-            start_index = json_str.find('${{' + var + '}}')
-            end_index = start_index + len(var) + 5  # 加上${{}}的长度
-            dollar_var = json_str[start_index: end_index]
-            json_str = json_str.replace(dollar_var, '{' + var + '}')
-            if var not in case_var:
-                case_var[var] = "null"
-        json_str = json_str.format(**case_var)
-        return json.loads(json_str)
+    new_str = replace_var(json_str)
+    if new_str:
+        return json.loads(new_str)
 
     if expr:
         json_obj = json.loads(json_str)
@@ -79,10 +69,3 @@ def _assign(json_obj: [dict, list], json_path: str, value: Any):
     dict_expr = _jsonpath_to_dict_expr(json_path)
     keys = _parse_dict_expr(dict_expr)
     _nested_modify(json_obj, keys, value)
-
-
-def _parse_var(json_str: str) -> list:
-    json_str = json_str.replace('{', '{{').replace('}', '}}')
-    pattern = r'\${{([^}]+)}}'
-    matches = re.findall(pattern, json_str)
-    return matches
