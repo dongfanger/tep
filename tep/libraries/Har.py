@@ -7,6 +7,7 @@ from haralyzer import HarParser
 from loguru import logger
 
 from tep.libraries.JSON import JSON
+from tep.libraries.Profile import Profile
 from tep.libraries.Sqlite import Sqlite
 from tep.libraries.Step import Step
 
@@ -28,13 +29,14 @@ from tep.libraries.Sqlite import Sqlite
 """
 
     def __init__(self, profile: dict):
-        self.profile = profile
-        self.har_file = profile.get("harFile", "")
-        self.har_dir = profile.get("harDir", "")
-        self.des_dir = profile.get("desDir", "")
-        self.overwrite = profile.get("overwrite", False)
-        self.replay = profile.get("replay", False)
-        self.json_indent = profile.get("jsonIndent", 4)
+        self.profile = Profile()
+        self.profile.har_file = profile.get("harFile", "")
+        self.profile.har_dir = profile.get("harDir", "")
+        self.profile.des_dir = profile.get("desDir", "")
+        self.profile.overwrite = profile.get("overwrite", False)
+        self.profile.replay = profile.get("replay", False)
+        self.profile.json_indent = profile.get("jsonIndent", 4)
+        self.profile.http2 = profile.get("http2", False)
 
         self.request_order = None
         self.case_id = None
@@ -42,27 +44,27 @@ from tep.libraries.Sqlite import Sqlite
         self.case_file = None
 
     def har2case(self):
-        if self.har_file:
-            self._convert(os.path.splitext(self.har_file)[0])
-        elif self.har_dir and self.des_dir:
-            for root, _, files in os.walk(self.har_dir):
+        if self.profile.har_file:
+            self._convert(os.path.splitext(self.profile.har_file)[0])
+        elif self.profile.har_dir and self.profile.des_dir:
+            for root, _, files in os.walk(self.profile.har_dir):
                 for file in files:
                     if file.endswith(".har"):
-                        self.har_file = os.path.join(root, file)
+                        self.profile.har_file = os.path.join(root, file)
                         self._convert(os.path.splitext(file)[0])
         else:
             logger.error("harFile is null, or, harDir and desDir is null")
 
     def _convert(self, filename: str):
-        if self.des_dir:
-            if not os.path.exists(self.des_dir):
-                os.makedirs(self.des_dir)
-            self.case_file = os.path.join(self.des_dir, "{}_test.py".format(filename))
-            self.replay_dff_dir = os.path.join(self.des_dir, "{}-replay-diff".format(filename))
+        if self.profile.des_dir:
+            if not os.path.exists(self.profile.des_dir):
+                os.makedirs(self.profile.des_dir)
+            self.case_file = os.path.join(self.profile.des_dir, "{}_test.py".format(filename))
+            self.replay_dff_dir = os.path.join(self.profile.des_dir, "{}-replay-diff".format(filename))
         else:
             self.case_file = "{}_test.py".format(filename)
             self.replay_dff_dir = "{}-replay-diff".format(filename)
-        if not self.overwrite and os.path.exists(self.case_file):
+        if not self.profile.overwrite and os.path.exists(self.case_file):
             logger.warning('Case file existed, skip "{}"', self.case_file)
             return
         # Generate a unique ID based on the file path
@@ -78,7 +80,7 @@ from tep.libraries.Sqlite import Sqlite
 
         content = Har.TEMPLATE.format(var=var, steps=steps)
 
-        if self.replay:
+        if self.profile.replay:
             content = Har.TEMPLATE_IMPORT_REPLAY + content
             if not os.path.exists(self.replay_dff_dir):
                 os.makedirs(self.replay_dff_dir)
@@ -89,7 +91,7 @@ from tep.libraries.Sqlite import Sqlite
 
     def _prepare_var(self) -> str:
         var = {}
-        if self.replay:
+        if self.profile.replay:
             var = {
                 "caseId": self.case_id,
                 "requestOrder": 1,
@@ -99,7 +101,7 @@ from tep.libraries.Sqlite import Sqlite
 
     def _prepare_steps(self) -> str:
         steps = []
-        har_parser = HarParser.from_file(self.har_file)
+        har_parser = HarParser.from_file(self.profile.har_file)
         for page in har_parser.pages:
             for entry in page.entries:
                 step = self._prepare_step(entry)
@@ -117,7 +119,7 @@ from tep.libraries.Sqlite import Sqlite
         self._make_after_extract(step, entry)
         self._make_after_assert(step, entry)
 
-        if self.replay:
+        if self.profile.replay:
             self._make_after_replay(step, entry)
             self._save_replay(step, entry)  # Save replay data to sqlite
 
@@ -137,14 +139,14 @@ from tep.libraries.Sqlite import Sqlite
             h[header["name"]] = header["value"]
         for cookie in cookies:
             h[cookie["name"]] = cookie["value"]
-        if self.json_indent:
-            step.request.headers = JSON.beautify_json(json.dumps(h, ensure_ascii=False), self.json_indent)
+        if self.profile.json_indent:
+            step.request.headers = JSON.beautify_json(json.dumps(h, ensure_ascii=False), self.profile.json_indent)
         else:
             step.request.headers = str(h)
 
     def _make_request_body(self, step, entry):
-        if self.json_indent and entry.request.text:
-            step.request.body = JSON.beautify_json(entry.request.text, self.json_indent)
+        if self.profile.json_indent and entry.request.text:
+            step.request.body = JSON.beautify_json(entry.request.text, self.profile.json_indent)
         else:
             step.request.body = entry.request.text
 
@@ -204,7 +206,7 @@ from tep.libraries.Sqlite import Sqlite
             param += b
         if step.request.method == "DELETE":
             param = '"delete", url=url, headers=headers'
-        if self.profile.get("http2", False):
+        if  self.profile.http2:
             param += ', http2=True'
         return param
 
