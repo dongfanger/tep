@@ -15,6 +15,8 @@ class Config:
     # will be deleted when generating HTML reports
     ALLURE_SOURCE_PATH = ".allure.source.temp"
 
+    TEP_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+
     def __init__(self):
         # Instance variable initialize after class variable assigned
         self.CASE_DIR = os.path.join(self.BASE_DIR, "case")

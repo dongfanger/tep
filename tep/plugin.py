@@ -4,10 +4,8 @@ import inspect
 import os
 import shutil
 
-import allure_commons
-from allure_commons.logger import AllureFileLogger
-from allure_pytest.listener import AllureListener
-from allure_pytest.plugin import cleanup_factory
+from jinja2 import Environment, FileSystemLoader, select_autoescape
+from loguru import logger
 
 from tep.libraries.Config import Config
 
@@ -20,24 +18,6 @@ def tep_plugins():
     Config.BASE_DIR = os.path.abspath(os.path.dirname(caller.filename))
     plugins = _keyword_path() + _fixture_path()  # +[other plugins]
     return plugins
-
-
-def _tep_reports(config):
-    """
-    --tep-reports cannot be used together with the allure command line parameter, otherwise an error may occur
-    """
-    if config.getoption("--tep-reports") and not config.getoption("allure_report_dir"):
-        return True
-    return False
-
-
-def _is_master(config):
-    """
-    During pytest-xdist distributed execution, determine whether it is the master node or a child node
-    The main node does not have a workerinput attribute
-    config: session.config
-    """
-    return not hasattr(config, 'workerinput')
 
 
 def _keyword_path() -> list:
@@ -58,52 +38,24 @@ def _fixture_path():
     return paths
 
 
+def _my_read_template(search_paths, template_name="index2.jinja2"):
+    env = Environment(
+        loader=FileSystemLoader(search_paths),
+        autoescape=select_autoescape(
+            enabled_extensions=("jinja2",),
+        ),
+    )
+    return env.get_template(template_name)
+
+
 class Plugin:
     @staticmethod
-    def pytest_addoption(parser):
-        """
-        Allure test report, command line parameters
-        """
-        parser.addoption(
-            "--tep-reports",
-            action="store_const",
-            const=True,
-            help="Create tep allure HTML reports."
-        )
+    def pytest_html_report_title(report):
+        report.title = "TepReport"
 
     @staticmethod
     def pytest_configure(config):
-        """
-        Reference: https://github.com/allure-framework/allure-python/blob/master/allure-pytest/src/plugin.py
-        In order to generate an allure source file for generating HTML reports
-        """
-        if _tep_reports(config):
-            if os.path.exists(Config.ALLURE_SOURCE_PATH):
-                shutil.rmtree(Config.ALLURE_SOURCE_PATH)
-            test_listener = AllureListener(config)
-            config.pluginmanager.register(test_listener)
-            allure_commons.plugin_manager.register(test_listener)
-            config.add_cleanup(cleanup_factory(test_listener))
-
-            clean = config.option.clean_alluredir
-            file_logger = AllureFileLogger(Config.ALLURE_SOURCE_PATH, clean)  # allure_source
-            allure_commons.plugin_manager.register(file_logger)
-            config.add_cleanup(cleanup_factory(file_logger))
-
-    @staticmethod
-    def pytest_sessionfinish(session):
-        """
-        Generate an allure report after the test run ends
-        """
-        reports_path = os.path.join(Config.BASE_DIR, "reports")
-        if _tep_reports(session.config):
-            if _is_master(session.config):  # Generate reports only at the master node
-                # Historical data from the latest report, filling in the allure trend chart
-                if os.path.exists(reports_path):
-                    his_reports = os.listdir(reports_path)
-                    if his_reports:
-                        latest_report_history = os.path.join(reports_path, his_reports[-1], "history")
-                        shutil.copytree(latest_report_history, os.path.join(Config.ALLURE_SOURCE_PATH, "history"))
-
-                os.system(f"allure generate {Config.ALLURE_SOURCE_PATH} -o {Config().HTML_REPORT_PATH}  --clean")
-                shutil.rmtree(Config.ALLURE_SOURCE_PATH)
+        import pytest_html
+        resources_dir = os.path.join(os.path.dirname(os.path.abspath(pytest_html.__file__)), "resources")
+        tep_resources_dir = os.path.join(Config.TEP_DIR, "resources")
+        shutil.copytree(tep_resources_dir, resources_dir, dirs_exist_ok=True)
