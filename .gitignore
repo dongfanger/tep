@@ -1,0 +1,15 @@
+.idea
+.pytest_cache/
+__pycache__/
+/result/report*/
+/result/*.log
+*.pyc
+.DS_Store
+.vscode
+.pypirc
+build/*
+dist/*
+*.egg-info
+.python-version
+.coverage
+.venv
