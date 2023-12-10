@@ -19,10 +19,10 @@ if __name__ == '__main__':
 
     proc = subprocess.Popen(["pip", "uninstall", "tep"], stdin=subprocess.PIPE)
     proc.communicate(input="y".encode())
-    os.chdir(r"YourPath/PycharmProjects/tep/venv/lib/python3.12/site-packages")
-    for dir_name in os.listdir():
-        if dir_name.startswith("tep"):
-            shutil.rmtree(dir_name)
+    os.chdir(r"D:\PycharmProjects\tep\venv\Lib\site-packages")
+    for name in os.listdir():
+        if os.path.isdir(name) and name.startswith("tep"):
+            shutil.rmtree(name)
 
     os.chdir(dist_path)
     os.system(f"pip install tep-{__version__}-py3-none-any.whl")

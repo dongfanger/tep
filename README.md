@@ -1,7 +1,11 @@
 [关键字驱动框架教程](https://dongfanger.gitee.io/blog/%E6%9B%B4%E5%A4%9A%E8%AF%AD%E8%A8%80/000001-%E3%80%90%E5%BC%80%E6%BA%90%E6%A1%86%E6%9E%B6%E3%80%91%E5%85%B3%E9%94%AE%E5%AD%97%E9%A9%B1%E5%8A%A8%E6%A1%86%E6%9E%B6.html)
 
 🌟更新日志🌟
-- ✅V2.2.1
+- ✅V2.2.2
+  - 基于Python12.1版本，poetry update
+  - 移除allure报告，去掉--tep-reports命令行参数
+  - 定制pytest-html报告内容和样式，单个HTML文件查看报告
+- V2.2.1
   - 新增关键字StringKeyword，url使用`${}`替换变量
   - 回放配置添加hookVar，可自定义变量池
   - 回放配置添加hookUrl，可自定义url
