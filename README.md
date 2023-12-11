@@ -1,4 +1,4 @@
-[关键字驱动框架教程](https://dongfanger.gitee.io/blog/%E6%9B%B4%E5%A4%9A%E8%AF%AD%E8%A8%80/000001-%E3%80%90%E5%BC%80%E6%BA%90%E6%A1%86%E6%9E%B6%E3%80%91%E5%85%B3%E9%94%AE%E5%AD%97%E9%A9%B1%E5%8A%A8%E6%A1%86%E6%9E%B6.html)
+框架教程：https://gitee.com/dongfanger/tep/wikis
 
 🌟更新日志🌟
 - ✅V2.2.2
