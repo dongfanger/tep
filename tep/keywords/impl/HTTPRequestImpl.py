@@ -22,7 +22,7 @@ _template = """\n
         Request Body: {request_body}
         Status Code: {status_code}
         Response Body: {response_body}
-        Elapsed: {elapsed}s
+        Elapsed: {elapsed}ms
         """
 
 
@@ -62,7 +62,7 @@ def _response_callback(response, *args, **kwargs):
         request_body=_json_text(response.request.body),
         status_code=response.status_code,
         response_body=response.text,
-        elapsed=response.elapsed.total_seconds()
+        elapsed=response.elapsed.total_seconds() * 1000
     )
     logger.info(log)
 
