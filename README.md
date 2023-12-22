@@ -5,7 +5,7 @@
   - case文件夹下使用中文命名，目录名+模块名（包名+模块名）
   - 修改pytest配置python_files = *.py，识别任意名称
   - 脚手架添加中文命名示例
-  - 脚手架添加下单到登录用例
+  - 脚手架添加场景测试用例
   - 脚手架添加Mock服务工具
   - 脚手架添加fixture\fixture_login.py
   - requests日志耗时改为毫秒
