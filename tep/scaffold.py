@@ -51,9 +51,12 @@ def create_scaffold(project_name):
 
     create_folder(project_name)
     create_folder(os.path.join(project_name, "case"))
+    create_folder(os.path.join(project_name, "case", "场景测试"))
     create_folder(os.path.join(project_name, "data"))
     create_folder(os.path.join(project_name, "data", "har"))
+    create_folder(os.path.join(project_name, "fixture"))
     create_folder(os.path.join(project_name, "report"))
+    create_folder(os.path.join(project_name, "util"))
 
     replay_content = """import os
 
@@ -72,7 +75,7 @@ if __name__ == '__main__':
 
 if __name__ == '__main__':
     settings = {
-        "path": ["test_demo.py"],  # Path to run, relative path to case
+        "path": ["示例.py"],  # Path to run, relative path to case
         "report": False  # Output test report or not
     }
     Run(settings)
@@ -83,7 +86,9 @@ if __name__ == '__main__':
 pytest_plugins = tep_plugins()
 """
     create_file(os.path.join(project_name, "conftest.py"), conftest_content)
-    create_file(os.path.join(project_name, "pytest.ini"), "")
+    ini_content = """[pytest]
+python_files = *.py"""
+    create_file(os.path.join(project_name, "pytest.ini"), ini_content)
     gitignore_content = """.idea
 .pytest_cache/
 __pycache__/
@@ -95,7 +100,127 @@ __pycache__/
     response = HTTPRequestKeyword("get", url="http://httpbin.org/status/200")
     assert response.status_code == 200
 """
-    create_file(os.path.join(project_name, "case", "test_demo.py"), demo_content)
+    create_file(os.path.join(project_name, "case", "示例.py"), demo_content)
+    flow_content = """def test(HTTPRequestKeyword, JSONKeyword, VarKeyword, login, StringKeyword):
+    headers = login()
+    var = VarKeyword({
+        "domain": "http://127.0.0.1:5000",
+        "headers": headers
+    })
+
+    url = StringKeyword("${domain}/searchSku?skuName=book")
+    response = HTTPRequestKeyword("get", url=url, headers=var["headers"])
+    assert response.status_code < 400
+    var["skuId"] = response.jsonpath("$.skuId")
+    var["skuPrice"] = response.jsonpath("$.price")
+
+    url = StringKeyword("${domain}/addCart")
+    body = JSONKeyword(r\"\"\"
+{
+    "skuId":"${skuId}",
+    "skuNum":2
+}
+\"\"\")
+    response = HTTPRequestKeyword("post", url=url, headers=var["headers"], json=body)
+    assert response.status_code < 400
+    var["skuNum"] = response.jsonpath("$.skuNum")
+    var["totalPrice"] = response.jsonpath("$.totalPrice")
+
+    url = StringKeyword("${domain}/order")
+    body = JSONKeyword(r\"\"\"
+{
+    "skuId":"${skuId}",
+    "price":${skuPrice},
+    "skuNum":${skuNum},
+    "totalPrice":${totalPrice}
+}
+\"\"\")
+    response = HTTPRequestKeyword("post", url=url, headers=var["headers"], json=body)
+    assert response.status_code < 400
+    var["orderId"] = response.jsonpath("$.orderId")
+
+    url = StringKeyword("${domain}/pay")
+    body = JSONKeyword(r\"\"\"
+{
+    "orderId":"${orderId}",
+    "payAmount":"0.2"
+}
+\"\"\")
+    response = HTTPRequestKeyword("post", url=url, headers=var["headers"], json=body)
+    assert response.status_code < 400
+    assert response.jsonpath("$.success") == "true"
+"""
+    create_file(os.path.join(project_name, "case", "场景测试", "登录-商品-购物车-下单-支付.py"), flow_content)
+    mock_content = """import uvicorn
+from fastapi import FastAPI, Request
+
+app = FastAPI()
+
+
+@app.post("/login")
+async def login(req: Request):
+    body = await req.json()
+    if body["username"] == "dongfanger" and body["password"] == "123456":
+        return {"Cookie": "de2e3ffu29"}
+    return ""
+
+
+@app.get("/searchSku")
+async def search_sku(req: Request):
+    if req.headers.get("Cookie") == "de2e3ffu29" and req.query_params.get("skuName") == "book":
+        return {"skuId": "222", "price": "2.3"}
+    return ""
+
+
+@app.post("/addCart")
+async def add_cart(req: Request):
+    body = await req.json()
+    if req.headers.get("Cookie") == "de2e3ffu29" and body["skuId"] == "222":
+        return {"skuId": "222", "price": "2.3", "skuNum": 3, "totalPrice": "6.9"}
+    return ""
+
+
+@app.post("/order")
+async def order(req: Request):
+    body = await req.json()
+    if req.headers.get("Cookie") == "de2e3ffu29" and body["skuId"] == "222":
+        return {"orderId": "333"}
+    return ""
+
+
+@app.post("/pay")
+async def pay(req: Request):
+    body = await req.json()
+    if req.headers.get("Cookie") == "de2e3ffu29" and body["orderId"] == "333":
+        return {"success": "true"}
+    return ""
+
+
+@app.get("/retry/code", status_code=500)
+async def retry_code(req: Request):
+    return {"success": "false"}
+
+
+if __name__ == '__main__':
+    uvicorn.run("mock:app", host="127.0.0.1", port=5000)
+"""
+    create_file(os.path.join(project_name, "util", "mock.py"), mock_content)
+    login_content = """import pytest
+
+
+@pytest.fixture(scope="session")
+def login(HTTPRequestKeyword):
+    def _function():
+        url = "http://127.0.0.1:5000/login"
+        headers = {"Content-Type": "application/json"}
+        body = {"username": "dongfanger", "password": "123456"}
+        response = HTTPRequestKeyword("post", url=url, headers=headers, json=body)
+        assert response.status_code < 400
+        return {"Content-Type": "application/json", "Cookie": f"{response.json()['Cookie']}"}
+
+    return _function
+"""
+    create_file(os.path.join(project_name, "fixture", "fixture_login.py"), login_content)
     user_defined_variables_content = 'name: "公众号测试开发刚哥"'
     create_file(os.path.join(project_name, "data", "UserDefinedVariables.yaml"), user_defined_variables_content)
 

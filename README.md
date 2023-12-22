@@ -1,7 +1,15 @@
 框架教程：https://gitee.com/dongfanger/tep/wikis
 
 🌟更新日志🌟
-- ✅V2.2.2
+- ✅V2.2.3
+  - case文件夹下使用中文命名，目录名+模块名（包名+模块名）
+  - 修改pytest配置python_files = *.py，识别任意名称
+  - 脚手架添加中文命名示例
+  - 脚手架添加下单到登录用例
+  - 脚手架添加Mock服务工具
+  - 脚手架添加fixture\fixture_login.py
+  - requests日志耗时改为毫秒
+- V2.2.2
   - 基于Python12.1版本，poetry update
   - 移除allure报告，去掉--tep-reports命令行参数
   - 定制pytest-html报告内容和样式，单个HTML文件查看报告
