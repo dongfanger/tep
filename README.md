@@ -1,6 +1,253 @@
-框架教程：https://github.com/dongfanger/tep/wiki
+# 简介
 
-🌟更新日志🌟
+tep是Try Easy Pytest的首字母缩写，帮你轻松上手pytest。
+
+如果你选择pytest做自动化，又不知道该怎么设计框架，那么可以学习和使用tep。
+
+特点：
+- 关键字驱动
+- HAR包转换pytest用例
+
+# 安装
+
+Python版本：12.1，下载：https://www.python.org/downloads/
+
+创建虚拟环境：`python -m venv venv`
+
+激活虚拟环境，Windows用户：`activate.bat` Mac用户：`source venv/bin/activate`
+
+安装tep：`pip install tep`
+
+验证安装成功：`tep -V`
+
+
+``` text
+Current Version: V2.2.2
+
+ ____o__ __o____   o__ __o__/_   o__ __o
+  /   \   /   \   <|    v       <|     v\
+       \o/        < >           / \     <\
+        |          |            \o/     o/
+       < >         o__/_         |__  _<|/
+        |          |             |
+        o         <o>           <o>
+       <|          |             |
+       / \        / \  _\o__/_  / \
+```
+
+# 手动编写用例
+
+执行命令`tep new demo`创建项目脚手架，demo为项目名称
+
+```
+Created folder: demo
+Created folder: demo/case
+Created folder: demo/data
+Created folder: demo/data/har
+Created folder: demo/report
+Created file:   demo/replay.py
+Created file:   demo/run.py
+Created file:   demo/conftest.py
+Created file:   demo/pytest.ini
+Created file:   demo/.gitignore
+Created file:   demo/case/__init__.py
+Created file:   demo/case/test_demo.py
+Created file:   demo/data/UserDefinedVariables.yaml
+```
+
+在case目录中，新建文件test_demo.py
+
+定义函数：
+
+```python
+def test():
+```
+
+输入关键字`HTTPRequestKeyword`：
+
+```python
+def test(HTTPRequestKeyword):
+```
+
+填写请求方式和URL：
+
+```python
+HTTPRequestKeyword("get", url="http://httpbin.org/status/200")
+```
+
+把响应存入response对象：
+
+```python
+response = HTTPRequestKeyword("get", url="http://httpbin.org/status/200")
+```
+
+添加断言：
+
+```python
+assert response.status_code == 200
+```
+
+完整代码：
+
+```python
+def test(HTTPRequestKeyword):
+    response = HTTPRequestKeyword("get", url="http://httpbin.org/status/200")
+    assert response.status_code == 200
+```
+
+# 抓包转换用例
+
+执行命令`tep new demo`创建项目脚手架，demo为项目名称
+
+```
+Created folder: demo
+Created folder: demo/case
+Created folder: demo/data
+Created folder: demo/data/har
+Created folder: demo/report
+Created file:   demo/replay.py
+Created file:   demo/run.py
+Created file:   demo/conftest.py
+Created file:   demo/pytest.ini
+Created file:   demo/.gitignore
+Created file:   demo/case/__init__.py
+Created file:   demo/case/test_demo.py
+Created file:   demo/data/UserDefinedVariables.yaml
+```
+
+通过Proxyman等工具抓包，导出为HAR包：
+
+![](README/0f0004e9_5031008.png)
+
+将HAR包放入`data/har`目录中，执行replay.py
+
+在`case/replay`目录下就能看到自动生成的pytest用例。
+
+# HTTP请求
+
+一、GET
+1.1 GET
+
+```
+HTTPRequestKeyword("get", url="")
+```
+
+1.2 GET、Header
+
+```
+HTTPRequestKeyword("get", url="", headers={})
+```
+
+1.3 GET、Header、查询参数
+1.3.1 直接拼在url后面
+
+```
+HTTPRequestKeyword("get", url="" + "?a=1&b=2", headers={})
+```
+
+1.3.2 JSON转查询参数
+
+```
+from urllib.parse import urlencode
+
+query = {}
+request("get", url="" + "?" + urlencode(query), headers={})
+```
+
+1.4 GET、Header、表单
+
+```
+HTTPRequestKeyword("get", url="", headers={}, params={})
+```
+
+二、POST
+2.1 POST
+
+```
+HTTPRequestKeyword("post", url="")
+```
+
+2.2 POST、Header
+
+```
+HTTPRequestKeyword("post", url="", headers={})
+```
+
+2.3 POST、Header、JSON
+
+```
+HTTPRequestKeyword("post", url="", headers={}, json={})
+```
+
+2.4 POST、Header、表单
+
+```
+HTTPRequestKeyword("post", url="", headers={}, data={})
+```
+
+三、PUT
+3.1 PUT
+
+```
+HTTPRequestKeyword("put", url="")
+```
+
+3.2 PUT、Header
+
+```
+HTTPRequestKeyword("put", url="", headers={})
+```
+
+3.3 PUT、Header、JSON
+
+```
+HTTPRequestKeyword("put", url="", headers={}, json={})
+```
+
+3.4 PUT、Header、表单
+
+```
+HTTPRequestKeyword("put", url="", headers={}, data={})
+```
+
+四、DELETE
+4.1 DELETE
+
+```
+HTTPRequestKeyword("delete", url="")
+```
+
+4.2 DELETE、Header
+
+```
+HTTPRequestKeyword("delete", url="", headers={})
+```
+
+五、上传文件
+5.1 上传图片
+
+```
+files = {
+    'file': ('filename', open('filepath', 'rb'), 'image/jpeg')
+}
+HTTPRequestKeyword("post", url="", headers={}, files=files)
+```
+注意requests会自动添加`{"Content-Type":"multipart/form-data"}`，使用headers不能再重复添加
+
+5.2上传zip
+
+```
+files = {
+    'file': ('filename', open('filepath', 'rb'), 'application/x-zip-compressed')
+}
+HTTPRequestKeyword("post", url="", headers={}, files=files)
+```
+
+
+
+
+# 🌟更新日志🌟
+
 - ✅V2.2.3
   - case文件夹下使用中文命名，目录名+模块名（包名+模块名）
   - 修改pytest配置python_files = *.py，识别任意名称
