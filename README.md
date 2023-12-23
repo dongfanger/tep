@@ -1,4 +1,4 @@
-框架教程：https://gitee.com/dongfanger/tep/wikis
+框架教程：https://github.com/dongfanger/tep/wiki
 
 🌟更新日志🌟
 - ✅V2.2.3
