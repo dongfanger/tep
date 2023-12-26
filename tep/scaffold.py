@@ -5,7 +5,7 @@ import os
 import platform
 import sys
 
-from loguru import logger
+import logging
 
 from tep.libraries.Config import Config
 
@@ -29,10 +29,10 @@ def scaffold(args):
 
 def create_scaffold(project_name):
     if os.path.isdir(project_name):
-        logger.warning(f"Project folder {project_name} exists, please specify a new project name")
+        logging.warning(f"Project folder {project_name} exists, please specify a new project name")
         return 1
     elif os.path.isfile(project_name):
-        logger.warning(f"Project name {project_name} conflicts with existed file, please specify a new one")
+        logging.warning(f"Project name {project_name} conflicts with existed file, please specify a new one")
         return 1
 
     print(f"Create new project: {project_name}")
@@ -87,7 +87,11 @@ pytest_plugins = tep_plugins()
 """
     create_file(os.path.join(project_name, "conftest.py"), conftest_content)
     ini_content = """[pytest]
-python_files = *.py"""
+python_files = *.py
+log_cli = True
+log_level = INFO
+log_format = %(asctime)s %(levelname)s %(message)s
+log_date_format = %Y-%m-%d %H:%M:%S"""
     create_file(os.path.join(project_name, "pytest.ini"), ini_content)
     gitignore_content = """.idea
 .pytest_cache/

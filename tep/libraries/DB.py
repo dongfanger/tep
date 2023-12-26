@@ -1,4 +1,4 @@
-from loguru import logger
+import logging
 
 
 class DB:
@@ -8,5 +8,5 @@ class DB:
             cursor.execute(sql)
             conn.commit()
         except Exception as e:
-            logger.error(f"Database execute error: {e}")
+            logging.error(f"Database execute error: {e}")
             conn.rollback()

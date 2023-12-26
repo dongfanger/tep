@@ -1,12 +1,13 @@
-from loguru import logger
+import logging
+
 from tenacity import retry, stop_after_attempt, wait_fixed
 
 
 @retry(
     stop=stop_after_attempt(3),
     wait=wait_fixed(2),
-    before=lambda _: logger.info("Retrying..."),
-    after=lambda _: logger.info("Retry completed.")
+    before=lambda _: logging.info("Retrying..."),
+    after=lambda _: logging.info("Retry completed.")
 )
 def test_req(HTTPRequestKeyword):
     response = HTTPRequestKeyword("get", url="http://127.0.0.1:5000/retry/code")
@@ -17,4 +18,4 @@ def test():
     try:
         test_req()
     except Exception as e:
-        logger.warning('Max retries exceeded:', e)
+        logging.warning('Max retries exceeded:', e)

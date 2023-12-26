@@ -8,7 +8,7 @@ from urllib.parse import unquote
 import httpx
 import requests
 import urllib3
-from loguru import logger
+import logging
 from requests.structures import CaseInsensitiveDict
 
 from tep.libraries.TepResponse import TepResponse
@@ -62,9 +62,9 @@ def _response_callback(response, *args, **kwargs):
         request_body=_json_text(response.request.body),
         status_code=response.status_code,
         response_body=response.text,
-        elapsed=response.elapsed.total_seconds() * 1000
+        elapsed=round(response.elapsed.total_seconds() * 1000, 2)
     )
-    logger.info(log)
+    logging.info(log)
 
 
 def _response2_callback(response: httpx.Response):
@@ -81,7 +81,7 @@ def _response2_callback(response: httpx.Response):
         response_body=response.text,
         elapsed=response.elapsed.total_seconds()
     )
-    logger.info(log)
+    logging.info(log)
 
 
 def _json_text(o: Any) -> [str, Any]:
@@ -95,8 +95,8 @@ def _json_text(o: Any) -> [str, Any]:
         elif isinstance(o, CaseInsensitiveDict):
             return json.dumps(dict(o), ensure_ascii=False)
         else:
-            logger.warning("JSON parse unknown type: {}", type(o))
+            logging.warning("JSON parse unknown type: {}", type(o))
             return o
     except Exception as e:
-        logger.error("JSON parse exception: {}", e)
+        logging.error("JSON parse exception: {}", e)
         return o

@@ -4,7 +4,7 @@ import os
 import uuid
 
 from haralyzer import HarParser
-from loguru import logger
+import logging
 
 from tep.libraries.JSON import JSON
 from tep.libraries.Profile import Profile
@@ -56,7 +56,7 @@ from tep.libraries.Sqlite import Sqlite
                         self.profile.har_file = os.path.join(root, file)
                         self._convert(os.path.splitext(file)[0])
         else:
-            logger.error("harFile is null, or, harDir and desDir is null")
+            logging.error("harFile is null, or, harDir and desDir is null")
 
     def _convert(self, filename: str):
         if self.profile.des_dir:
@@ -68,14 +68,14 @@ from tep.libraries.Sqlite import Sqlite
             self.case_file = "{}_test.py".format(filename)
             self.replay_dff_dir = "{}-replay-diff".format(filename)
         if not self.profile.overwrite and os.path.exists(self.case_file):
-            logger.warning('Case file existed, skip "{}"', self.case_file)
+            logging.warning('Case file existed, skip "{}"', self.case_file)
             return
         # Generate a unique ID based on the file path
         self.case_id = str(uuid.uuid5(uuid.UUID("3fa83108-6f0a-4cf0-b687-bbdd294ce7fb"), self.case_file)).replace("-", "")
         self.request_order = 1
-        logger.info("Start to generate case")
+        logging.info("Start to generate case")
         self._make_case()
-        logger.info("Case generated: {}".format(self.case_file))
+        logging.info("Case generated: {}".format(self.case_file))
 
     def _make_case(self):
         var = self._prepare_var()
@@ -118,7 +118,7 @@ from tep.libraries.Sqlite import Sqlite
         return "\n    ".join(steps)
 
     def _prepare_step(self, entry) -> list:
-        logger.info("{} {} Convert step", entry.request.method, entry.request.url)
+        logging.info("{} {} Convert step", entry.request.method, entry.request.url)
         step = Step()
         self._make_request_method(step, entry)
         self._make_request_url(step, entry)

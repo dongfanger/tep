@@ -1,7 +1,7 @@
 import os.path
 import time
 
-from loguru import logger
+import logging
 
 from tep.libraries.Config import Config
 
