@@ -5,7 +5,6 @@ import os
 import shutil
 
 from jinja2 import Environment, FileSystemLoader, select_autoescape
-from loguru import logger
 
 from tep.libraries.Config import Config
 

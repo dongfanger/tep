@@ -8,12 +8,11 @@ from typing import Any
 from tep.keywords.impl.VarImpl import replace_var
 
 
-def JSONImpl(json_str: str, **kwargs) -> dict:
+def JSONImpl(json_str: str, expr: dict = None) -> dict:
     new_str = replace_var(json_str)
     if new_str:
         return json.loads(new_str)
 
-    expr = kwargs.get("expr", None)
     if expr:
         json_obj = json.loads(json_str)
         for json_path, value in expr.items():

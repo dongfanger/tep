@@ -1,4 +1,4 @@
-from loguru import logger
+import logging
 
 from tep.libraries.JSON import JSON
 
@@ -26,4 +26,4 @@ def test(JSONKeyword, VarKeyword):
     }
 }
 """)
-    logger.info('\n' + JSON.beautify_json(JSON.to_json_str(body)))
+    logging.info('\n' + JSON.beautify_json(JSON.to_json_str(body)))

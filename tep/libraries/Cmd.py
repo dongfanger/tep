@@ -6,7 +6,7 @@ from tep.libraries.Config import Config
 
 
 class Cmd:
-    template = "pytest -s {where_to_run} {tep_report}"
+    template = "pytest {where_to_run} {tep_report}"
 
     def __init__(self, *args, **kwargs):
         settings = args[0]

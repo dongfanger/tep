@@ -2,7 +2,7 @@ import copy
 import itertools
 from sys import stdout
 
-from loguru import logger
+import logging
 
 
 def parewise(option: list) -> list:
@@ -14,7 +14,7 @@ def parewise(option: list) -> list:
     for x in eval('itertools.product' + str(tuple(option))):
         cp.append(x)
         s.append([i for i in itertools.combinations(x, 2)])
-    logger.info('Cartesian product:%s' % len(cp))
+    logging.info('Cartesian product:%s' % len(cp))
     del_row = []
     print_progress_bar(0)
     s2 = copy.deepcopy(s)
@@ -37,7 +37,7 @@ def parewise(option: list) -> list:
             del_row.append(i)
             s2.remove(s[i])
     res = [cp[i] for i in range(len(cp)) if i not in del_row]
-    logger.info('After filtering:%s' % len(res))
+    logging.info('After filtering:%s' % len(res))
     return res
 
 

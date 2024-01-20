@@ -244,11 +244,16 @@ HTTPRequestKeyword("post", url="", headers={}, files=files)
 ```
 
 
-
-
 # 🌟更新日志🌟
-
-- ✅V2.2.3
+- ✅V2.2.5
+  - 移除Allure多余代码
+  - 适配层代码优化
+- ✅V2.2.4
+  - 去掉loguru，不依赖visual c++，改用Python内置logging
+  - 添加pytest.ini配置，支持控制台实时日志
+  - 日志输出到pytest-html测试报告
+  - 日志的Elapsed，毫秒保留2位小数
+- V2.2.3
   - case文件夹下使用中文命名，目录名+模块名（包名+模块名）
   - 修改pytest配置python_files = *.py，识别任意名称
   - 脚手架添加中文命名示例
