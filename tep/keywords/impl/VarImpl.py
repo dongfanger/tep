@@ -4,10 +4,10 @@ import re
 
 
 class CaseVar:
-    var = None
+    var: dict = None  # 变量池
 
 
-def VarImpl(var: dict = None):
+def VarImpl(var=None, **kwargs):
     if var:
         CaseVar.var = var
     return CaseVar.var
