@@ -1,13 +1,12 @@
 #!/usr/bin/python
 # encoding=utf-8
 
+import logging
 import os
 import platform
 import sys
 
-import logging
-
-from tep.libraries.Config import Config
+from tep.config import Config
 
 
 def init_parser_scaffold(subparsers):
@@ -23,7 +22,7 @@ def init_parser_scaffold(subparsers):
 
 
 def scaffold(args):
-    Config.CREATE_ENV = args.create_venv
+    Config.CREATE_VENV = args.create_venv
     sys.exit(create_scaffold(args.project_name))
 
 
@@ -50,112 +49,106 @@ def create_scaffold(project_name):
         print(msg)
 
     create_folder(project_name)
-    create_folder(os.path.join(project_name, "case"))
-    create_folder(os.path.join(project_name, "case", "场景测试"))
     create_folder(os.path.join(project_name, "data"))
-    create_folder(os.path.join(project_name, "data", "har"))
+    create_folder(os.path.join(project_name, "file"))
+    create_folder(os.path.join(project_name, "file", "har"))
     create_folder(os.path.join(project_name, "fixture"))
     create_folder(os.path.join(project_name, "report"))
-    create_folder(os.path.join(project_name, "util"))
+    create_folder(os.path.join(project_name, "scripts"))
+    create_folder(os.path.join(project_name, "tests"))
 
-    replay_content = """import os
+    create_file(os.path.join(project_name, ".gitignore"), """.idea
+.pytest_cache/
+__pycache__/
+.venv
+.har
+    """)
 
-from tep.libraries.Config import Config
-from tep.libraries.Har import Har
-
-if __name__ == '__main__':
-    profile = {
-        "harDir": os.path.join(Config.BASE_DIR, "data", "har"),
-        "desDir": os.path.join(Config.BASE_DIR, "case", "replay")
-    }
-    Har(profile).har2case()
-"""
-    create_file(os.path.join(project_name, "replay.py"), replay_content)
-    run_content = """from tep.libraries.Run import Run
-
-if __name__ == '__main__':
-    settings = {
-        "path": ["示例.py"],  # Path to run, relative path to case
-        "report": False  # Output test report or not
-    }
-    Run(settings)
-"""
-    create_file(os.path.join(project_name, "run.py"), run_content)
-    conftest_content = """from tep.plugin import tep_plugins
+    create_file(os.path.join(project_name, "conftest.py"), """from tep.plugin import tep_plugins
 
 pytest_plugins = tep_plugins()
-"""
-    create_file(os.path.join(project_name, "conftest.py"), conftest_content)
-    ini_content = """[pytest]
-python_files = *.py
+""")
+
+    create_file(os.path.join(project_name, "pytest.ini"), """[pytest]
 log_cli = True
 log_level = INFO
 log_format = %(asctime)s %(levelname)s %(message)s
-log_date_format = %Y-%m-%d %H:%M:%S"""
-    create_file(os.path.join(project_name, "pytest.ini"), ini_content)
-    gitignore_content = """.idea
-.pytest_cache/
-__pycache__/
-.har
-"""
-    create_file(os.path.join(project_name, ".gitignore"), gitignore_content)
-    create_file(os.path.join(project_name, "case", "__init__.py"), "")
-    demo_content = """def test(HTTPRequestKeyword):
-    response = HTTPRequestKeyword("get", url="http://httpbin.org/status/200")
-    assert response.status_code == 200
-"""
-    create_file(os.path.join(project_name, "case", "示例.py"), demo_content)
-    flow_content = """def test(HTTPRequestKeyword, JSONKeyword, VarKeyword, login, StringKeyword):
-    headers = login()
-    var = VarKeyword({
-        "domain": "http://127.0.0.1:5000",
-        "headers": headers
+log_date_format = %Y-%m-%d %H:%M:%S
+""")
+
+    create_file(os.path.join(project_name, "run.py"), """from tep import run
+
+if __name__ == '__main__':
+    run({
+        "path": ["test_flow.py"],  # Relative path to tests, file or directory
+        "report": 1  # Generate html report, 0: False, 1: True
     })
+""")
 
-    url = StringKeyword("${domain}/searchSku?skuName=book")
-    response = HTTPRequestKeyword("get", url=url, headers=var["headers"])
-    assert response.status_code < 400
-    var["skuId"] = response.jsonpath("$.skuId")
-    var["skuPrice"] = response.jsonpath("$.price")
+    create_file(os.path.join(project_name, "data", "__init__.py"), "")
 
-    url = StringKeyword("${domain}/addCart")
-    body = JSONKeyword(r\"\"\"
-{
-    "skuId":"${skuId}",
-    "skuNum":2
-}
-\"\"\")
-    response = HTTPRequestKeyword("post", url=url, headers=var["headers"], json=body)
-    assert response.status_code < 400
-    var["skuNum"] = response.jsonpath("$.skuNum")
-    var["totalPrice"] = response.jsonpath("$.totalPrice")
+    create_file(os.path.join(project_name, "data", "global_data.py"), """#!/usr/bin/python
+# encoding=utf-8
 
-    url = StringKeyword("${domain}/order")
-    body = JSONKeyword(r\"\"\"
-{
-    "skuId":"${skuId}",
-    "price":${skuPrice},
-    "skuNum":${skuNum},
-    "totalPrice":${totalPrice}
-}
-\"\"\")
-    response = HTTPRequestKeyword("post", url=url, headers=var["headers"], json=body)
-    assert response.status_code < 400
-    var["orderId"] = response.jsonpath("$.orderId")
 
-    url = StringKeyword("${domain}/pay")
-    body = JSONKeyword(r\"\"\"
-{
-    "orderId":"${orderId}",
-    "payAmount":"0.2"
-}
-\"\"\")
-    response = HTTPRequestKeyword("post", url=url, headers=var["headers"], json=body)
+class GlobalData:
+    domain = "http://127.0.0.1:5000"
+    headers = {"Content-Type": "application/json", "Cookie": "de2e3ffu29"}
+""")
+
+    create_file(os.path.join(project_name, "fixture", "__init__.py"), "")
+
+    create_file(os.path.join(project_name, "fixture", "fixture_login.py"), """#!/usr/bin/python
+# encoding=utf-8
+
+import pytest
+from tep import request
+
+
+@pytest.fixture(scope="session")
+def login():
+    url = "http://127.0.0.1:5000/login"
+    headers = {"Content-Type": "application/json"}
+    body = {"username": "dongfanger", "password": "123456"}
+    response = request("post", url=url, headers=headers, json=body)
     assert response.status_code < 400
-    assert response.jsonpath("$.success") == "true"
-"""
-    create_file(os.path.join(project_name, "case", "场景测试", "登录-商品-购物车-下单-支付.py"), flow_content)
-    mock_content = """import uvicorn
+    return {"Content-Type": "application/json", "Cookie": f"{response.json()['Cookie']}"}
+""")
+
+    create_file(os.path.join(project_name, "fixture", "fixture_mysql.py"), """import logging
+
+import pymysql
+import pytest
+
+
+class Data:
+    host = "127.0.0.1"
+    port = 3306
+    user = "root"
+    password = "12345678"
+    database = "sys"
+
+
+@pytest.fixture(scope="session")
+def mysql_execute():
+    conn = pymysql.connect(host="127.0.0.1", port=3306, user="root", password="12345678", database="sys")
+
+    def _function(sql: str):
+        cursor = conn.cursor()
+        try:
+            cursor.execute(sql)
+            conn.commit()
+        except Exception as e:
+            logging.error(f"Database execute error: {e}")
+            conn.rollback()
+
+        return cursor
+
+    yield _function
+    conn.close()  # After test, close connection
+""")
+
+    create_file(os.path.join(project_name, "scripts", "mock.py"), """import uvicorn
 from fastapi import FastAPI, Request
 
 app = FastAPI()
@@ -207,28 +200,61 @@ async def retry_code(req: Request):
 
 if __name__ == '__main__':
     uvicorn.run("mock:app", host="127.0.0.1", port=5000)
-"""
-    create_file(os.path.join(project_name, "util", "mock.py"), mock_content)
-    login_content = """import pytest
+""")
+
+    create_file(os.path.join(project_name, "tests", "test_get.py"), """from tep import request
 
 
-@pytest.fixture(scope="session")
-def login(HTTPRequestKeyword):
-    def _function():
-        url = "http://127.0.0.1:5000/login"
-        headers = {"Content-Type": "application/json"}
-        body = {"username": "dongfanger", "password": "123456"}
-        response = HTTPRequestKeyword("post", url=url, headers=headers, json=body)
-        assert response.status_code < 400
-        return {"Content-Type": "application/json", "Cookie": f"{response.json()['Cookie']}"}
+def test():
+    response = request("get", url="http://httpbin.org/status/200")
+    assert response.status_code == 200
+""")
 
-    return _function
-"""
-    create_file(os.path.join(project_name, "fixture", "fixture_login.py"), login_content)
-    user_defined_variables_content = 'name: "公众号测试开发刚哥"'
-    create_file(os.path.join(project_name, "data", "UserDefinedVariables.yaml"), user_defined_variables_content)
+    create_file(os.path.join(project_name, "tests", "test_flow.py"), """from tep import request
+from tep import v
 
-    if Config.CREATE_ENV:
+from data.global_data import GlobalData
+
+
+class Data:
+    v({
+        "domain": GlobalData.domain,
+        "skuNum": 2,
+        "payAmount": 0.2
+    })
+    body_add_cart = '{"skuId":"${skuId}","skuNum":${skuNum}}'
+    body_order = '{"skuId":"${skuId}","price":${skuPrice},"skuNum":${skuNum},"totalPrice":${totalPrice}}'
+    body_pay = '{"orderId":"${orderId}","payAmount":${payAmount}}'
+
+
+def test():
+    url = v("${domain}/searchSku?skuName=book")
+    response = request("get", url=url, headers=GlobalData.headers)
+    assert response.status_code < 400
+    v("skuId", response.jsonpath("$.skuId")[0])
+    v("skuPrice", response.jsonpath("$.price")[0])
+
+    url = v("${domain}/addCart")
+    body = v(Data.body_add_cart)
+    response = request("post", url=url, headers=GlobalData.headers, json=body)
+    assert response.status_code < 400
+    v("skuNum", response.jsonpath("$.skuNum")[0])
+    v("totalPrice", response.jsonpath("$.totalPrice")[0])
+
+    url = v("${domain}/order")
+    body = v(Data.body_order)
+    response = request("post", url=url, headers=GlobalData.headers, json=body)
+    assert response.status_code < 400
+    v("orderId", response.jsonpath("$.orderId")[0])
+
+    url = v("${domain}/pay")
+    body = v(Data.body_pay)
+    response = request("post", url=url, headers=GlobalData.headers, json=body)
+    assert response.status_code < 400
+    assert response.jsonpath("$.success")[0] == "true"
+""")
+
+    if Config.CREATE_VENV:
         # Create Python virtual Environment
         os.chdir(project_name)
         print("\nCreating virtual environment")
