@@ -6,7 +6,7 @@ import shutil
 
 from jinja2 import Environment, FileSystemLoader, select_autoescape
 
-from tep.libraries.Config import Config
+from tep.config import Config
 
 
 def tep_plugins():
@@ -15,12 +15,8 @@ def tep_plugins():
     """
     caller = inspect.stack()[1]
     Config.BASE_DIR = os.path.abspath(os.path.dirname(caller.filename))
-    plugins = _keyword_path() + _fixture_path()  # +[other plugins]
+    plugins = _fixture_path()  # +[other plugins]
     return plugins
-
-
-def _keyword_path() -> list:
-    return ["tep.keywords.api"]
 
 
 def _fixture_path():
@@ -37,7 +33,7 @@ def _fixture_path():
     return paths
 
 
-def _my_read_template(search_paths, template_name="index2.jinja2"):
+def _tep_read_template(search_paths, template_name="index2.jinja2"):
     env = Environment(
         loader=FileSystemLoader(search_paths),
         autoescape=select_autoescape(

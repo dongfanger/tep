@@ -1,0 +1,7 @@
+pip install -U pip setuptools
+pip install poetry
+
+poetry config pypi-token.pypi <your-api-token>
+poetry publish --build
+
+pip install "fastapi[standard]"
