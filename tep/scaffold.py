@@ -53,6 +53,7 @@ def create_scaffold(project_name):
     create_folder(os.path.join(project_name, "file"))
     create_folder(os.path.join(project_name, "file", "har"))
     create_folder(os.path.join(project_name, "fixture"))
+    create_folder(os.path.join(project_name, "function"))
     create_folder(os.path.join(project_name, "report"))
     create_folder(os.path.join(project_name, "scripts"))
     create_folder(os.path.join(project_name, "tests"))
@@ -146,6 +147,23 @@ def mysql_execute():
 
     yield _function
     conn.close()  # After test, close connection
+""")
+
+    create_file(os.path.join(project_name, "function", "__init__.py"), "")
+
+    create_file(os.path.join(project_name, "function", "common.py"), """#!/usr/bin/python
+# encoding=utf-8
+import os.path
+
+from tep import file
+
+
+def base_dir():
+    return os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+
+
+def headers():
+    return {"Content-Type": "application/json", "Cookie": file(os.path.join(base_dir(), "file", "Cookie"))}
 """)
 
     create_file(os.path.join(project_name, "scripts", "mock.py"), """import uvicorn

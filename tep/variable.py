@@ -1,7 +1,12 @@
 #!/usr/bin/python
 # encoding=utf-8
-import json
+import inspect
+import logging
 import re
+
+from tep.patch.random import random
+from tep.patch.time import time, timestamp
+from tep.patch.uuid import uuid
 
 
 def v(*args, **kwargs):
@@ -16,11 +21,12 @@ def v(*args, **kwargs):
 
 class TepVar:
     kv = {}
-
-
-class Constant:
-    JSON = "json"
-    STR = "str"
+    build_in_functions = [
+        "random",
+        "uuid",
+        "time",
+        "timestamp"
+    ]
 
 
 def _init(kv: dict):
@@ -31,34 +37,17 @@ def _set(key, value):
     TepVar.kv[key] = value
 
 
-def _parse(data: str):
+def _get(key):
+    return TepVar.kv[key]
+
+
+def _parse(data: str) -> str:
     data = data.strip()
-    if Constant.STR == _str_parsed_type(data):
-        return _parse_str(data)
-    elif Constant.JSON == _str_parsed_type(data):
-        return _parse_json(data)
-
-
-def _str_parsed_type(data: str):
-    if data.startswith("{"):
-        return Constant.JSON
+    if data in TepVar.kv:
+        return _get(data)
     else:
-        return Constant.STR
-
-
-def _parse_str(data: str) -> str:
-    new_str = _replace_var(data)
-    if new_str:
-        return new_str
-    return data
-
-
-def _parse_json(data: str) -> dict:
-    new_str = _replace_var(data)
-    if new_str:
-        return json.loads(new_str)
-
-    return json.loads(data)
+        new_str = _replace_var(data)
+        return new_str if new_str else data
 
 
 def _replace_var(str_param: str) -> str:
@@ -70,15 +59,57 @@ def _replace_var(str_param: str) -> str:
             start_index = str_param.find('${{' + var + '}}')
             end_index = start_index + len(var) + 5  # Length of ${{}}
             dollar_var = str_param[start_index: end_index]
-            str_param = str_param.replace(dollar_var, '{' + var + '}')
-            if var not in kv:
-                kv[var] = "null"
+
+            function_name, parameters = _parse_function(var)
+            if not function_name and var not in kv:
+                kv[var] = '${' + var + '}'
+                logging.warning(f'Can not find variable {var} in TepVar.kv')
+                continue
+
+            if function_name:
+                if function_name not in TepVar.build_in_functions:
+                    logging.warning(f'Can not find function {function_name} in built-in functions')
+
+                kv[function_name] = _call_function(function_name, parameters)
+
+            variable_name = function_name if function_name else var
+            str_param = str_param.replace(dollar_var, '{' + variable_name + '}')
+
         return str_param.format(**kv)
-    return ""
+
+    return ''
 
 
-def _parse_var(json_str: str) -> list:
+def _parse_var(json_str: str) -> set:
     json_str = json_str.replace('{', '{{').replace('}', '}}')
     pattern = r'\${{([^}]+)}}'
     matches = re.findall(pattern, json_str)
-    return matches
+    return set(matches)
+
+
+def _parse_function(s):
+    pattern = r'^\s*([a-zA-Z_][a-zA-Z0-9_]*)\s*\((.*)\)\s*$'
+    match = re.match(pattern, s)
+    if match:
+        function_name = match.group(1)
+        parameters = match.group(2)
+        parameters = [param.strip() for param in parameters.split(',')] if parameters else []
+        return function_name, parameters
+    else:
+        return None, None
+
+
+def _call_function(function_name, parameters):
+    try:
+        if function_name == "random":
+            return random(*parameters)
+        elif function_name == "uuid":
+            return uuid()
+        elif function_name == "time":
+            return time(*parameters)
+        elif function_name == "timestamp":
+            return timestamp(*parameters)
+    except:
+        caller_code = inspect.currentframe().f_back.f_code
+        logging.error(f"{caller_code.co_filename}::{caller_code.co_name} function {function_name} error, return -1")
+        return -1

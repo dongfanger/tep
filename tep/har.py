@@ -1,12 +1,11 @@
 #!/usr/bin/python
 # encoding=utf-8
-import json
 import logging
 import os
 
 from haralyzer import HarParser
 
-from tep.utils.json_util import simplify_json
+from tep.patch import json
 
 
 def har2case(settings: dict):
@@ -83,7 +82,7 @@ def test():
     def _make_case(self):
         self._generate_variable()
         case = self._generate_case()
-        variable = json.dumps(self.variable, ensure_ascii=False, indent=4)
+        variable = json.dumps(self.variable)
         data = "".join(self.data)
         content = Har.TEMPLATE.format(variable=variable, case=case, data=data)
         with open(self.case_file, "w") as f:
@@ -135,11 +134,11 @@ def test():
                 h[header["name"]] = header["value"]
             for cookie in cookies:
                 h[cookie["name"]] = cookie["value"]
-            step.request.headers = simplify_json(json.dumps(h, ensure_ascii=False))
+            step.request.headers = json.simplify(json.dumps(h))
 
     def _make_request_body(self, step, entry):
         if entry.request.text:
-            step.request.body = simplify_json(entry.request.text)
+            step.request.body = json.simplify(entry.request.text)
         else:
             step.request.body = entry.request.text
 

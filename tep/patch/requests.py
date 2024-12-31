@@ -1,20 +1,20 @@
 #!/usr/bin/python
 # encoding=utf-8
 
-import json
 import logging
 from urllib.parse import unquote
 
 import httpx
 import jsonpath
-import requests
+import requests as req
 import urllib3
-from requests import Response
+
+from tep.patch import json
 
 urllib3.disable_warnings(urllib3.exceptions.InsecureRequestWarning)
 
 
-class TepResponse(Response):
+class TepResponse(req.Response):
     """
     Inherit on requests.Response, adding additional methods
     """
@@ -40,14 +40,27 @@ Elapsed: {elapsed}ms
 
 
 def request(method, url, **kwargs):
+    if not _check(method, url, **kwargs):
+        return
+
     http2 = kwargs.pop("http2", False)
     if http2:
         return _http2(method, url, **kwargs)
+
     return _http1(method, url, **kwargs)
 
 
+def _check(method, url, **kwargs) -> bool:
+    json_param = kwargs["json"]
+    if isinstance(json_param, str):
+        logging.error("request() json expect dict type, json.loads() convert str to dict")
+        return False
+
+    return True
+
+
 def _http1(method, url, **kwargs):
-    response = requests.request(
+    response = req.request(
         method, url,
         hooks={'response': _response_callback},
         **kwargs
@@ -93,17 +106,17 @@ def _json_str(o):
         return o
 
     try:
-        return json.dumps(o, ensure_ascii=False)
+        return json.dumps(o)
     except:
         pass
 
     try:
-        return json.dumps(json.loads(o.decode("utf-8")), ensure_ascii=False)  # bytes
+        return json.dumps(json.loads(o.decode("utf-8")))  # bytes
     except:
         pass
 
     try:
-        return json.dumps(dict(o), ensure_ascii=False)  # requests.structures.CaseInsensitiveDict
+        return json.dumps(dict(o))  # requests.structures.CaseInsensitiveDict
     except:
         pass
 

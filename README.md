@@ -7,14 +7,15 @@ tep是Try Easy Pytest的首字母缩写，帮你轻松上手pytest。
 - 框架完全由Python构建，没有混杂其他语言。
 - 原生Python语法，学习Python，零成本使用框架。
 - HAR包转换pytest用例。
+- 函数v()支持${}占位符语法，便捷管理接口数据。
 
 # 安装
 
 支持Python3.8以上版本
 
-创建虚拟环境：`python -m venv venv`
+创建虚拟环境：`python -m venv .venv`
 
-激活虚拟环境，Windows用户：`activate.bat` Mac用户：`source venv/bin/activate`
+激活虚拟环境，Windows用户：`activate.bat` Mac用户：`source .venv/bin/activate`
 
 安装tep：`pip install tep`
 
