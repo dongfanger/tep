@@ -23,7 +23,7 @@ tep是Try Easy Pytest的首字母缩写，帮你轻松上手pytest。
 
 
 ``` text
-Current Version: V3.0.0
+Current Version: V3.0.1
 
 ████████ ███████ ██████  
    ██    ██      ██   ██ 

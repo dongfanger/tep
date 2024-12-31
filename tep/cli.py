@@ -8,7 +8,7 @@ from tep.scaffold import scaffold, init_parser_scaffold
 
 
 def main():
-    version = "3.0.0"
+    version = "3.0.1"
     parser = argparse.ArgumentParser(description="Try Easy Pytest!")
     parser.add_argument("-V", "--version", dest="version", action="store_true", help="show version")
     subparsers = parser.add_subparsers(help="sub-command help")

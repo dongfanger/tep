@@ -4,7 +4,7 @@ build-backend = "poetry.masonry.api"
 
 [tool.poetry]
 name = "tep"
-version = "3.0.0"
+version = "3.0.1"
 description = "tep is a testing framework to help you write pytest more easily. Try Easy Pytest!"
 license = "Apache-2.0"
 readme = "README.md"

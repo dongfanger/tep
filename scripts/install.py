@@ -6,7 +6,7 @@ import shutil
 import subprocess
 
 if __name__ == '__main__':
-    version = "3.0.0"
+    version = "3.0.1"
     base_path = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
     site_packages_path = os.path.join(base_path, ".venv", "lib", "python3.8", "site-packages")
     os.chdir(base_path)
