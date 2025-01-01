@@ -6,6 +6,7 @@ from tep.har import har2case
 from tep.patch import json
 from tep.patch.requests import request
 from tep.run import run
+from tep.step import step
 from tep.utils import pairwise
 from tep.variable import v
 
@@ -16,5 +17,6 @@ __all__ = [
     "run",
     "har2case",
     "file",
-    "pairwise"
+    "pairwise",
+    "step"
 ]

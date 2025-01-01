@@ -5,8 +5,9 @@ import os
 import shutil
 import subprocess
 
+from scripts.version import Constant
+
 if __name__ == '__main__':
-    version = "3.0.1"
     base_path = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
     site_packages_path = os.path.join(base_path, ".venv", "lib", "python3.8", "site-packages")
     os.chdir(base_path)
@@ -24,4 +25,4 @@ if __name__ == '__main__':
             shutil.rmtree(name)
 
     os.chdir(dist_path)
-    os.system(f"pip install tep-{version}-py3-none-any.whl")
+    os.system(f"pip install tep-{Constant.VERSION}-py3-none-any.whl")

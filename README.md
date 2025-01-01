@@ -3,6 +3,7 @@
 tep是Try Easy Pytest的首字母缩写，帮你轻松上手pytest。
 
 框架特点：
+
 - 基于pytest封装，成熟、稳定且扩展性强。
 - 框架完全由Python构建，没有混杂其他语言。
 - 原生Python语法，学习Python，零成本使用框架。
@@ -21,22 +22,12 @@ tep是Try Easy Pytest的首字母缩写，帮你轻松上手pytest。
 
 验证安装成功：`tep -V`
 
-
-``` text
-Current Version: V3.0.1
-
-████████ ███████ ██████  
-   ██    ██      ██   ██ 
-   ██    █████   ██████  
-   ██    ██      ██      
-   ██    ███████ ██      
-```
-
 # 更多介绍
 
 [原创接口测试框架tep](https://dongfanger.github.io/chapters/%E5%8E%9F%E5%88%9B%E6%8E%A5%E5%8F%A3%E6%B5%8B%E8%AF%95%E6%A1%86%E6%9E%B6tep.html)
 
 # 重要版本说明
+
 - V3.0.0 纯粹Python接口测试框架
 - V2.0.0 关键字驱动框架
 - V1.0.0 tep小工具完整教程

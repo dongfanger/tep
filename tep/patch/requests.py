@@ -28,7 +28,7 @@ class TepResponse(req.Response):
         return jsonpath.jsonpath(self.json(), expr)
 
 
-_template = """\n
+_template = """
 URL: {url}
 Method: {method}
 Headers: {headers}
@@ -51,10 +51,11 @@ def request(method, url, **kwargs):
 
 
 def _check(method, url, **kwargs) -> bool:
-    json_param = kwargs["json"]
-    if isinstance(json_param, str):
-        logging.error("request() json expect dict type, json.loads() convert str to dict")
-        return False
+    if "json" in kwargs:
+        json_param = kwargs["json"]
+        if isinstance(json_param, str):
+            logging.error("request() json expect dict type, json.loads() convert str to dict")
+            return False
 
     return True
 
