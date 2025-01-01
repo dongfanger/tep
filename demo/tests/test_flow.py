@@ -16,26 +16,21 @@ class Data:
     body_add_cart = """
 {
     "skuId": "${skuId}",
-    "skuNum":${skuNum
-    }
+    "skuNum":${skuNum}
 }
 """
     body_order = """
 {
     "skuId": "${skuId}",
-    "price":${skuPrice
-    },
-    "skuNum":${skuNum
-    },
-    "totalPrice":${totalPrice
-    }
+    "price":${skuPrice},
+    "skuNum":${skuNum},
+    "totalPrice":${totalPrice}
 }
 """
     body_pay = """
 {
     "orderId": "${orderId}",
-    "payAmount":${payAmount
-    }
+    "payAmount":${payAmount}
 }
 """
 
