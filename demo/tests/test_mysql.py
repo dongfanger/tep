@@ -1,8 +1,10 @@
-def test(mysql_execute):
+from tep import pymysql
+
+from data.global_data import GlobalData
+
+
+def test():
     sql = "select 1 from dual"
-    cursor = mysql_execute(sql)
-    column_names = [desc[0] for desc in cursor.description]
-    rows = cursor.fetchall()
+    rows = pymysql(GlobalData.db, sql)
     for row in rows:
-        print(row)
-        print(row[column_names.index("1")])  # get by column name
+        print(row["1"])

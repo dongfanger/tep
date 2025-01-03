@@ -4,6 +4,7 @@
 from tep.file import file
 from tep.har import har2case
 from tep.patch import json
+from tep.patch.pymysql import pymysql
 from tep.patch.requests import request
 from tep.run import run
 from tep.step import step
@@ -18,5 +19,6 @@ __all__ = [
     "har2case",
     "file",
     "pairwise",
-    "step"
+    "step",
+    "pymysql"
 ]
