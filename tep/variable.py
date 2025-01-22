@@ -4,9 +4,9 @@ import inspect
 import logging
 import re
 
-from tep.patch.random import random
-from tep.patch.time import time, timestamp
-from tep.patch.uuid import uuid
+from tep.patch.patch_random import patch_random
+from tep.patch.patch_time import patch_time, timestamp
+from tep.patch.patch_uuid import patch_uuid
 
 
 def v(*args, **kwargs):
@@ -102,11 +102,11 @@ def _parse_function(s):
 def _call_function(function_name, parameters):
     try:
         if function_name == "random":
-            return random(*parameters)
+            return patch_random(*parameters)
         elif function_name == "uuid":
-            return uuid()
+            return patch_uuid()
         elif function_name == "time":
-            return time(*parameters)
+            return patch_time(*parameters)
         elif function_name == "timestamp":
             return timestamp(*parameters)
     except:

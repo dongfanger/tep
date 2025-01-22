@@ -2,10 +2,10 @@
 # encoding=utf-8
 import inspect
 import logging
-import random as rnd
+import random
 
 
-def random(*args, **kwargs):
+def patch_random(*args, **kwargs):
     try:
         if len(args) == 0:
             return _get_random_num(8)
@@ -24,4 +24,4 @@ def random(*args, **kwargs):
 def _get_random_num(n):
     lower_bound = 10 ** (n - 1)
     upper_bound = 10 ** n - 1
-    return rnd.randint(lower_bound, upper_bound)
+    return random.randint(lower_bound, upper_bound)

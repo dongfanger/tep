@@ -6,15 +6,15 @@ from urllib.parse import unquote
 
 import httpx
 import jsonpath
-import requests as req
+import requests
 import urllib3
 
-from tep.patch import json
+from tep.patch import patch_json
 
 urllib3.disable_warnings(urllib3.exceptions.InsecureRequestWarning)
 
 
-class TepResponse(req.Response):
+class TepResponse(requests.Response):
     """
     Inherit on requests.Response, adding additional methods
     """
@@ -39,7 +39,7 @@ Elapsed: {elapsed}ms
 """
 
 
-def request(method, url, **kwargs):
+def patch_request(method, url, **kwargs):
     if not _check(method, url, **kwargs):
         return
 
@@ -61,7 +61,7 @@ def _check(method, url, **kwargs) -> bool:
 
 
 def _http1(method, url, **kwargs):
-    response = req.request(
+    response = requests.request(
         method, url,
         hooks={'response': _response_callback},
         **kwargs
@@ -107,17 +107,17 @@ def _json_str(o):
         return o
 
     try:
-        return json.dumps(o)
+        return patch_json.dumps(o)
     except:
         pass
 
     try:
-        return json.dumps(json.loads(o.decode("utf-8")))  # bytes
+        return patch_json.dumps(patch_json.loads(o.decode("utf-8")))  # bytes
     except:
         pass
 
     try:
-        return json.dumps(dict(o))  # requests.structures.CaseInsensitiveDict
+        return patch_json.dumps(dict(o))  # requests.structures.CaseInsensitiveDict
     except:
         pass
 

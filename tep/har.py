@@ -5,7 +5,7 @@ import os
 
 from haralyzer import HarParser
 
-from tep.patch import json
+from tep.patch import patch_json
 
 
 def har2case(settings: dict):
@@ -82,7 +82,7 @@ def test():
     def _make_case(self):
         self._generate_variable()
         case = self._generate_case()
-        variable = json.dumps(self.variable)
+        variable = patch_json.dumps(self.variable)
         data = "".join(self.data)
         content = Har.TEMPLATE.format(variable=variable, case=case, data=data)
         with open(self.case_file, "w") as f:
@@ -134,11 +134,11 @@ def test():
                 h[header["name"]] = header["value"]
             for cookie in cookies:
                 h[cookie["name"]] = cookie["value"]
-            step.request.headers = json.simplify(json.dumps(h))
+            step.request.headers = patch_json.simplify(patch_json.dumps(h))
 
     def _make_request_body(self, step, entry):
         if entry.request.text:
-            step.request.body = json.simplify(entry.request.text)
+            step.request.body = patch_json.simplify(entry.request.text)
         else:
             step.request.body = entry.request.text
 

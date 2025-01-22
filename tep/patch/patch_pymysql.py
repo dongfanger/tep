@@ -2,14 +2,14 @@
 # encoding=utf-8
 import logging
 
-import pymysql as pl
+import pymysql
 
 
-def pymysql(db: dict, sql: str):
+def patch_pymysql(db: dict, sql: str):
     conn = None
     cursor = None
     try:
-        conn = pl.connect(host=db["host"], port=db["port"], user=db["user"], password=db["password"], database=db["database"])
+        conn = pymysql.connect(host=db["host"], port=db["port"], user=db["user"], password=db["password"], database=db["database"])
         cursor = conn.cursor()
         _execute(cursor, sql)
         conn.commit()
