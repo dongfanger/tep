@@ -62,8 +62,8 @@ def _replace_var(str_param: str) -> str:
 
             function_name, parameters = _parse_function(var)
             if not function_name and var not in kv:
-                kv[var] = '${' + var + '}'
-                logging.warning(f'Can not find variable {var} in TepVar.kv')
+                kv[var] = None
+                logging.warning(f'Can not find variable {var} in TepVar.kv, default None')
                 continue
 
             if function_name:

@@ -4,7 +4,7 @@ import os
 
 
 class Constant:
-    VERSION = "3.0.3"
+    VERSION = "3.0.4"
 
 
 def set_version():
