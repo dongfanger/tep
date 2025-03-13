@@ -12,7 +12,7 @@ from tep.patch.patch_uuid import patch_uuid
 def v(*args, **kwargs):
     if len(args) == 1:
         if isinstance(args[0], dict):
-            _init(args[0])
+            _batch(args[0])
         elif isinstance(args[0], str):
             return _parse(args[0])
     elif len(args) == 2:
@@ -22,16 +22,16 @@ def v(*args, **kwargs):
 class TepVar:
     kv = {}
     build_in_functions = [
-        "random",
-        "uuid",
-        "time",
-        "timestamp"
+        'random',
+        'uuid',
+        'time',
+        'timestamp'
     ]
 
 
-def _init(kv: dict):
-    TepVar.kv = kv
-
+def _batch(kv: dict):
+    for k, v in kv.items():
+        TepVar.kv[k] = v
 
 def _set(key, value):
     TepVar.kv[key] = value
@@ -101,15 +101,15 @@ def _parse_function(s):
 
 def _call_function(function_name, parameters):
     try:
-        if function_name == "random":
+        if function_name == 'random':
             return patch_random(*parameters)
-        elif function_name == "uuid":
+        elif function_name == 'uuid':
             return patch_uuid()
-        elif function_name == "time":
+        elif function_name == 'time':
             return patch_time(*parameters)
-        elif function_name == "timestamp":
+        elif function_name == 'timestamp':
             return timestamp(*parameters)
     except:
         caller_code = inspect.currentframe().f_back.f_code
-        logging.error(f"{caller_code.co_filename}::{caller_code.co_name} function {function_name} error, return -1")
+        logging.error(f'{caller_code.co_filename}::{caller_code.co_name} function {function_name} error, return -1')
         return -1

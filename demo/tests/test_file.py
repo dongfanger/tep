@@ -5,12 +5,12 @@ from tep import file
 
 
 def test():
-    print(file("Cookie"))
+    print(file('Cookie'))
 
 
 def test_json():
-    print(file("type", "x.json"))
+    print(file('type', 'x.json'))
 
 
 def test_yaml():
-    print(file("type", "y.yaml"))
+    print(file('type', 'y.yaml'))

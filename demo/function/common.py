@@ -10,4 +10,4 @@ def base_dir():
 
 
 def headers():
-    return {"Content-Type": "application/json", "Cookie": file(os.path.join(base_dir(), "file", "Cookie"))}
+    return {'Content-Type': 'application/json', 'Cookie': file(os.path.join(base_dir(), 'file', 'Cookie'))}

@@ -15,12 +15,12 @@ def file(*args):
 
 def _load(path):
     file_type = _file_type(path)
-    if file_type in [".yml", ".yaml", ".YML", "YAML"]:
+    if file_type in ['.yml', '.yaml', '.YML', 'YAML']:
         return _yaml_load(path)
-    elif file_type in [".json", ".JSON"]:
+    elif file_type in ['.json', '.JSON']:
         return _json_load(path)
     else:
-        with open(path, encoding="utf8") as f:
+        with open(path, encoding='utf8') as f:
             return f.read()
 
 
@@ -29,10 +29,10 @@ def _file_type(path) -> str:
 
 
 def _yaml_load(path) -> [dict, list]:
-    with open(path, encoding="utf8") as f:
+    with open(path, encoding='utf8') as f:
         return yaml.load(f.read(), Loader=yaml.FullLoader)
 
 
 def _json_load(path) -> [dict, list]:
-    with open(path, encoding="utf8") as f:
+    with open(path, encoding='utf8') as f:
         return json.load(f)

@@ -4,7 +4,7 @@ from data.global_data import GlobalData
 
 
 def test():
-    sql = "select 1 from dual"
+    sql = 'select 1 from dual'
     rows = pymysql(GlobalData.db, sql)
     for row in rows:
-        print(row["1"])
+        print(row['1'])

@@ -4,56 +4,56 @@ from tep import v
 
 
 def test_random():
-    s = """{
+    s = '''{
     "x": ${random()}
-}"""
+}'''
     print(v(s))
 
 
 def test_random_n():
-    s = """{
+    s = '''{
         "x": ${random(9)}
-    }"""
+    }'''
     print(v(s))
 
 
 def test_random_prefix():
-    s = """{
+    s = '''{
         "x": "${random(前缀,2)}"
-    }"""
+    }'''
     print(v(s))
 
 
 def test_uuid():
-    s = """{
+    s = '''{
          "x": "${uuid()}"
-     }"""
+     }'''
     print(v(s))
 
 
 def test_time():
-    s = """{
+    s = '''{
              "x": "${time()}",
-         }"""
+         }'''
     print(v(s))
 
 
 def test_time_format():
-    s = """{
+    s = '''{
              "x": "${time(%Y-%m-%d %H:%M:%S)}",
-         }"""
+         }'''
     print(v(s))
 
 
 def test_timestamp():
-    s = """{
+    s = '''{
              "x": "${timestamp()}",
-         }"""
+         }'''
     print(v(s))
 
 
 def test_timestamp_specified():
-    s = """{
+    s = '''{
              "x": "${timestamp(2023-03-23 23:23:23)}",
-         }"""
+         }'''
     print(v(s))

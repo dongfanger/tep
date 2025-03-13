@@ -9,13 +9,13 @@ def patch_pymysql(db: dict, sql: str):
     conn = None
     cursor = None
     try:
-        conn = pymysql.connect(host=db["host"], port=db["port"], user=db["user"], password=db["password"], database=db["database"])
+        conn = pymysql.connect(host=db['host'], port=db['port'], user=db['user'], password=db['password'], database=db['database'])
         cursor = conn.cursor()
         _execute(cursor, sql)
         conn.commit()
         return _rows(cursor)
     except Exception as e:
-        logging.error(f"Database execute error, {e}")
+        logging.error(f'Database execute error, {e}')
         conn.rollback()
         return None
     finally:
@@ -26,10 +26,10 @@ def patch_pymysql(db: dict, sql: str):
 
 
 def _execute(cursor, sql):
-    seq = ";"
+    seq = ';'
     if seq in sql:
         for s in sql.split(seq):
-            s = s.strip().strip("\\n")
+            s = s.strip().strip('\\n')
             if s:
                 cursor.execute(s)
     else:
@@ -44,6 +44,6 @@ def _rows(cursor):
 
     names = [desc[0] for desc in cursor.description]
     # Get row by name
-    # rows [{"a": 1, "b": 1}, {"a": 2, "b": 2}]
-    # row {"a": 1, "b": 1}
+    # rows [{'a': 1, 'b': 1}, {'a': 2, 'b': 2}]
+    # row {'a': 1, 'b': 1}
     return [{name: row[names.index(name)] for name in names} for row in rows]

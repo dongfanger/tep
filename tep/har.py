@@ -14,8 +14,8 @@ def har2case(settings: dict):
 
 class Settings:
     def __init__(self):
-        self.har_path: str = ""
-        self.des_dir: str = ""
+        self.har_path: str = ''
+        self.des_dir: str = ''
         self.overwrite: bool = False
         self.json_indent: int = 4
         self.http2: bool = False
@@ -25,7 +25,7 @@ class Settings:
 
 
 class Har:
-    TEMPLATE = """from tep import request
+    TEMPLATE = '''from tep import request
 from tep import v
 
 
@@ -35,17 +35,17 @@ class Data:
 
 def test():
 {case}
-"""
+'''
 
     def __init__(self, settings: dict):
         self.settings = Settings()
-        self.settings.har_path = settings.get("har", "")
-        self.settings.des_dir = settings.get("dir", "")
-        self.settings.overwrite = settings.get("overwrite", False)
-        self.settings.http2 = settings.get("http2", False)
-        self.settings.hook_variable = settings.get("var", {})
-        self.settings.hook_url = settings.get("url", {})
-        self.settings.hook_headers = settings.get("headers", {})
+        self.settings.har_path = settings.get('har', '')
+        self.settings.des_dir = settings.get('dir', '')
+        self.settings.overwrite = settings.get('overwrite', False)
+        self.settings.http2 = settings.get('http2', False)
+        self.settings.hook_variable = settings.get('var', {})
+        self.settings.hook_url = settings.get('url', {})
+        self.settings.hook_headers = settings.get('headers', {})
 
         self.har_file = None
         self.case_file = None
@@ -54,7 +54,7 @@ def test():
 
     def har2case(self):
         if not self.settings.har_path:
-            logging.error("Har path is None")
+            logging.error('Har path is None')
             return
 
         if os.path.isfile(self.settings.har_path):
@@ -63,7 +63,7 @@ def test():
         else:
             for root, _, files in os.walk(self.settings.har_path):
                 for file in files:
-                    if file.endswith(".har"):
+                    if file.endswith('.har'):
                         self.har_file = os.path.join(root, file)
                         self._convert()
 
@@ -71,25 +71,25 @@ def test():
         filename = os.path.splitext(os.path.basename(self.har_file))[0]
         if not os.path.exists(self.settings.des_dir):
             os.makedirs(self.settings.des_dir)
-        self.case_file = os.path.join(self.settings.des_dir, "test_{}.py".format(filename))
+        self.case_file = os.path.join(self.settings.des_dir, 'test_{}.py'.format(filename))
         if not self.settings.overwrite and os.path.exists(self.case_file):
-            logging.warning('Case file existed, skip "{}"', self.case_file)
+            logging.warning('Case file existed, skip: {}', self.case_file)
             return
-        logging.info("Start to generate case")
+        logging.info('Start to generate case')
         self._make_case()
-        logging.info("Case generated: {}".format(self.case_file))
+        logging.info('Case generated: {}'.format(self.case_file))
 
     def _make_case(self):
         self._generate_variable()
         case = self._generate_case()
         variable = patch_json.dumps(self.variable)
-        data = "".join(self.data)
+        data = ''.join(self.data)
         content = Har.TEMPLATE.format(variable=variable, case=case, data=data)
-        with open(self.case_file, "w") as f:
+        with open(self.case_file, 'w') as f:
             f.write(content)
 
     def _generate_variable(self):
-        variable = {"domain": ""}
+        variable = {'domain': ''}
         if self.settings.hook_variable:
             variable.update(self.settings.hook_variable)
         if self.settings.hook_headers:
@@ -103,10 +103,10 @@ def test():
             for entry in page.entries:
                 step = self._generate_step(entry)
                 steps += step
-        return "\n    ".join(steps)
+        return '\n    '.join(steps)
 
     def _generate_step(self, entry) -> list:
-        logging.info(f"{entry.request.method} {entry.request.url} Convert step")
+        logging.info(f'{entry.request.method} {entry.request.url} Convert step')
         step = Step()
         self._make_request_method(step, entry)
         self._make_request_url(step, entry)
@@ -131,9 +131,9 @@ def test():
             step.request.headers = None  # Move headers to variable
         else:
             for header in headers:
-                h[header["name"]] = header["value"]
+                h[header['name']] = header['value']
             for cookie in cookies:
-                h[cookie["name"]] = cookie["value"]
+                h[cookie['name']] = cookie['value']
             step.request.headers = patch_json.simplify(patch_json.dumps(h))
 
     def _make_request_body(self, step, entry):
@@ -149,11 +149,11 @@ def test():
                 url = url.replace(k, v)
         stmt = [
             '',  # Blank line, distinguishing paragraphs
-            'url = v("{}")'.format(url)
+            "url = v('{}')".format(url)
         ]
         if not self.settings.hook_headers:  # If config hookHeaders, move headers to variable
             stmt += [
-                'headers = v(r"""{}""")'.format(step.request.headers),
+                "headers = v(r'''{}''')".format(step.request.headers),
             ]
         body_stmt = [
             f'body = v(Data.body_{self.body_id})',
@@ -166,7 +166,7 @@ def test():
 
     def _make_after_extract(self, step, entry):
         stmt = [
-            '# v("name", response.jsonpath("$.jsonpath")[0])'
+            "# v('name', response.jsonpath('$.jsonpath')[0])"
         ]
         step.after.extractor = stmt
 
@@ -177,25 +177,25 @@ def test():
         step.after.assertion = stmt
 
     def _request_param(self, step, entry) -> str:
-        param = ""
+        param = ''
         mime_type = entry.request.mimeType
         headers = 'headers'
         if self.settings.hook_headers:
             headers = 'Data.headers'
-        b = 'data=body' if mime_type and mime_type.startswith("application/x-www-form-urlencoded") else 'json=body'
-        if step.request.method == "GET":
+        b = 'data=body' if mime_type and mime_type.startswith('application/x-www-form-urlencoded') else 'json=body'
+        if step.request.method == 'GET':
             if step.request.body:
-                param = '"get", url=url, headers={}, params=body'.format(headers)
+                param = "'get', url=url, headers={}, params=body".format(headers)
             else:
-                param = '"get", url=url, headers={}'.format(headers)
-        if step.request.method == "POST":
-            param = '"post", url=url, headers={}, '.format(headers)
+                param = "'get', url=url, headers={}".format(headers)
+        if step.request.method == 'POST':
+            param = "'post', url=url, headers={}, ".format(headers)
             param += b
-        if step.request.method == "PUT":
-            param = '"put", url=url, headers={}, '.format(headers)
+        if step.request.method == 'PUT':
+            param = "'put', url=url, headers={}, ".format(headers)
             param += b
-        if step.request.method == "DELETE":
-            param = '"delete", url=url, headers={}'.format(headers)
+        if step.request.method == 'DELETE':
+            param = "'delete', url=url, headers={}".format(headers)
         if self.settings.http2:
             param += ', http2=True'
         return param
@@ -212,10 +212,10 @@ def test():
 
 
 class Request:
-    method: str = ""
-    url: str = ""
-    headers: str = ""
-    body: str = ""
+    method: str = ''
+    url: str = ''
+    headers: str = ''
+    body: str = ''
 
 
 class Before:
@@ -231,7 +231,7 @@ class After:
 
 class Step:
     def __init__(self):
-        self.name: str = ""
+        self.name: str = ''
         self.before: Before = Before()
         self.request: Request = Request()
         self.after: After = After()

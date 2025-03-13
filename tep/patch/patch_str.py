@@ -4,6 +4,6 @@
 
 def strip(s: str) -> str:
     s = s.strip()
-    s = s.strip("\n")
-    s = s.strip("\t")
+    s = s.strip('\n')
+    s = s.strip('\t')
     return s

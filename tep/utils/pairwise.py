@@ -6,9 +6,9 @@ import logging
 
 
 def parewise(option: list) -> list:
-    """
+    '''
     Automatically generate composite use cases
-    """
+    '''
     cp = []  # Cartesian product
     s = []  # Split in pairs
     for x in eval('itertools.product' + str(tuple(option))):

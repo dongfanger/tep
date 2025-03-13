@@ -4,5 +4,5 @@ import logging
 
 
 def step(name: str, function):
-    logging.info("----------------" + name + "----------------")
+    logging.info('----------------' + name + '----------------')
     return function()

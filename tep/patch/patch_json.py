@@ -27,12 +27,12 @@ def loads(json_str: str) -> dict:
         json_dict = json.loads(json_str)
     except:
         caller_code = inspect.currentframe().f_back.f_code
-        logging.error(f"{caller_code.co_filename}::{caller_code.co_name} error, string is not json format:\n{json_str} ")
+        logging.error(f'{caller_code.co_filename}::{caller_code.co_name} error, string is not json format:\n{json_str} ')
 
     return json_dict
 
 
-def dumps(data: dict) -> str:
+def dumps(data) -> str:
     return json.dumps(data, ensure_ascii=False)
 
 
@@ -42,11 +42,11 @@ def json2sql(json_dict: dict, table_name: str) -> str:
     for key, value in json_dict.items():
         fields.append(key)
         if value is None:
-            value = "null"
+            value = 'null'
         else:
             if '"' in value:
                 value = nested(value)
-            value = '"' + value + '"'
+            value = "'" + value + "'"
 
         values.append(value)
-    return f"insert into {table_name}({','.join(fields)}) values ({','.join(values)});"
+    return f'insert into {table_name}({",".join(fields)}) values ({",".join(values)});'

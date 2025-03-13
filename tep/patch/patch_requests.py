@@ -15,9 +15,9 @@ urllib3.disable_warnings(urllib3.exceptions.InsecureRequestWarning)
 
 
 class TepResponse(requests.Response):
-    """
+    '''
     Inherit on requests.Response, adding additional methods
-    """
+    '''
 
     def __init__(self, response):
         super().__init__()
@@ -28,7 +28,7 @@ class TepResponse(requests.Response):
         return jsonpath.jsonpath(self.json(), expr)
 
 
-_template = """
+_template = '''
 URL: {url}
 Method: {method}
 Headers: {headers}
@@ -36,14 +36,14 @@ Request Body: {request_body}
 Status Code: {status_code}
 Response Body: {response_body}
 Elapsed: {elapsed}ms
-"""
+'''
 
 
 def patch_request(method, url, **kwargs):
     if not _check(method, url, **kwargs):
         return
 
-    http2 = kwargs.pop("http2", False)
+    http2 = kwargs.pop('http2', False)
     if http2:
         return _http2(method, url, **kwargs)
 
@@ -51,10 +51,10 @@ def patch_request(method, url, **kwargs):
 
 
 def _check(method, url, **kwargs) -> bool:
-    if "json" in kwargs:
-        json_param = kwargs["json"]
+    if 'json' in kwargs:
+        json_param = kwargs['json']
         if isinstance(json_param, str):
-            logging.error("request() json expect dict type, json.loads() convert str to dict")
+            logging.error('request() json expect dict type, json.loads() convert str to dict')
             return False
 
     return True
@@ -112,7 +112,7 @@ def _json_str(o):
         pass
 
     try:
-        return patch_json.dumps(patch_json.loads(o.decode("utf-8")))  # bytes
+        return patch_json.dumps(patch_json.loads(o.decode('utf-8')))  # bytes
     except:
         pass
 

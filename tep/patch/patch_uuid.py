@@ -4,4 +4,4 @@ import uuid
 
 
 def patch_uuid():
-    return str(uuid.uuid1()).replace("-", "")
+    return str(uuid.uuid1()).replace('-', '')
