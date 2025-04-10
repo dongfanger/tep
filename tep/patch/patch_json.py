@@ -2,6 +2,7 @@
 # encoding=utf-8
 import inspect
 import json
+import jsonpath as jp
 import logging
 
 
@@ -15,10 +16,8 @@ def beautify(json_str: str, indent: int = 4) -> str:
     return json.dumps(json_dict, separators=(',', ':'), indent=indent, ensure_ascii=False)
 
 
-def nested(json_str: str) -> str:
-    json_dict = loads(json_str)
-
-    return json.dumps(json_dict, separators=(',', ':'), ensure_ascii=False).replace('"', '\\"')
+def escape(json_str: str) -> str:
+    return json.dumps(json_str, ensure_ascii=False)[1:-1]
 
 
 def loads(json_str: str) -> dict:
@@ -27,13 +26,21 @@ def loads(json_str: str) -> dict:
         json_dict = json.loads(json_str)
     except:
         caller_code = inspect.currentframe().f_back.f_code
-        logging.error(f'{caller_code.co_filename}::{caller_code.co_name} error, string is not json format:\n{json_str} ')
+        logging.error(f'{caller_code.co_filename}::{caller_code.co_name} error, parse json str exception:\n{json_str} ')
 
     return json_dict
 
 
-def dumps(data) -> str:
-    return json.dumps(data, ensure_ascii=False)
+def dumps(json_dict) -> str:
+    return json.dumps(json_dict, ensure_ascii=False)
+
+
+def parse(json_str):
+    return loads(json_str)
+
+
+def to_json_string(json_dict) -> str:
+    return dumps(json_dict)
 
 
 def json2sql(json_dict: dict, table_name: str) -> str:
@@ -45,8 +52,18 @@ def json2sql(json_dict: dict, table_name: str) -> str:
             value = 'null'
         else:
             if '"' in value:
-                value = nested(value)
+                value = escape(value)
             value = "'" + value + "'"
 
         values.append(value)
     return f'insert into {table_name}({",".join(fields)}) values ({",".join(values)});'
+
+
+def jsonpath(json_dict, expr):
+    data = jp.jsonpath(json_dict, expr)
+    if not data:
+        return None
+
+    if isinstance(data, list) and len(data) == 1:
+        return data[0]
+    return data

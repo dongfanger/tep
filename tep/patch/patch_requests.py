@@ -5,7 +5,6 @@ import logging
 from urllib.parse import unquote
 
 import httpx
-import jsonpath
 import requests
 import urllib3
 
@@ -25,7 +24,7 @@ class TepResponse(requests.Response):
             self.__dict__[k] = v
 
     def jsonpath(self, expr: str):
-        return jsonpath.jsonpath(self.json(), expr)
+        return patch_json.jsonpath(self.json(), expr)
 
 
 _template = '''

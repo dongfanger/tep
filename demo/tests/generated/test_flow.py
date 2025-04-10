@@ -3,9 +3,7 @@ from tep import v
 
 
 class Data:
-    v({
-        'domain': 'http://127.0.0.1:5000'
-    })
+    v({"domain": "http://127.0.0.1:5000"})
     headers = {'Content-Type': 'application/json', 'Cookie': 'de2e3ffu29'}
     body_1 = '{"username":"dongfanger","password":"123456"}'
     body_2 = '{"skuId":"222","skuNum":2}'

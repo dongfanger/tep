@@ -12,6 +12,13 @@ def file(*args):
     path = os.path.join(Config().FILE_DIR, *args)
     return _load(path)
 
+def filepath():
+    """
+    Effective when using Pytest: from tep import filepath
+    Otherwise: from function.common import base_dir
+    """
+    return Config().FILE_DIR
+
 
 def _load(path):
     file_type = _file_type(path)

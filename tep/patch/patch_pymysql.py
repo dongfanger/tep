@@ -6,6 +6,9 @@ import pymysql
 
 
 def patch_pymysql(db: dict, sql: str):
+    """
+    Return type: list | None
+    """
     conn = None
     cursor = None
     try:

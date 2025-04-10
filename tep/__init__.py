@@ -1,7 +1,7 @@
 #!/usr/bin/python
 # encoding=utf-8
 
-from tep.file import file
+from tep.file import file, filepath
 from tep.har import har2case
 from tep.patch import patch_json as json
 from tep.patch import patch_str as str
@@ -21,6 +21,7 @@ __all__ = [
     'run',
     'har2case',
     'file',
+    'filepath',
     'pairwise',
     'step'
 ]
