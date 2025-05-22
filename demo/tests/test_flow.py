@@ -4,7 +4,7 @@ from tep import request
 from tep import step
 from tep import v
 
-from data.global_data import GlobalData
+from data.GlobalData import GlobalData
 
 
 def test():

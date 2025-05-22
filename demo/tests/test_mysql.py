@@ -1,6 +1,6 @@
 from tep import pymysql
 
-from data.global_data import GlobalData
+from data.GlobalData import GlobalData
 
 
 def test():

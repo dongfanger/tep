@@ -88,7 +88,7 @@ if __name__ == '__main__':
 
     create_file(os.path.join(project_name, 'data', '__init__.py'), '')
 
-    create_file(os.path.join(project_name, 'data', 'global_data.py'), '''#!/usr/bin/python
+    create_file(os.path.join(project_name, 'data', 'GlobalData.py'), '''#!/usr/bin/python
 # encoding=utf-8
 
 
@@ -198,7 +198,7 @@ def test():
     create_file(os.path.join(project_name, 'tests', 'test_flow.py'), '''from tep import request
 from tep import v
 
-from data.global_data import GlobalData
+from data.GlobalData import GlobalData
 
 
 class Data:

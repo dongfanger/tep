@@ -1,7 +1,7 @@
 from tep import request
 from tep import v
 
-from data.global_data import GlobalData
+from data.GlobalData import GlobalData
 
 
 class Data:
