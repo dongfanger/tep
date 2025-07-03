@@ -10,6 +10,9 @@ from tep.patch.patch_uuid import patch_uuid
 
 
 def v(*args, **kwargs):
+    if 'key' in kwargs:
+        return _get(kwargs['key'])
+
     if len(args) == 1:
         if isinstance(args[0], dict):
             _batch(args[0])
@@ -33,12 +36,13 @@ def _batch(kv: dict):
     for k, v in kv.items():
         TepVar.kv[k] = v
 
+
 def _set(key, value):
     TepVar.kv[key] = value
 
 
 def _get(key):
-    return TepVar.kv[key]
+    return TepVar.kv.get(key, None)
 
 
 def _parse(data: str) -> str:
