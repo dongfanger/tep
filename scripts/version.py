@@ -22,7 +22,7 @@ def replace(path, prefix):
         new = ''
         for line in content:
             if line.startswith(prefix):
-                line = prefix + f'{Constant.VERSION}'
+                line = prefix + f'"{Constant.VERSION}"'
 
             new += line + '\n'
         with open(path, 'w', encoding='utf8') as fw:
