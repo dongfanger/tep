@@ -37,3 +37,10 @@ def test_none():
     print()
     print(v('msg'))  # msg
     print(v(key='msg'))  # None
+
+
+def test_list():
+    v({
+        "a": [1, 2, 3]
+    })
+    print(v('a'))

@@ -3,6 +3,7 @@
 import inspect
 import logging
 import re
+from typing import Optional
 
 from tep.patch.patch_random import patch_random
 from tep.patch.patch_time import patch_time, timestamp
@@ -45,9 +46,14 @@ def _get(key):
     return TepVar.kv.get(key, None)
 
 
-def _parse(data: str) -> str:
-    data = data.strip()
-    data = _get(data) if data in TepVar.kv else data
+def _parse(data: str) -> Optional[str]:
+    value = _get(data)
+
+    if value is not None:
+        if isinstance(value, str):
+            return _replace_var(value)
+        return value
+
     return _replace_var(data)
 
 
@@ -73,7 +79,9 @@ def _replace_var(data: str) -> str:
                     logging.warning(f'Can not find variable {var} in TepVar.kv, default None')
                     continue
 
-                kv[var] = _replace_var(kv[var])
+                value = kv[var]
+                if isinstance(value, str):
+                    kv[var] = _replace_var(value)
 
             variable_name = function_name if function_name else var
             data = data.replace(dollar_var, '{' + variable_name + '}')
