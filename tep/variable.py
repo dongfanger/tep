@@ -47,41 +47,40 @@ def _get(key):
 
 def _parse(data: str) -> str:
     data = data.strip()
-    if data in TepVar.kv:
-        return _get(data)
-    else:
-        new_str = _replace_var(data)
-        return new_str if new_str else data
+    data = _get(data) if data in TepVar.kv else data
+    return _replace_var(data)
 
 
-def _replace_var(str_param: str) -> str:
-    var_list = _parse_var(str_param)
+def _replace_var(data: str) -> str:
+    var_list = _parse_var(data)
     if var_list:
-        str_param = str_param.replace('{', '{{').replace('}', '}}')
+        data = data.replace('{', '{{').replace('}', '}}')
         kv = TepVar.kv
         for var in var_list:
-            start_index = str_param.find('${{' + var + '}}')
+            start_index = data.find('${{' + var + '}}')
             end_index = start_index + len(var) + 5  # Length of ${{}}
-            dollar_var = str_param[start_index: end_index]
+            dollar_var = data[start_index: end_index]
 
             function_name, parameters = _parse_function(var)
-            if not function_name and var not in kv:
-                kv[var] = None
-                logging.warning(f'Can not find variable {var} in TepVar.kv, default None')
-                continue
-
             if function_name:
                 if function_name not in TepVar.build_in_functions:
                     logging.warning(f'Can not find function {function_name} in built-in functions')
 
                 kv[function_name] = _call_function(function_name, parameters)
+            else:
+                if var not in kv:
+                    kv[var] = None
+                    logging.warning(f'Can not find variable {var} in TepVar.kv, default None')
+                    continue
+
+                kv[var] = _replace_var(kv[var])
 
             variable_name = function_name if function_name else var
-            str_param = str_param.replace(dollar_var, '{' + variable_name + '}')
+            data = data.replace(dollar_var, '{' + variable_name + '}')
 
-        return str_param.format(**kv)
+        return data.format(**kv)
 
-    return ''
+    return data
 
 
 def _parse_var(json_str: str) -> set:

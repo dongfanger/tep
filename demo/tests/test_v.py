@@ -31,3 +31,9 @@ def test_repeat():
 }
 '''
     print(v(test_json))
+
+
+def test_none():
+    print()
+    print(v('msg'))  # msg
+    print(v(key='msg'))  # None
