@@ -27,7 +27,6 @@ def loads(json_str: str) -> dict:
     except:
         caller_code = inspect.currentframe().f_back.f_code
         logging.error(f'{caller_code.co_filename}::{caller_code.co_name} error, parse json str exception:\n{json_str} ')
-
     return json_dict
 
 
@@ -54,7 +53,6 @@ def json2sql(json_dict: dict, table_name: str) -> str:
             if '"' in value:
                 value = escape(value)
             value = "'" + value + "'"
-
         values.append(value)
     return f'insert into {table_name}({",".join(fields)}) values ({",".join(values)});'
 
@@ -63,7 +61,6 @@ def jsonpath(json_dict, expr):
     data = jp.jsonpath(json_dict, expr)
     if not data:
         return None
-
     if isinstance(data, list) and len(data) == 1:
         return data[0]
     return data

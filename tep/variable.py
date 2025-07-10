@@ -48,7 +48,6 @@ def _get(key):
 
 def _parse(data: str) -> Optional[str]:
     value = _get(data)
-
     if value is not None:
         if isinstance(value, str):
             return _replace_var(value)
@@ -78,14 +77,11 @@ def _replace_var(data: str) -> str:
                     kv[var] = None
                     logging.warning(f'Can not find variable {var} in TepVar.kv, default None')
                     continue
-
                 value = kv[var]
                 if isinstance(value, str):
                     kv[var] = _replace_var(value)
-
             variable_name = function_name if function_name else var
             data = data.replace(dollar_var, '{' + variable_name + '}')
-
         return data.format(**kv)
 
     return data

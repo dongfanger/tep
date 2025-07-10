@@ -9,10 +9,8 @@ def patch_random(*args, **kwargs):
     try:
         if len(args) == 0:
             return _get_random_num(8)
-
         if len(args) == 1:
             return _get_random_num(int(args[0]))
-
         if len(args) == 2:
             return str(args[0]) + str(_get_random_num(int(args[1])))
     except:

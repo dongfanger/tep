@@ -14,9 +14,9 @@ urllib3.disable_warnings(urllib3.exceptions.InsecureRequestWarning)
 
 
 class TepResponse(requests.Response):
-    '''
+    """
     Inherit on requests.Response, adding additional methods
-    '''
+    """
 
     def __init__(self, response):
         super().__init__()
@@ -55,7 +55,6 @@ def _check(method, url, **kwargs) -> bool:
         if isinstance(json_param, str):
             logging.error('request() json expect dict type, json.loads() convert str to dict')
             return False
-
     return True
 
 
