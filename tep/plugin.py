@@ -10,9 +10,9 @@ from tep.config import Config
 
 
 def tep_plugins():
-    '''
+    """
     Must be placed at the top, execute first to initialize base dir
-    '''
+    """
     caller = inspect.stack()[1]
     Config.BASE_DIR = os.path.abspath(os.path.dirname(caller.filename))
     plugins = _fixture_path()  # +[other plugins]
@@ -20,9 +20,9 @@ def tep_plugins():
 
 
 def _fixture_path():
-    _fixture_dir = os.path.join(Config.BASE_DIR, 'fixture')
+    _fixture_dir = Config().FIXTURE_DIR
     paths = []
-    # 项目下的fixtures
+    # project/fixtures
     for root, _, files in os.walk(_fixture_dir):
         for file in files:
             if file.startswith('fixture_') and file.endswith('.py'):

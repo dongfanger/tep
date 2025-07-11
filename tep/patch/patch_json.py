@@ -3,7 +3,7 @@
 import inspect
 import json
 import jsonpath as jp
-import logging
+from tep.patch.patch_logging import logger
 
 
 def simplify(json_str: str) -> str:
@@ -26,7 +26,7 @@ def loads(json_str: str) -> dict:
         json_dict = json.loads(json_str)
     except:
         caller_code = inspect.currentframe().f_back.f_code
-        logging.error(f'{caller_code.co_filename}::{caller_code.co_name} error, parse json str exception:\n{json_str} ')
+        logger.error(f'{caller_code.co_filename}::{caller_code.co_name} error, parse json str exception:\n{json_str} ')
     return json_dict
 
 

@@ -1,13 +1,13 @@
 #!/usr/bin/python
 # encoding=utf-8
 import inspect
-import logging
 import re
 from typing import Optional
 
 from tep.patch.patch_random import patch_random
 from tep.patch.patch_time import patch_time, timestamp
 from tep.patch.patch_uuid import patch_uuid
+from tep.patch.patch_logging import logger
 
 
 def v(*args, **kwargs):
@@ -34,11 +34,13 @@ class TepVar:
 
 
 def _batch(kv: dict):
-    for k, v in kv.items():
-        TepVar.kv[k] = v
+    for key, value in kv.items():
+        _set(key, value)
 
 
 def _set(key, value):
+    if isinstance(value, str):
+        value = _replace_var(value)
     TepVar.kv[key] = value
 
 
@@ -69,13 +71,13 @@ def _replace_var(data: str) -> str:
             function_name, parameters = _parse_function(var)
             if function_name:
                 if function_name not in TepVar.build_in_functions:
-                    logging.warning(f'Can not find function {function_name} in built-in functions')
+                    logger.warning(f'Can not find function {function_name} in built-in functions')
 
                 kv[function_name] = _call_function(function_name, parameters)
             else:
                 if var not in kv:
+                    # Can not find var in TepVar.kv, default None
                     kv[var] = None
-                    logging.warning(f'Can not find variable {var} in TepVar.kv, default None')
                     continue
                 value = kv[var]
                 if isinstance(value, str):
@@ -118,5 +120,5 @@ def _call_function(function_name, parameters):
             return timestamp(*parameters)
     except:
         caller_code = inspect.currentframe().f_back.f_code
-        logging.error(f'{caller_code.co_filename}::{caller_code.co_name} function {function_name} error, return -1')
+        logger.error(f'{caller_code.co_filename}::{caller_code.co_name} function {function_name} error, return -1')
         return -1

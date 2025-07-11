@@ -1,7 +1,6 @@
 #!/usr/bin/python
 # encoding=utf-8
 
-import logging
 from urllib.parse import unquote
 
 import httpx
@@ -9,6 +8,7 @@ import requests
 import urllib3
 
 from tep.patch import patch_json
+from tep.patch.patch_logging import logger
 
 urllib3.disable_warnings(urllib3.exceptions.InsecureRequestWarning)
 
@@ -53,7 +53,7 @@ def _check(method, url, **kwargs) -> bool:
     if 'json' in kwargs:
         json_param = kwargs['json']
         if isinstance(json_param, str):
-            logging.error('request() json expect dict type, json.loads() convert str to dict')
+            logger.error('request() json expect dict type, json.loads() convert str to dict')
             return False
     return True
 
@@ -83,7 +83,7 @@ def _response_callback(response, *args, **kwargs):
         response_body=response.text,
         elapsed=round(response.elapsed.total_seconds() * 1000, 2)
     )
-    logging.info(log)
+    logger.info(log)
 
 
 def _response2_callback(response: httpx.Response):
@@ -97,7 +97,7 @@ def _response2_callback(response: httpx.Response):
         response_body=response.text,
         elapsed=response.elapsed.total_seconds()
     )
-    logging.info(log)
+    logger.info(log)
 
 
 def _json_str(o):

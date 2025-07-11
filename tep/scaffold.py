@@ -1,12 +1,12 @@
 #!/usr/bin/python
 # encoding=utf-8
 
-import logging
 import os
 import platform
 import sys
 
 from tep.config import Config
+from tep.patch.patch_logging import logger
 
 
 def init_parser_scaffold(subparsers):
@@ -28,10 +28,10 @@ def scaffold(args):
 
 def create_scaffold(project_name):
     if os.path.isdir(project_name):
-        logging.warning(f'Project folder {project_name} exists, please specify a new project name')
+        logger.warning(f'Project folder {project_name} exists, please specify a new project name')
         return 1
     elif os.path.isfile(project_name):
-        logging.warning(f'Project name {project_name} conflicts with existed file, please specify a new one')
+        logger.warning(f'Project name {project_name} conflicts with existed file, please specify a new one')
         return 1
 
     print(f'Create new project: {project_name}')

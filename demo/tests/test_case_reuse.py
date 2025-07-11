@@ -1,7 +1,7 @@
 #!/usr/bin/python
 # encoding=utf-8
 
-from tep import v, step
+from tep import v, step, logger
 
 
 def test(case_hello):
@@ -13,4 +13,4 @@ def test(case_hello):
 
 
 def step_welcome():
-    print('Welcome to tep')
+    logger.info('Welcome to tep')

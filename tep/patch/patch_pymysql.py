@@ -1,8 +1,9 @@
 #!/usr/bin/python
 # encoding=utf-8
-import logging
 
 import pymysql
+
+from tep.patch.patch_logging import logger
 
 
 def patch_pymysql(db: dict, sql: str):
@@ -18,7 +19,7 @@ def patch_pymysql(db: dict, sql: str):
         conn.commit()
         return _rows(cursor)
     except Exception as e:
-        logging.error(f'Database execute error, {e}')
+        logger.error(f'Database execute error, {e}')
         conn.rollback()
         return None
     finally:

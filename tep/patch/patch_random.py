@@ -1,8 +1,8 @@
 #!/usr/bin/python
 # encoding=utf-8
 import inspect
-import logging
 import random
+from tep.patch.patch_logging import logger
 
 
 def patch_random(*args, **kwargs):
@@ -15,7 +15,7 @@ def patch_random(*args, **kwargs):
             return str(args[0]) + str(_get_random_num(int(args[1])))
     except:
         caller_code = inspect.currentframe().f_back.f_code
-        logging.error(f'{caller_code.co_filename}::{caller_code.co_name} error, return -1')
+        logger.error(f'{caller_code.co_filename}::{caller_code.co_name} error, return -1')
         return -1
 
 

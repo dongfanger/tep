@@ -1,7 +1,8 @@
 from faker import Faker
+from tep import logger
 
 
 def test():
-    print(Faker().name())
-    print(Faker(locale='zh_CN').name())
-    print(Faker(locale='en').name())
+    logger.info(Faker().name())
+    logger.info(Faker(locale='zh_CN').name())
+    logger.info(Faker(locale='en').name())

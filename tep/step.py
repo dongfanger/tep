@@ -1,8 +1,9 @@
 #!/usr/bin/python
 # encoding=utf-8
-import logging
+
+from tep.patch.patch_logging import logger
 
 
 def step(name: str, function):
-    logging.info('----------------' + name + '----------------')
+    logger.info('----------------' + name + '----------------')
     return function()

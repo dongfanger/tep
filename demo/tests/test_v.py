@@ -44,3 +44,13 @@ def test_list():
         "a": [1, 2, 3]
     })
     print(v('a'))
+
+
+def test_loop():
+    v({
+         "a": 2
+    })
+    v({
+        "a": "${a}"
+    })
+    print(v("${a}"))
